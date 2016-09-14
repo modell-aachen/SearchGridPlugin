@@ -4,16 +4,8 @@ module.exports = function(grunt) {
       interrupt: true
     },
     grunt: {
-      files: ['Gruntfile.js', 'dev/tasks/**/*.js'],
+      files: ['Gruntfile.js', 'dev/tasks/**/*.js', 'dev/**/*.vue'],
       tasks: ['build']
-    },
-    sass: {
-      files: ['dev/sass/**/*.scss'],
-      tasks: ['sass', 'cssmin']
-    },
-    js: {
-      files: ['dev/js/**/*.js'],
-      tasks: ['concurrent:js']
     }
   });
 

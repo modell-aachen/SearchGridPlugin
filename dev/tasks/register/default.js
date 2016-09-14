@@ -1,3 +1,3 @@
 module.exports = function (grunt) {
-  grunt.registerTask('default', ['compile', 'watch']);
+  grunt.registerTask('default', ['build', 'watch']);
 };

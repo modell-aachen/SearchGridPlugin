@@ -90,14 +90,14 @@ sub _searchGrid {
 
     my $defaultQuery = $params->{_DEFAULT};
 
-    Foswiki::Plugins::VueJSPlugin::loadDependencies();
+    #Foswiki::Plugins::VueJSPlugin::loadDependencies();
     my $jPrefs = to_json($params->TO_JSON());
     Foswiki::Func::addToZone( 'script', 'SEARCHGRIDPREF',
         "<script type='text/json'>$jPrefs</script>");
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
         "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>"
     );
-    return "<div id=\"searchGrid\"></div>";
+    return "<grid></grid>";
 }
 
 1;
