@@ -97,7 +97,7 @@ sub _searchGrid {
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
         "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>"
     );
-    return "<div id=\"searchGrid\"><ul><li v-for=\"item in results\">{{item.author}} {{item.topic}}</li></ul></div>";
+    return "<div id=\"searchGrid\"></div>";
 }
 
 1;
