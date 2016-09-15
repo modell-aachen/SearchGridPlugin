@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "build": "webpack -p --watch"
+    "build": "webpack -d --watch"
   },
   "repository": {
     "type": "git",
@@ -31,6 +31,9 @@
     "webpack-dev-server": "^1.14.0"
   },
   "dependencies": {
-    "vue": "1.0.26"
+    "moment": "^2.15.0",
+    "style-loader": "^0.13.1",
+    "vue": "1.0.26",
+    "vue-simple-pagination": "0.0.0"
   }
 }

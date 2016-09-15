@@ -1,11 +1,11 @@
 import Vue from 'vue/dist/vue.js'
-import Grid from './components/TopicGrid.vue'
+import TopicGrid from './components/TopicGrid.vue'
 
 $( function () {
 new Vue({
-    el: 'body',
+    el: '.foswikiTopic',
     components: {
-      grid: Grid
+      grid: TopicGrid
     }
 })
 })

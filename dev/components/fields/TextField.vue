@@ -1,5 +1,5 @@
 <template>
-<td>params.text</td>
+<td>{{params[0]}}</td>
 </template>
 
 <script>

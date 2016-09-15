@@ -89,14 +89,18 @@ sub _searchGrid {
     # - displayRows: list von anzeie mata feldern
 
     my $defaultQuery = $params->{_DEFAULT};
+    my $resultsPerPage = $params->{resultsPerPage};
     my $headers = $params->{headers};
     my $fields = $params->{fields};
 
-    my $prefs = {q => $defaultQuery, fields => []};
+    my $prefs = {
+        q => $defaultQuery,
+        resultsPerPage => $resultsPerPage,
+        fields => []};
     my @parsedFields = ( $fields =~ /(.*?\(.*?\)),?/g );
     my $index = 0;
     foreach my $header (split(/,/,$headers)) {
-        my $field = {title => $header};
+        my $field = {title => $session->i18n->maketext($header)};
         my $parsedField = @parsedFields[$index];
         my ($component) = $parsedField =~ /(.*?)\(/;
         $field->{component} = $component;

@@ -1,9 +1,9 @@
 <template>
-<td>test<a href="{{params.url}}">{{params.title}}</a></td>
+<td><a href="{{params[1]}}">{{params[0]}}</a></td>
 </template>
 
 <script>
 export default {
-    props: ['params']
+    props: ['params'],
 }
 </script>

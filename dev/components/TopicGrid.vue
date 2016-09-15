@@ -1,39 +1,76 @@
 <template>
-    <table class="tablesorter">
-<thead>
-<th v-for="field in prefs.fields">{{field.title}}</th>
-</thead>
-<tbody>
-<tr v-for="result in results">
-<template v-for="field in prefs.fields">
-<component :is="field.component" params="{{field.params}}"></component>
-</template>
-</tr>
-</tbody>
+<table>
+  <thead>
+    <th v-for="field in prefs.fields">{{field.title}}</th>
+  </thead>
+  <tbody>
+    <tr v-for="result in results">
+      <template v-for="field in prefs.fields">
+      <component :is="field.component" :params="paramsToData(field.params, result)"></component>
+      </template>
+    </tr>
+  </tbody>
 </table>
+<paginator v-if="pageCount > 1" @page-changed="pageChanged" :page-count="pageCount" :current-page.sync="currentPage"></paginator>
 </template>
 
 <script>
 import TitleField from './fields/TitleField.vue'
 import TextField from './fields/TextField.vue'
+import DateField from './fields/DateField.vue'
+import Paginator from 'vue-simple-pagination/VueSimplePagination.vue'
 export default {
     data : function () {
        return {
           results: [],
+          numResults: 0,
+          resultsPerPage: 0,
+          currentPage: 1,
           prefs: {}
        }
     },
+    computed: {
+      pageCount: function(){
+        return Math.ceil(this.numResults / this.resultsPerPage);
+      }
+    },
+    methods: {
+      paramsToData : function(params, queryResult){
+        var result = [];
+        for(var i = 0; i < params.length; i++){
+          var key= params[i];
+          result.push(queryResult[key]);
+        }
+        return result;
+      },
+      pageChanged: function(){
+        var self = this;
+        self.$set('resultsPerPage', self.prefs.resultsPerPage);
+        $.get( "/bin/rest/SolrPlugin/proxy", {"q":this.prefs.q, "rows":this.resultsPerPage, "start": (this.currentPage - 1) * this.resultsPerPage},function(result){
+            self.$set('numResults', result.response.numFound);
+            self.$set('results', result.response.docs);
+        });
+      },
+      fetchData: function(){
+        var self = this;
+
+        $.get( "/bin/rest/SolrPlugin/proxy", {"q":this.prefs.q, "rows":this.resultsPerPage, "start": (this.currentPage - 1) * this.resultsPerPage},function(result){
+            self.$set('numResults', result.response.numFound);
+            self.$set('results', result.response.docs);
+        });
+      }
+    },
     components : {
-      "title-field" : TitleField,
-      "text-field" : TextField
+      TitleField,
+      TextField,
+      DateField,
+      Paginator
     },
     ready: function () {
-      this.$set('prefs', JSON.parse($('.SEARCHGRIDPREF').html()));
       var self = this;
-
-      var results = $.get( "/bin/rest/SolrPlugin/proxy", {"q":this.prefs.q},function(result){
-          self.results = result.response.docs;
-      });
+      this.$set('prefs', JSON.parse($('.SEARCHGRIDPREF').html()));
+      self.$set('resultsPerPage', self.prefs.resultsPerPage);
+      this.fetchData();
     }
 }
 </script>
