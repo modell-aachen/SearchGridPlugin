@@ -80,7 +80,7 @@ sub initPlugin {
 
 sub _searchGrid {
     my($session, $params, $topic, $web, $topicObject) = @_;
-
+    use Data::Dumper;
     # Params:
     # - DEFAULT: Full text search
     # - FACETS:  List of Facets (e.g. create_date:date,author:user,)
@@ -89,9 +89,28 @@ sub _searchGrid {
     # - displayRows: list von anzeie mata feldern
 
     my $defaultQuery = $params->{_DEFAULT};
+    my $headers = $params->{headers};
+    my $fields = $params->{fields};
 
+    my $prefs = {q => $defaultQuery, fields => []};
+    my @parsedFields = ( $fields =~ /(.*?\(.*?\)),?/g );
+    my $index = 0;
+    foreach my $header (split(/,/,$headers)) {
+        my $field = {title => $header};
+        my $parsedField = @parsedFields[$index];
+        my ($component) = $parsedField =~ /(.*?)\(/;
+        $field->{component} = $component;
+        my($params) = $parsedField =~ /\((.*?)\)/;
+
+        my @paramsArray = split(/,/, $params);
+        $field->{params} = \@paramsArray;
+        push($prefs->{fields}, $field);
+
+        $index++;
+    }
+    Foswiki::Func::writeWarning(Dumper($prefs));
     #Foswiki::Plugins::VueJSPlugin::loadDependencies();
-    my $jPrefs = to_json($params->TO_JSON());
+    my $jPrefs = to_json($prefs);
     Foswiki::Func::addToZone( 'script', 'SEARCHGRIDPREF',
         "<script type='text/json'>$jPrefs</script>");
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',

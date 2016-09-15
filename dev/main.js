@@ -1,5 +1,5 @@
 import Vue from 'vue/dist/vue.js'
-import Grid from './Grid.vue'
+import Grid from './components/TopicGrid.vue'
 
 $( function () {
 new Vue({

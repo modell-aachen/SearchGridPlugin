@@ -13,7 +13,7 @@ export default {
        var prefs = JSON.parse($('.SEARCHGRIDPREF').html());
        var self = this;
 
-       var results = $.get( "/bin/rest/SolrPlugin/proxy", {"q":prefs._DEFAULT},function(result){
+       var results = $.get( "/bin/rest/SolrPlugin/proxy", {"q":prefs.q},function(result){
            self.results = result.response.docs;
         });
     }

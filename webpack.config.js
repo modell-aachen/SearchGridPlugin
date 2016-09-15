@@ -1,5 +1,6 @@
 var path = require('path')
 var projectRoot = path.resolve(__dirname, '../../..')
+var webpack = require('webpack')
 
 module.exports = {
   babel: {
@@ -33,6 +34,12 @@ module.exports = {
       }
     ]
   },
+  vue: {
   plugins: [
+  new webpack.optimize.UglifyJsPlugin({
+      compress: false,
+      mangle: false
+    })
   ]
+}
 }
