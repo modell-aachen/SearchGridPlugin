@@ -46,7 +46,7 @@ export default {
       pageChanged: function(){
         var self = this;
         self.$set('resultsPerPage', self.prefs.resultsPerPage);
-        $.get( "/bin/rest/SolrPlugin/proxy", {"q":this.prefs.q, "rows":this.resultsPerPage, "start": (this.currentPage - 1) * this.resultsPerPage},function(result){
+        $.get( "/bin/rest/SearchGridPlugin/searchproxy", {"q":this.prefs.q, "rows":this.resultsPerPage, "start": (this.currentPage - 1) * this.resultsPerPage},function(result){
             self.$set('numResults', result.response.numFound);
             self.$set('results', result.response.docs);
         });
@@ -54,7 +54,7 @@ export default {
       fetchData: function(){
         var self = this;
 
-        $.get( "/bin/rest/SolrPlugin/proxy", {"q":this.prefs.q, "rows":this.resultsPerPage, "start": (this.currentPage - 1) * this.resultsPerPage},function(result){
+        $.get( "/bin/rest/SearchGridPlugin/searchproxy", {"q":this.prefs.q, "rows":this.resultsPerPage, "start": (this.currentPage - 1) * this.resultsPerPage},function(result){
             self.$set('numResults', result.response.numFound);
             self.$set('results', result.response.docs);
         });
