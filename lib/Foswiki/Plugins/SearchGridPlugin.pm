@@ -99,9 +99,9 @@ sub _searchGrid {
     # - displayRows: list von anzeie mata feldern
 
     my $defaultQuery = $params->{_DEFAULT};
-    my $resultsPerPage = $params->{resultsPerPage};
-    my $headers = $params->{headers};
-    my $fields = $params->{fields};
+    my $resultsPerPage = $params->{resultsPerPage} || 20;
+    my $headers = $params->{headers} || '';
+    my $fields = $params->{fields} || '';
 
     my $prefs = {
         q => $defaultQuery,
@@ -111,7 +111,7 @@ sub _searchGrid {
     my $index = 0;
     foreach my $header (split(/,/,$headers)) {
         my $field = {title => $session->i18n->maketext($header)};
-        my $parsedField = @parsedFields[$index];
+        my $parsedField = $parsedFields[$index];
         my ($component) = $parsedField =~ /(.*?)\(/;
         $field->{component} = $component;
         my($params) = $parsedField =~ /\((.*?)\)/;
@@ -122,7 +122,6 @@ sub _searchGrid {
 
         $index++;
     }
-    Foswiki::Func::writeWarning(Dumper($prefs));
     #Foswiki::Plugins::VueJSPlugin::loadDependencies();
     my $jPrefs = to_json($prefs);
     Foswiki::Func::addToZone( 'script', 'SEARCHGRIDPREF',
@@ -155,7 +154,7 @@ sub _searchProxy {
             my $form = "$fweb.$ftopic";
             $forms{$form} = Foswiki::Form->new($session, $fweb, $ftopic) unless ($forms{$form});
             my $fields = $forms{$form}->getFields();
-            my %tempDoc = %$doc;
+            my %tempDoc = %doc;
             while(my ($key, $value) = each(%tempDoc)) {
                 if ($key =~ /^field_([A-Za-z0-9]*)_/ && $key !~ /_dv$/) {
                     my $formField = $forms{$form}->getField($1);
@@ -164,7 +163,7 @@ sub _searchProxy {
                     next unless $dsp;
                     $dsp = $meta->expandMacros($dsp);
                     # Add display value to result set.
-                    $doc{$key.'_dv'} = $dsp;
+                    $doc->{$key.'_dv'} = $dsp;
                 }
             }
         }
