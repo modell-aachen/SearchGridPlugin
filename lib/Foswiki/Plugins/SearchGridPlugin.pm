@@ -64,6 +64,11 @@ sub initPlugin {
     } else {
       return 0;
     }
+    if ($Foswiki::cfg{Plugins}{SolrPlugin}{Enabled}) {
+      require Foswiki::Plugins::SolrPlugin;
+    } else {
+      return 0;
+    }
 
     # Register the _EXAMPLETAG function to handle %EXAMPLETAG{...}%
     # This will be called whenever %EXAMPLETAG% or %EXAMPLETAG{...}% is
@@ -72,7 +77,12 @@ sub initPlugin {
 
     # Allow a sub to be called from the REST interface
     # using the provided alias
-    Foswiki::Func::registerRESTHandler( 'example', \&restExample );
+    Foswiki::Func::registerRESTHandler( 'searchproxy',
+                                        \&_searchProxy,
+                                        authenticate => 0,
+                                        validate => 0,
+                                        http_allow => 'GET,POST',
+                                      );
 
     # Plugin correctly initialized
     return 1;
@@ -123,6 +133,45 @@ sub _searchGrid {
     return "<grid></grid>";
 }
 
+
+sub _searchProxy {
+    my $session = shift;
+    my $json = JSON->new->allow_nonref;
+    my $meta = Foswiki::Meta->new($session);
+
+    my $web = $session->{webName};
+    my $topic = $session->{topicName};
+    my $query = Foswiki::Func::getCgiQuery();
+    return 0 if $query->param('wt') && $query->param('wt') ne 'json';
+    my $content = Foswiki::Plugins::SolrPlugin::getSearcher($session)->restSOLRPROXY($web, $topic);
+
+    $content = $json->decode($content);
+    my %forms;
+
+    foreach my $doc (@{%{$content}{response}->{docs}}) {
+        my %doc = %{$doc};
+        if($doc{form}) {
+            my ($fweb, $ftopic) = Foswiki::Func::normalizeWebTopicName($doc{web}, $doc{form});
+            my $form = "$fweb.$ftopic";
+            $forms{$form} = Foswiki::Form->new($session, $fweb, $ftopic) unless ($forms{$form});
+            my $fields = $forms{$form}->getFields();
+            my %tempDoc = %$doc;
+            while(my ($key, $value) = each(%tempDoc)) {
+                if ($key =~ /^field_([A-Za-z0-9]*)_/ && $key !~ /_dv$/) {
+                    my $formField = $forms{$form}->getField($1);
+                    next unless $formField->can('getDisplayValue');
+                    my $dsp = $formField->getDisplayValue($doc->{$key});
+                    next unless $dsp;
+                    $dsp = $meta->expandMacros($dsp);
+                    # Add display value to result set.
+                    $doc{$key.'_dv'} = $dsp;
+                }
+            }
+        }
+    }
+
+    return $json->encode($content);
+}
 1;
 
 __END__
