@@ -102,15 +102,20 @@ sub _searchGrid {
     my $resultsPerPage = $params->{resultsPerPage} || 20;
     my $headers = $params->{headers} || '';
     my $fields = $params->{fields} || '';
+    my $sortFields = $params->{sortFields} || '';
 
     my $prefs = {
         q => $defaultQuery,
         resultsPerPage => $resultsPerPage,
         fields => []};
     my @parsedFields = ( $fields =~ /(.*?\(.*?\)),?/g );
+    my @parsedSortFields = (split(/,/,$sortFields));
     my $index = 0;
     foreach my $header (split(/,/,$headers)) {
-        my $field = {title => $session->i18n->maketext($header)};
+        my $field = {
+            title => $session->i18n->maketext($header),
+            sortField => $parsedSortFields[$index]
+        };
         my $parsedField = $parsedFields[$index];
         my ($component) = $parsedField =~ /(.*?)\(/;
         $field->{component} = $component;

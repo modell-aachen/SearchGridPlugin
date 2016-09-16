@@ -1,8 +1,6 @@
 <template>
 <table>
-  <thead>
-    <th v-for="field in prefs.fields">{{field.title}}</th>
-  </thead>
+  <thead is="grid-header" :headers="prefs.fields" @sort-changed="sortChanged"></thead>
   <tbody>
     <tr v-for="result in results">
       <template v-for="field in prefs.fields">
@@ -15,6 +13,7 @@
 </template>
 
 <script>
+import GridHeader from './GridHeader.vue'
 import TitleField from './fields/TitleField.vue'
 import TextField from './fields/TextField.vue'
 import DateField from './fields/DateField.vue'
@@ -26,6 +25,8 @@ export default {
           numResults: 0,
           resultsPerPage: 0,
           currentPage: 1,
+          sortField: "",
+          sort: "",
           prefs: {}
        }
     },
@@ -46,21 +47,31 @@ export default {
       pageChanged: function(){
         var self = this;
         self.$set('resultsPerPage', self.prefs.resultsPerPage);
-        $.get( "/bin/rest/SearchGridPlugin/searchproxy", {"q":this.prefs.q, "rows":this.resultsPerPage, "start": (this.currentPage - 1) * this.resultsPerPage},function(result){
-            self.$set('numResults', result.response.numFound);
-            self.$set('results', result.response.docs);
-        });
+        this.fetchData();
+      },
+      sortChanged: function(sortField, sort){
+        this.sortField = sortField;
+        this.sort = sort;
+        this.fetchData();
       },
       fetchData: function(){
         var self = this;
-
-        $.get( "/bin/rest/SearchGridPlugin/searchproxy", {"q":this.prefs.q, "rows":this.resultsPerPage, "start": (this.currentPage - 1) * this.resultsPerPage},function(result){
+        var params = {
+          "q":this.prefs.q,
+          "rows":this.resultsPerPage,
+          "start": (this.currentPage - 1) * this.resultsPerPage,
+        };
+        if(this.sortField !== ""){
+          params["sort"] = "" + this.sortField + " " + this.sort;
+        }
+        $.get( "/bin/rest/SearchGridPlugin/searchproxy", params, function(result){
             self.$set('numResults', result.response.numFound);
             self.$set('results', result.response.docs);
         });
       }
     },
     components : {
+      GridHeader,
       TitleField,
       TextField,
       DateField,

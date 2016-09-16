@@ -9,6 +9,7 @@ export default {
     computed: {
     	date: function(){
     		return Moment(this.params[0]);
+    		//return this.params[0];
     	}
     }
 }
