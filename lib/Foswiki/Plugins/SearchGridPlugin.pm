@@ -102,12 +102,14 @@ sub _searchGrid {
     my $resultsPerPage = $params->{resultsPerPage} || 20;
     my $headers = $params->{headers} || '';
     my $fields = $params->{fields} || '';
+    my $filters = $params->{filters} || '';
     my $sortFields = $params->{sortFields} || '';
 
     my $prefs = {
         q => $defaultQuery,
         resultsPerPage => $resultsPerPage,
-        fields => []};
+        fields => [],
+        filters => []};
     my @parsedFields = ( $fields =~ /(.*?\(.*?\)),?/g );
     my @parsedSortFields = (split(/,/,$sortFields));
     my $index = 0;
@@ -123,9 +125,20 @@ sub _searchGrid {
 
         my @paramsArray = split(/,/, $params);
         $field->{params} = \@paramsArray;
-        push($prefs->{fields}, $field);
+        push(@{$prefs->{fields}}, $field);
 
         $index++;
+    }
+    my @parsedFilters = ( $filters =~ /(.*?\(.*?\)),?/g );
+    foreach my $filter (@parsedFilters) {
+        my ($component) = $filter =~ /(.*?)\(/;
+        my($params) = $filter =~ /\((.*?)\)/;
+        my @paramsArray = split(/,/, $params);
+        my $newFilter = {
+            component => $component,
+            params => \@paramsArray
+        };
+        push(@{$prefs->{filters}}, $newFilter);
     }
     #Foswiki::Plugins::VueJSPlugin::loadDependencies();
     my $jPrefs = to_json($prefs);
