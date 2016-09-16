@@ -69,6 +69,7 @@ export default {
         } else {
             this.filterQuerys[field] = filterQuery;
         }
+        this.currentPage = 1;
         this.fetchData();
       },
       sortChanged: function(sortField, sort){

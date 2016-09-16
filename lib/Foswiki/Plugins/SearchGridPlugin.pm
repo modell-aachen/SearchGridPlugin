@@ -142,6 +142,8 @@ sub _searchGrid {
     }
     #Foswiki::Plugins::VueJSPlugin::loadDependencies();
     my $jPrefs = to_json($prefs);
+    Foswiki::Func::addToZone( 'head', 'FONTAWESOME',
+        '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FontAwesomeContrib/css/font-awesome.min.css" />');
     Foswiki::Func::addToZone( 'script', 'SEARCHGRIDPREF',
         "<script type='text/json'>$jPrefs</script>");
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
