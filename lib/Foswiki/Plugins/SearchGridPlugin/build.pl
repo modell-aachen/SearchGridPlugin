@@ -27,7 +27,7 @@ BEGIN {
 use Foswiki::Contrib::Build;
 
 # Declare our build package
-package BuildBuild;
+package SearchPluginBuild;
 use Foswiki::Contrib::Build;
 our @ISA = qw( Foswiki::Contrib::Build );
 
@@ -36,19 +36,25 @@ sub new {
     return bless( $class->SUPER::new("SearchGridPlugin"), $class );
 }
 
-# Example: Override the build target
+
 sub target_build {
-    my $this = shift;
+  my $this = shift;
+  $this->_installDeps();
+}
 
-    $this->SUPER::target_build();
+sub target_compress {}
 
-    # Do other build stuff here
+sub _installDeps {
+  my $this = shift;
+
+  local $| = 1;
+  print $this->sys_action( qw(npm install) );
 }
 
 package main;
 
 # Create the build object
-my $build = new BuildBuild();
+my $build = new SearchPlugindBuild();
 
 # Build the target on the command line, or the default target
 $build->build( $build->{target} );
