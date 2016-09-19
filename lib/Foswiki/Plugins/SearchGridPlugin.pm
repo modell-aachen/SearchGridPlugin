@@ -120,11 +120,14 @@ sub _searchGrid {
     my @parsedFields = ( $fields =~ /(.*?\(.*?\)),?/g );
     my @parsedSortFields = (split(/,/,$sortFields));
     my $index = 0;
-    foreach my $header (split(/,/,$headers)) {
+    foreach my $field ($fields =~ /(.*?\(.*?\)),?/g) {
+        my @headers = split(/,/,$headers);
         my $field = {
-            title => $session->i18n->maketext($header),
             sortField => $parsedSortFields[$index]
         };
+        if( @headers ){
+            $field->{title} = $headers[$index];
+        }
         my $parsedField = $parsedFields[$index];
         my ($component) = $parsedField =~ /(.*?)\(/;
         $field->{component} = $component;

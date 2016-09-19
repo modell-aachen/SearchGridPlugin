@@ -4,7 +4,7 @@
             <h3 title="topic">
                 <img class="solrHitIcon" v-bind:src="doc['icon']" height="16" width="16"></img>
                 <a href="{{doc['url']}}">{{doc["title"]}}</a>
-                <span class="foswikiGrayText foswikiSmallish solrContainerLink"> in <a href="{{doc['container_url']}}">{{doc["web"]}}</a>
+                <span class="foswikiGrayText foswikiSmallish solrContainerLink"> {{sIn}} <a href="{{doc['container_url']}}">{{doc["web"]}}</a>
                 <em v-if="doc['workflow_controlled_b']" style="font-size: 0.9em;" title="not approved">({{doc['workflowmeta_name_s_dv']}})</em>
                 <img class="modacFlag" src="/pub/System/FamFamFamFlagIcons/{{language}}.png" title="{{language}}"></span>
             </h3>
@@ -20,6 +20,11 @@ import 'moment/locale/de'
 import 'moment/locale/fr'
 export default {
     props: ['doc','params','language'],
+    data: function () {
+        return {
+            sIn: foswiki.jsi18n.get('SearchGrid', 'in')
+        }
+    },
     computed: {
         language: function() {
             if (this.doc['language'] === 'en'){

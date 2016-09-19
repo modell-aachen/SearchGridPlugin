@@ -1,5 +1,6 @@
 import Vue from 'vue/dist/vue.js'
 import TopicGrid from './components/TopicGrid.vue'
+import de from './locales/jsi18n.SearchGrid.de.js'
 
 $( function () {
 new Vue({
