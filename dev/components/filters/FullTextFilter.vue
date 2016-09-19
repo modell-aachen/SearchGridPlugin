@@ -1,5 +1,5 @@
 <template>
-<input v-model="filterText" debounce="500">
+    <input v-model="filterText" debounce="500" placeholder="{{params[0]}}">
 </template>
 
 <script>
@@ -12,7 +12,7 @@ export default {
     },
     ready: function () {
         this.$watch("filterText", function () {
-            this.$dispatch("filter-changed","*" + this.filterText + "*",this.params[0]);
+            this.$dispatch("filter-changed","*" + this.filterText + "*",this.params[1]);
         });
     }
 }

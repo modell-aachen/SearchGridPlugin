@@ -1,4 +1,5 @@
 <template>
+    <br>{{prefs.filterHeading}}</br>
 <template v-for="filter in prefs.filters">
 <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @filter-changed="filterChanged" @register-facet-field="registerFacetField"></component>
 </template>
@@ -36,9 +37,11 @@ export default {
           sort: "",
           filterQuerys: {},
           facetFields: {},
-          prefs: {}
+          prefs: {},
+          id: {}
        }
     },
+    props: ['instances'],
     computed: {
       pageCount: function(){
         return Math.ceil(this.numResults / this.resultsPerPage);
@@ -103,18 +106,20 @@ export default {
         this.request = $.get( "/bin/rest/SearchGridPlugin/searchproxy", params, function(result){
             self.$set('numResults', result.response.numFound);
             self.$set('results', result.response.docs);
-            var facetValues = result.facet_counts.facet_fields;
-            var newFacetValues = {};
-            for (var key in facetValues) {
-                var facet = [];
-                for(var i = 0; i < facetValues[key].length; i+=2){
-                    facet.push({'title': facetValues[key][i],
-                                'count': facetValues[key][i+1]
-                               });
+            if(result.facet_counts){
+                var facetValues = result.facet_counts.facet_fields;
+                var newFacetValues = {};
+                for (var key in facetValues) {
+                    var facet = [];
+                    for(var i = 0; i < facetValues[key].length; i+=2){
+                        facet.push({'title': facetValues[key][i],
+                                    'count': facetValues[key][i+1]
+                                   });
+                    }
+                    newFacetValues[key]=facet;
                 }
-                newFacetValues[key]=facet;
+                self.$set('facetValues', newFacetValues);
             }
-            self.$set('facetValues', newFacetValues);
             self.request = null;
         });
       }
@@ -130,9 +135,13 @@ export default {
     },
     ready: function () {
       var self = this;
-      this.$set('prefs', JSON.parse($('.SEARCHGRIDPREF').html()));
+      this.$set('prefs', JSON.parse($('.SEARCHGRIDPREF' + this.id).html()));
       self.$set('resultsPerPage', self.prefs.resultsPerPage);
       this.fetchData();
+    },
+    created: function () {
+      this.$set('id', this.instances);
+      this.$dispatch("update-instance-counter", this.instances);
     }
 }
 </script>

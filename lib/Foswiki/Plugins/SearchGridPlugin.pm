@@ -22,6 +22,8 @@ our $RELEASE = "0.1";
 
 our $SHORTDESCRIPTION = 'Search Gird Plugin for create Solr overviews';
 
+our $searchGridCounter = 0;
+
 
 =begin TML
 
@@ -90,7 +92,6 @@ sub initPlugin {
 
 sub _searchGrid {
     my($session, $params, $topic, $web, $topicObject) = @_;
-    use Data::Dumper;
     # Params:
     # - DEFAULT: Full text search
     # - FACETS:  List of Facets (e.g. create_date:date,author:user,)
@@ -104,12 +105,15 @@ sub _searchGrid {
     my $fields = $params->{fields} || '';
     my $filters = $params->{filters} || '';
     my $sortFields = $params->{sortFields} || '';
+    my $filterHeading = $params->{filterHeading} || 'Filter';
 
     my $prefs = {
         q => $defaultQuery,
         resultsPerPage => $resultsPerPage,
         fields => [],
-        filters => []};
+        filters => [],
+        filterHeading => $session->i18n->maketext($filterHeading)
+    };
     my @parsedFields = ( $fields =~ /(.*?\(.*?\)),?/g );
     my @parsedSortFields = (split(/,/,$sortFields));
     my $index = 0;
@@ -134,6 +138,7 @@ sub _searchGrid {
         my ($component) = $filter =~ /(.*?)\(/;
         my($params) = $filter =~ /\((.*?)\)/;
         my @paramsArray = split(/,/, $params);
+        $paramsArray[0] = $session->i18n->maketext($paramsArray[0]);
         my $newFilter = {
             component => $component,
             params => \@paramsArray
@@ -144,12 +149,12 @@ sub _searchGrid {
     my $jPrefs = to_json($prefs);
     Foswiki::Func::addToZone( 'head', 'FONTAWESOME',
         '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FontAwesomeContrib/css/font-awesome.min.css" />');
-    Foswiki::Func::addToZone( 'script', 'SEARCHGRIDPREF',
+    Foswiki::Func::addToZone( 'script', 'SEARCHGRIDPREF'. $searchGridCounter++,
         "<script type='text/json'>$jPrefs</script>");
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
         "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>"
     );
-    return "<grid></grid>";
+    return '<grid @update-instance-counter="updateInstanceCounter" :instances="instances"></grid>';
 }
 
 
