@@ -3,6 +3,7 @@
 <template v-for="filter in prefs.filters">
 <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @filter-changed="filterChanged" @register-facet-field="registerFacetField"></component>
 </template>
+<i v-show="request !== null" class="fa fa-spinner fa-spin fa-lg fa-fw"></i>
 <table class="tablesortercopy">
   <thead is="grid-header" :headers="prefs.fields" @sort-changed="sortChanged"></thead>
   <tbody>
