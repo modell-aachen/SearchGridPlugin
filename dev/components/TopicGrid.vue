@@ -3,7 +3,7 @@
 <template v-for="filter in prefs.filters">
 <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @filter-changed="filterChanged" @register-facet-field="registerFacetField"></component>
 </template>
-<table>
+<table class="tablesortercopy">
   <thead is="grid-header" :headers="prefs.fields" @sort-changed="sortChanged"></thead>
   <tbody>
     <tr v-for="result in results">
@@ -155,3 +155,64 @@ export default {
     }
 }
 </script>
+
+<style>
+
+/*--------merely copied from tablesorter* --------------*/
+/*Original doesnt work due to conflicts with vue*/
+table.tablesortercopy {
+  margin:10px 0pt 15px;
+  width: 100%;
+  text-align: left;
+}
+
+table.tablesortercopy thead tr th,
+table.tablesortercopy tfoot tr th {
+  background-color: #fff;
+  color: #999;
+  text-align: left;
+  padding: 4px 20px 8px 4px;
+  vertical-align: middle;
+}
+
+table.tablesortercopy.Modac_Standard thead tr th,
+table.tablesortercopy.Modac_Standard tfoot tr th {
+  background-color: #003c89;
+  color: #fff;
+  padding: 0 3px;
+  text-align: center;
+}
+
+table.tablesortercopy tbody td {
+  color: #3d3d3d;
+  background-color: #fff;
+  margin: 8px 1px;
+  padding: 8px;
+  background: #f8fcff;
+}
+
+table.tablesortercopy.Modac_Standard tbody td {
+  background: #f9f9f9;
+  padding: 0 3px;
+}
+
+table.tablesortercopy tbody tr.odd td {
+  background-color:#f8fcff;
+}
+
+table.tablesortercopy thead tr .sorted {
+  background-color: #fff;
+  color: #000;
+  font-weight: bold;
+}
+table.tablesortercopy thead tr .sortable {
+  cursor: pointer;
+}
+
+table.tablesortercopy tr.even:hover td,
+table.tablesortercopy tr.odd:hover td {
+  background-color: #e8f7ff;
+  margin: 8px 1px;
+  padding: 8px;
+}
+</style>

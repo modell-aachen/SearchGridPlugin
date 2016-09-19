@@ -1,5 +1,10 @@
 <template>
-<th v-on:click="toggleSort">{{title}}<i v-show="sortingEnabled" class="fa fa-caret-{{sortingIconClass}}" aria-hidden="true"></i></th>
+<th v-if="sortField !== 'none'" v-on:click="toggleSort" :class="{'sorted': sortingEnabled, 'sortable':true}">
+    {{title}}
+    <i v-show="sortingEnabled" class="fa fa-caret-{{sortingIconClass}}" aria-hidden="true"></i>
+    <i v-else class="fa fa-sort" aria-hidden="true"></i>
+</th>
+<th v-else>{{title}}</th>
 </template>
 
 <script>
