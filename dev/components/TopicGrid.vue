@@ -1,24 +1,31 @@
+
 <template>
+<div class="searchGridWrapper">
+  <div class="searchGridResults">
     <br>{{prefs.filterHeading}}</br>
-<template v-for="filter in prefs.filters">
-<component :is="filter.component" :params="filter.params" :facet-values="facetValues" @filter-changed="filterChanged" @register-facet-field="registerFacetField"></component>
-</template>
-<i v-show="request !== null" class="fa fa-spinner fa-spin fa-lg fa-fw"></i>
-<table class="tablesortercopy">
-  <thead is="grid-header" :headers="prefs.fields" @sort-changed="sortChanged"></thead>
-  <tbody>
-    <tr v-for="result in results">
-      <template v-for="field in prefs.fields">
-      <component :is="field.component" :doc="result" :params="field.params" :language="prefs.language"></component>
-      </template>
-    </tr>
-  </tbody>
-</table>
-<paginator v-if="pageCount > 1" @page-changed="pageChanged" :page-count="pageCount" :current-page.sync="currentPage"></paginator>
-<div>
-  <template v-for="facet in prefs.facets">
+    <template v-for="filter in prefs.filters">
+    <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @filter-changed="filterChanged" @register-facet-field="registerFacetField"></component>
+    </template>
+    <i v-show="request !== null" class="fa fa-spinner fa-spin fa-lg fa-fw"></i>
+    <table class="tablesortercopy">
+      <thead is="grid-header" :headers="prefs.fields" @sort-changed="sortChanged"></thead>
+      <tbody>
+        <tr v-for="result in results">
+          <template v-for="field in prefs.fields">
+          <component :is="field.component" :doc="result" :params="field.params" :language="prefs.language"></component>
+          </template>
+        </tr>
+      </tbody>
+    </table>
+    <paginator v-if="pageCount > 1" @page-changed="pageChanged" :page-count="pageCount" :current-page.sync="currentPage"></paginator>
+  </div>
+  <div id="modacSolrRightBar">
+    <h2 class='solrFilterResultsHeading' >Filter results</h2>
+    <button @click.stop="clearFacets()">Clear selection</button>
+    <template v-for="facet in prefs.facets">
     <component :is="facet.component" :params="facet.params" :facet-values="facetValues" @filter-changed="filterChanged" @register-facet-field="registerFacetField"></component>
-  </template>
+    </template>
+  </div>
 </div>
 </template>
 
@@ -84,6 +91,9 @@ export default {
         }
         this.currentPage = 1;
         this.fetchData();
+      },
+      clearFacets: function () {
+        this.$broadcast('reset');
       },
       sortChanged: function(sortField, sort){
         this.sortField = sortField;
@@ -161,6 +171,17 @@ export default {
 </script>
 
 <style>
+/*------------ facets --------*/
+.searchGridWrapper {
+  overflow: auto;
+}
+.searchGridResults {
+  width: calc(100% - 16em);
+  display: inline-block;
+}
+#modacSolrRightBar h2{
+  font-weight: 600;
+}
 
 /*--------merely copied from tablesorter* --------------*/
 /*Original doesnt work due to conflicts with vue*/

@@ -1,10 +1,14 @@
 <template>
 <div>
-	<p>{{params[0]}}</p>
-	<template v-for="value in facetValues[params[0]] | orderBy 'title'">
-		<input v-show="value.count > 0" type ="checkbox" id="{{value.title + '_id'}}" value="{{value.title}}" v-model="selectedFacets">
-		<label v-show="value.count > 0" for="{{value.title + '_id'}}">{{getLabel(value.title, value.count)}}</label>
-	</template>
+    <h2>{{params[0]}}</h2>
+    <ul>
+        <template v-for="value in facetValues[params[0]] | orderBy 'title'">
+        <li><label v-show="value.count > 0">
+            <input type ="checkbox" value="{{value.title}}" v-model="selectedFacets">
+            {{getLabel(value.title, value.count)}}
+        </label></li>
+        </template>
+    </ul>
 </div>
 </template>
 
@@ -35,6 +39,9 @@ export default {
 	        	queryString += ")";
 	        }
             this.$dispatch("filter-changed",queryString,`{!tag=${this.params[0]} q.op=OR}` + this.params[0]);
+        });
+        this.$on('reset', function () {
+            this.selectedFacets = [];
         });
     }
 }
