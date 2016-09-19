@@ -29,9 +29,9 @@ export default {
     		switch(this.sortState){
     			case sortStates["NONE"]:
     			case sortStates["ASC"]:
-    				return "down";
-    			case sortStates["DESC"]:
     				return "up";
+    			case sortStates["DESC"]:
+    				return "down";
     		}
     	}
     },
