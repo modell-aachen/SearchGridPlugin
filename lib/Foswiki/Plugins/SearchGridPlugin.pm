@@ -106,14 +106,15 @@ sub _searchGrid {
     my $filters = $params->{filters} || '';
     my $sortFields = $params->{sortFields} || '';
     my $filterHeading = $params->{filterHeading} || 'Filter';
+    my $facets = $params->{facets} || '';
 
     my $prefs = {
         q => $defaultQuery,
         resultsPerPage => $resultsPerPage,
         fields => [],
         filters => [],
-        filterHeading => $session->i18n->maketext($filterHeading)
-    };
+        filterHeading => $session->i18n->maketext($filterHeading),
+        facets => []};
     my @parsedFields = ( $fields =~ /(.*?\(.*?\)),?/g );
     my @parsedSortFields = (split(/,/,$sortFields));
     my $index = 0;
@@ -144,6 +145,17 @@ sub _searchGrid {
             params => \@paramsArray
         };
         push(@{$prefs->{filters}}, $newFilter);
+    }
+    my @parsedFacets = ( $facets =~ /(.*?\(.*?\)),?/g );
+    foreach my $facet (@parsedFacets) {
+        my ($component) = $facet =~ /(.*?)\(/;
+        my($params) = $facet =~ /\((.*?)\)/;
+        my @paramsArray = split(/,/, $params);
+        my $newFacet = {
+            component => $component,
+            params => \@paramsArray
+        };
+        push(@{$prefs->{facets}}, $newFacet);
     }
     #Foswiki::Plugins::VueJSPlugin::loadDependencies();
     my $jPrefs = to_json($prefs);

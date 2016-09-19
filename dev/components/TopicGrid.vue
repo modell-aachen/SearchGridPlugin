@@ -14,6 +14,11 @@
   </tbody>
 </table>
 <paginator v-if="pageCount > 1" @page-changed="pageChanged" :page-count="pageCount" :current-page.sync="currentPage"></paginator>
+<div>
+  <template v-for="facet in prefs.facets">
+    <component :is="facet.component" :params="facet.params" :facet-values="facetValues" @filter-changed="filterChanged" @register-facet-field="registerFacetField"></component>
+  </template>
+</div>
 </template>
 
 <script>
@@ -23,6 +28,8 @@ import TextField from './fields/TextField.vue'
 import DateField from './fields/DateField.vue'
 import FullTextFilter from './filters/FullTextFilter.vue'
 import SelectFilter from './filters/SelectFilter.vue'
+import MultiSelectFacet from './facets/MultiSelectFacet.vue'
+import SingleSelectFacet from './facets/SingleSelectFacet.vue'
 import Paginator from 'vue-simple-pagination/VueSimplePagination.vue'
 export default {
     data : function () {
@@ -99,6 +106,7 @@ export default {
         for (var key in this.facetFields) {
             params["facet.field"].push(key);
         }
+
         if(this.sortField !== ""){
           params["sort"] = "" + this.sortField + " " + this.sort;
         }
@@ -131,6 +139,8 @@ export default {
       DateField,
       FullTextFilter,
       SelectFilter,
+      MultiSelectFacet,
+      SingleSelectFacet,
       Paginator
     },
     ready: function () {
