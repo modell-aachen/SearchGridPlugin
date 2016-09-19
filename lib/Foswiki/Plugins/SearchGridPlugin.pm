@@ -114,10 +114,10 @@ sub _searchGrid {
         fields => [],
         filters => [],
         filterHeading => $session->i18n->maketext($filterHeading),
-        facets => []};
-        language => Foswiki::Func::getPreferencesValue('LANGUAGE')
+        facets => [],
+        language => Foswiki::Func::getPreferencesValue('LANGUAGE'),
     };
-    :w
+    my @parsedFields = ( $fields =~ /(.*?\(.*?\)),?/g );
     my @parsedSortFields = (split(/,/,$sortFields));
     my $index = 0;
     foreach my $header (split(/,/,$headers)) {
