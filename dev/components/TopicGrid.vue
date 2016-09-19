@@ -9,7 +9,7 @@
   <tbody>
     <tr v-for="result in results">
       <template v-for="field in prefs.fields">
-      <component :is="field.component" :params="paramsToData(field.params, result)"></component>
+      <component :is="field.component" :doc="result" :params="field.params" :language="prefs.language"></component>
       </template>
     </tr>
   </tbody>
@@ -27,11 +27,13 @@ import GridHeader from './GridHeader.vue'
 import TitleField from './fields/TitleField.vue'
 import TextField from './fields/TextField.vue'
 import DateField from './fields/DateField.vue'
+import SolrField from './fields/SolrField.vue'
 import FullTextFilter from './filters/FullTextFilter.vue'
 import SelectFilter from './filters/SelectFilter.vue'
 import MultiSelectFacet from './facets/MultiSelectFacet.vue'
 import SingleSelectFacet from './facets/SingleSelectFacet.vue'
 import Paginator from 'vue-simple-pagination/VueSimplePagination.vue'
+
 export default {
     data : function () {
        return {
@@ -138,6 +140,7 @@ export default {
       TitleField,
       TextField,
       DateField,
+      SolrField,
       FullTextFilter,
       SelectFilter,
       MultiSelectFacet,

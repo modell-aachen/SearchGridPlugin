@@ -1,9 +1,9 @@
 <template>
-<td>{{params[0]}}</td>
+    <td>{{doc[params[0]]}}</td>
 </template>
 
 <script>
 export default {
-    props: ['params']
+    props: ['doc','params']
 }
 </script>

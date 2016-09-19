@@ -115,7 +115,9 @@ sub _searchGrid {
         filters => [],
         filterHeading => $session->i18n->maketext($filterHeading),
         facets => []};
-    my @parsedFields = ( $fields =~ /(.*?\(.*?\)),?/g );
+        language => Foswiki::Func::getPreferencesValue('LANGUAGE')
+    };
+    :w
     my @parsedSortFields = (split(/,/,$sortFields));
     my $index = 0;
     foreach my $header (split(/,/,$headers)) {
@@ -178,6 +180,17 @@ sub _searchProxy {
     my $web = $session->{webName};
     my $topic = $session->{topicName};
     my $query = Foswiki::Func::getCgiQuery();
+    my %workflowMapping = (
+        "NEW" => "New",
+        "DISCUSSION" => "Discussion",
+        "APPROVED" => "Approved",
+        "DRAFT" => "Draft",
+        "FORMAL_REVIEW" => "Formal review",
+        "FORMAL_REVIEW_DRAFT" => "Formal review draft",
+        "CONTENT_REVIEW" => "Content review",
+        "CONTENT_REVIEW_DRAFT" => "Content review draft",
+        "DISCARDED" => "Discarded",
+    );
     return 0 if $query->param('wt') && $query->param('wt') ne 'json';
     my $content = Foswiki::Plugins::SolrPlugin::getSearcher($session)->restSOLRPROXY($web, $topic);
 
@@ -203,6 +216,10 @@ sub _searchProxy {
                     $doc->{$key.'_dv'} = $dsp;
                 }
             }
+        }
+        if ($doc{workflowmeta_name_s}) {
+                my $newName = $session->i18n->maketext($workflowMapping{$doc{workflowmeta_name_s}});
+                $doc->{workflowmeta_name_s_dv} = $newName;
         }
     }
 
