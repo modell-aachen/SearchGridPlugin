@@ -126,7 +126,7 @@ sub _searchGrid {
             sortField => $parsedSortFields[$index]
         };
         if( @headers ){
-            $field->{title} = $headers[$index];
+            $field->{title} = $session->i18n->maketext($headers[$index]);
         }
         my $parsedField = $parsedFields[$index];
         my ($component) = $parsedField =~ /(.*?)\(/;
