@@ -1,4 +1,5 @@
 !noci
 data/System/SearchGridPlugin.txt 0644
+data/System/VarSEARCHGRID.txt 0644
 lib/Foswiki/Plugins/SearchGridPlugin.pm 0444 Plugin Perl module
 pub/System/SearchGridPlugin/searchGrid.js 0644
