@@ -2,6 +2,11 @@ import Vue from 'vue/dist/vue.js'
 import TopicGrid from './components/TopicGrid.vue'
 import de from './locales/jsi18n.SearchGrid.de.js'
 
+window.Vue = Vue;
+window.registerCustomComponent = function(name, component){
+    Vue.component(name, component);
+};
+
 $( function () {
 new Vue({
     el: '.foswikiTopic',
@@ -14,7 +19,7 @@ new Vue({
         }
     },
     components: {
-      grid: TopicGrid
+        grid: TopicGrid
     }
 })
 })

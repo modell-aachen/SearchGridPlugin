@@ -169,7 +169,7 @@ sub _searchGrid {
     Foswiki::Func::addToZone( 'script', 'SEARCHGRIDPREF'. $searchGridCounter++,
         "<script type='text/json'>$jPrefs</script>");
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
-        "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>"
+        "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>","jsi18nCore"
     );
     return '<grid @update-instance-counter="updateInstanceCounter" :instances="instances"></grid>';
 }
