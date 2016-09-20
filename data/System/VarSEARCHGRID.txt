@@ -1,0 +1,60 @@
+---+ SEARCHGRID macro
+
+This us a macro from [[SearchGridPlugin]], used to render the search grid.
+
+%STARTINCLUDE%
+Renders the Solr search results and add filters and widgets.
+
+Example:
+
+<verbatim class="tml">
+%SEARCHGRID{"type:topic web:InternalProjects"
+   headers="Topic,Status"
+   fields="title-field(title,url),text-field(field_Status_s_dv)"
+   filters="full-text-filter(Title,title),full-text-filter(Author,author),select-filter(Status,field_Status_s)"
+   sortFields="none,field_Status_s"
+   facets="multi-select-facet(field_Status_s),single-select-facet(author)"
+}%
+</verbatim>
+
+---+++ Parameter
+
+| *Parameter* | *Description* | *Default* |
+| "..." | This is the default Solr query on which the result set will be rendered | |
+| headers | Comma-Seperated list of headers for the label. |  |
+| fields | List of fields to render. See [[#Fields][Fields]] |  |
+| filter | List of filters. See [[#Filters][Filters]] |  |
+| facets | List of facets to render. See [[#Facets][Facets]] |  |
+| sortFields | List of fields which should be sortable |  |
+| resultsPerPage | Sets the page shown on one page | 20 |
+
+---+++ Fields
+The fields parameter define the components which should be loaded and rendered.
+There are different type of fields. They take some parameters which they render.
+
+   * title-field(string,url)
+      * Renders a link field. First parameter is rendered as label and the second used as link ref.
+   * text-field(string)
+      * Renders a simple text. Takes the display value as first parameter.
+   * date-field(date)
+      * Takes a date value as param and the field will render it human readable.
+   * solr-field()
+      * Takes no parameters and renders the result in a single column in a Solr style.
+
+---+++ Filters
+Filters are rendered over the SearchGrid. They add extra filters to the search query and restrict the result set.
+All Filter take as first parameter the label of that field.
+   * full-text-filter(Title,title)
+      * This renders an input field. The second parameter is the field which should be filtered.
+   * select-filter(Status,field_Status_s)
+      * This renders a select list with all possible values to filter on. The second parameter is the field which should be filtered.
+
+---+++ Facets
+Facets are Filters which rendered as widgets on the right side. They add extra filters to the search query.
+
+   * multi-select-facet(field_Status_s)
+      * This select facet contains the possible values as check boxes.
+   * single-select-facet(author)
+      * This select facet contains the possible values as radio boxes.
+
+%STOPINCLUDE%
