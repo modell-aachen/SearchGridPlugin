@@ -1,8 +1,8 @@
 
 <template>
 <div class="searchGridWrapper">
-  <div class="searchGridResults">
-    <br>{{prefs.filterHeading}}</br>
+  <div class="searchGridResults" v-bind:style="gridStyle">
+    <div v-if="showFilters">{{prefs.filterHeading}}</div>
     <template v-for="filter in prefs.filters">
     <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @filter-changed="filterChanged" @register-facet-field="registerFacetField"></component>
     </template>
@@ -19,7 +19,7 @@
     </table>
     <paginator v-if="pageCount > 1" @page-changed="pageChanged" :page-count="pageCount" :current-page.sync="currentPage"></paginator>
   </div>
-  <div id="modacSolrRightBar">
+  <div v-if="showFacets" id="modacSolrRightBar">
     <h2 class='solrFilterResultsHeading' >Filter results</h2>
     <button @click.stop="clearFacets()">Clear selection</button>
     <template v-for="facet in prefs.facets">
@@ -54,7 +54,10 @@ export default {
           sort: "",
           filterQuerys: {},
           facetFields: {},
-          prefs: {},
+          prefs: {
+            filters: [],
+            facets: []
+          },
           id: {}
        }
     },
@@ -62,6 +65,17 @@ export default {
     computed: {
       pageCount: function(){
         return Math.ceil(this.numResults / this.resultsPerPage);
+      },
+      showFilters: function(){
+        return this.prefs.filters.length > 0;
+      },
+      showFacets: function(){
+        return this.prefs.facets.length > 0;
+      },
+      gridStyle: function(){
+        return {
+          width: this.showFacets ? '' : '100%'
+        }
       }
     },
     methods: {
