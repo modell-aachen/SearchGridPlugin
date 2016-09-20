@@ -80,8 +80,11 @@ export default {
       },
       registerFacetField: function(field){
         this.facetFields[field]=field;
+        var self = this;
         //TODO: trigger fetch only once
-        this.fetchData();
+        $(function(){
+          self.fetchData();
+        });
       },
       filterChanged: function(filterQuery, field){
         if(filterQuery === '') {

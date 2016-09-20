@@ -14,7 +14,9 @@
 </template>
 
 <script>
+import FacetMixin from './FacetMixin.vue'
 export default {
+    mixins: [FacetMixin],
     data: function(){
         return {
             selectedFacet: ''
@@ -22,15 +24,14 @@ export default {
     },
     props: ['params','facetValues'],
     methods: {
-        getLabel: function(value, count){
-            return value + " (" + count + ")";
+        getFacetQuery: function(){
+            return this.selectedFacet;
+        },
+        getFacetField: function(){
+            return `{!tag=${this.params[0]} q.op=OR}${this.params[0]}`;
         }
     },
     ready: function () {
-        this.$dispatch("register-facet-field","{!ex=" + this.params[0] + "}" + this.params[0]);
-        this.$watch("selectedFacet", function () {
-            this.$dispatch("filter-changed",this.selectedFacet,`{!tag=${this.params[0]} q.op=OR}${this.params[0]}`);
-        });
         this.$on('reset', function () {
             this.selectedFacet = '';
         });
