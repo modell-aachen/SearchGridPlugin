@@ -1,14 +1,6 @@
 
 <template>
 <div class="searchGridWrapper">
-  <div class="filters">
-    <template v-for="filter in prefs.filters">
-      <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @filter-changed="filterChanged" @register-facet-field="registerFacetField"></component>
-    </template>
-  </div>
-  <div>
-      <button v-on:click="fetchData">Filter</button>
-  </div>
   <div v-bind:class="{ 'invisible': !isLoading }" id="cssload-wrapper">
   <div id="cssload-border">
     <div id="cssload-whitespace">
@@ -17,6 +9,14 @@
     </div>
   </div>
 </div>
+  <div v-if="showFilters" class="filters">
+    <template v-for="filter in prefs.filters">
+      <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @filter-changed="filterChanged" @register-facet-field="registerFacetField"></component>
+    </template>
+  </div>
+  <div>
+      <button v-if="showFilters" v-on:click="fetchData">Filter</button>
+  </div>
   <div class="searchGridResults" v-bind:style="gridStyle">
     <table class="tablesortercopy">
       <thead is="grid-header" :headers="prefs.fields" @sort-changed="sortChanged"></thead>
