@@ -87,6 +87,7 @@ sub initPlugin {
                                       );
 
     # Plugin correctly initialized
+    $searchGridCounter = 0;
     return 1;
 }
 
