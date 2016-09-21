@@ -156,7 +156,7 @@ export default {
           params["sort"] = "" + this.sortField + " " + this.sort;
         }
         $.ajaxSettings.traditional = true;
-        this.request = $.get( "/bin/rest/SearchGridPlugin/searchproxy", params, function(result){
+        this.request = $.get(foswiki.preferences.SCRIPTURL + "/rest/SearchGridPlugin/searchproxy", params, function(result){
             self.$set('numResults', result.response.numFound);
             self.$set('results', result.response.docs);
             if(result.facet_counts){
