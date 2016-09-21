@@ -230,26 +230,27 @@ sub _searchProxy {
         }
     }
 
-    use Data::Dumper;
-
-    my ($fweb,$ftopic) = split(/\./,$requestObject->param('form'));
-    my $form = Foswiki::Form->new($session, $fweb, $ftopic);
-    my $facetDsps = {};
-    while(my ($key, $value) = each($content->{facet_counts}->{facet_fields})) {
-        $key =~ /^field_([A-Za-z0-9]*)_/;
-        my $formField = $form->getField($1);
-        next unless $formField->can('getDisplayValue');
-        my $length = scalar @$value;
-        my @array = @$value;
-        my $mapping = {};
-        $facetDsps->{$key} = $mapping;
-        for(my $index = 0; $index < $length; $index += 2){
-            my $dsp = $formField->getDisplayValue($array[$index]);
-            $mapping->{$array[$index]} = $dsp;
+    my $formParam = $requestObject->param('form') || "";
+    $content->{facet_dsps} = {};
+    if($formParam){
+        my ($fweb,$ftopic) = split(/\./,$formParam);
+        my $form = Foswiki::Form->new($session, $fweb, $ftopic);
+        my $facetDsps = {};
+        while(my ($key, $value) = each($content->{facet_counts}->{facet_fields})) {
+            $key =~ /^field_([A-Za-z0-9]*)_/;
+            my $formField = $form->getField($1);
+            next unless $formField->can('getDisplayValue');
+            my $length = scalar @$value;
+            my @array = @$value;
+            my $mapping = {};
+            $facetDsps->{$key} = $mapping;
+            for(my $index = 0; $index < $length; $index += 2){
+                my $dsp = $formField->getDisplayValue($array[$index]);
+                $mapping->{$array[$index]} = $dsp;
+            }
         }
+        $content->{facet_dsps} = $facetDsps;
     }
-    $content->{facet_dsps} = $facetDsps;
-
     return $json->encode($content);
 }
 1;

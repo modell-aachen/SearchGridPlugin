@@ -161,7 +161,6 @@ export default {
         this.request = $.get(foswiki.preferences.SCRIPTURL + "/rest/SearchGridPlugin/searchproxy", params, function(result){
             self.$set('numResults', result.response.numFound);
             self.$set('results', result.response.docs);
-            console.log(result.facet_dsps);
             if(result.facet_counts){
                 var facetValues = result.facet_counts.facet_fields;
                 var newFacetValues = {};
@@ -170,7 +169,7 @@ export default {
                     for(var i = 0; i < facetValues[key].length; i+=2){
                         var field = facetValues[key][i];
                         var displayValue = "";
-                        if(result.facet_dsps[key].hasOwnProperty(field))
+                        if(result.facet_dsps.hasOwnProperty(key) && result.facet_dsps[key].hasOwnProperty(field))
                           displayValue = result.facet_dsps[key][field];
                         else
                           displayValue = field;
