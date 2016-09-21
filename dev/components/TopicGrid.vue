@@ -9,7 +9,7 @@
     </div>
   </div>
 </div>
-  <div v-if="showFilters" class="filters">
+  <div v-if="showFilters" class="search-grid-filters">
     <template v-for="filter in prefs.filters">
       <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @filter-changed="filterChanged" @register-facet-field="registerFacetField"></component>
     </template>
@@ -273,7 +273,7 @@ table.tablesortercopy tr.odd:hover td {
   padding: 8px;
 }
 
-.filters {
+.search-grid-filters {
   float: left;
   width: 100%;
   margin-bottom: 5px;

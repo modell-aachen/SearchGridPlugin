@@ -1,5 +1,5 @@
 <template>
-    <div class="filter">
+    <div class="search-grid-filter">
     <label style="display:block;" for="{{id}}">{{params[0]}}</label>
     <select id="{{id}}" v-model="filterValue">
         <option v-bind:value="''">All</option>
