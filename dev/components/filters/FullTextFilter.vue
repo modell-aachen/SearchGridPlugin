@@ -1,5 +1,8 @@
 <template>
-    <input v-model="filterText" debounce="500" placeholder="{{params[0]}}">
+    <div class="filter">
+    <label for="{{id}}">{{params[0]}}</label>
+    <input id="{{id}}" v-model="filterText" debounce="500">
+    </div>
 </template>
 
 <script>
@@ -10,6 +13,11 @@ export default {
           filterText: ''
        }
     },
+    computed: {
+      id: function(){
+        return this.params[0] + "_id";
+      }
+    },
     ready: function () {
         this.$watch("filterText", function () {
             this.$dispatch("filter-changed","*" + this.filterText + "*",this.params[1]);
@@ -17,3 +25,13 @@ export default {
     }
 }
 </script>
+
+<style>
+.filter {
+  float: left;
+  margin-right: 10px;
+}
+.filter label,input,select {
+  display:block;
+}
+</style>

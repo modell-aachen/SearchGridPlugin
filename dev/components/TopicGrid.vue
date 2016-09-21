@@ -1,12 +1,20 @@
 
 <template>
 <div class="searchGridWrapper">
-  <div class="searchGridResults" v-bind:style="gridStyle">
-    <div v-if="showFilters">{{prefs.filterHeading}}</div>
+  <div class="filters">
     <template v-for="filter in prefs.filters">
-    <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @filter-changed="filterChanged" @register-facet-field="registerFacetField"></component>
+      <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @filter-changed="filterChanged" @register-facet-field="registerFacetField"></component>
     </template>
-    <i v-show="request !== null" class="fa fa-spinner fa-spin fa-lg fa-fw"></i>
+  </div>
+  <div v-bind:class="{ 'invisible': !isLoading }" id="cssload-wrapper">
+  <div id="cssload-border">
+    <div id="cssload-whitespace">
+      <div id="cssload-line">
+      </div>
+    </div>
+  </div>
+</div>
+  <div class="searchGridResults" v-bind:style="gridStyle">
     <table class="tablesortercopy">
       <thead is="grid-header" :headers="prefs.fields" @sort-changed="sortChanged"></thead>
       <tbody>
@@ -71,6 +79,9 @@ export default {
       },
       showFacets: function(){
         return this.prefs.facets.length > 0;
+      },
+      isLoading: function() {
+        return this.request != null;
       },
       gridStyle: function(){
         return {
@@ -256,5 +267,102 @@ table.tablesortercopy tr.odd:hover td {
   background-color: #e8f7ff;
   margin: 8px 1px;
   padding: 8px;
+}
+
+.filters {
+  float: left;
+  width: 100%;
+  margin-bottom: 5px;
+}
+#cssload-wrapper {
+  width: 100%;
+  height: 4px;
+  overflow: hidden;
+}
+
+#cssload-wrapper.invisible {
+  visibility: hidden;
+}
+
+#cssload-border {
+  border: 1px solid rgb(255,255,255);
+  height: 100%;
+  width: 100%;
+  left: -50%;
+  top: -50%;
+  padding: 1px 1px;
+}
+
+#cssload-whitespace {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+}
+
+#cssload-line {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: rgb(27,145,224);
+  animation: cssload-slide 2s steps(120) infinite;
+    -o-animation: cssload-slide 2s steps(120) infinite;
+    -ms-animation: cssload-slide 2s steps(120) infinite;
+    -webkit-animation: cssload-slide 2s steps(120) infinite;
+    -moz-animation: cssload-slide 2s steps(120) infinite;
+}
+
+
+
+@keyframes cssload-slide {
+  0% {
+    left: -100%;
+  }
+
+  100% {
+    left: 100%;
+  }
+}
+
+@-o-keyframes cssload-slide {
+  0% {
+    left: -100%;
+  }
+
+  100% {
+    left: 100%;
+  }
+}
+
+@-ms-keyframes cssload-slide {
+  0% {
+    left: -100%;
+  }
+
+  100% {
+    left: 100%;
+  }
+}
+
+@-webkit-keyframes cssload-slide {
+  0% {
+    left: -100%;
+  }
+
+  100% {
+    left: 100%;
+  }
+}
+
+@-moz-keyframes cssload-slide {
+  0% {
+    left: -100%;
+  }
+
+  100% {
+    left: 100%;
+  }
 }
 </style>
