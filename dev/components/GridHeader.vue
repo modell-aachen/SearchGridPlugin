@@ -13,8 +13,6 @@ export default {
     },
     methods: {
     	applySorting: function(sortField, sort){
-    		console.log(sortField);
-    		console.log(sort);
     		this.$broadcast('sort-processed');
     		this.$dispatch('sort-changed', sortField, sort)
     	}
