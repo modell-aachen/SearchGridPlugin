@@ -108,6 +108,7 @@ sub _searchGrid {
     my $sortFields = $params->{sortFields} || '';
     my $filterHeading = $params->{filterHeading} || 'Filter';
     my $facets = $params->{facets} || '';
+    my $form = $params->{form} || '';
 
     my $prefs = {
         q => $defaultQuery,
@@ -117,6 +118,7 @@ sub _searchGrid {
         filterHeading => $session->i18n->maketext($filterHeading),
         facets => [],
         language => Foswiki::Func::getPreferencesValue('LANGUAGE'),
+        form => $form
     };
     my @parsedFields = ( $fields =~ /(.*?\(.*?\)),?/g );
     my @parsedSortFields = (split(/,/,$sortFields));
@@ -178,6 +180,7 @@ sub _searchGrid {
 
 sub _searchProxy {
     my $session = shift;
+    my $requestObject = Foswiki::Func::getRequestObject();
     my $json = JSON->new->allow_nonref;
     my $meta = Foswiki::Meta->new($session);
 
@@ -226,6 +229,26 @@ sub _searchProxy {
                 $doc->{workflowmeta_name_s_dv} = $newName;
         }
     }
+
+    use Data::Dumper;
+
+    my ($fweb,$ftopic) = split(/\./,$requestObject->param('form'));
+    my $form = Foswiki::Form->new($session, $fweb, $ftopic);
+    my $facetDsps = {};
+    while(my ($key, $value) = each($content->{facet_counts}->{facet_fields})) {
+        $key =~ /^field_([A-Za-z0-9]*)_/;
+        my $formField = $form->getField($1);
+        next unless $formField->can('getDisplayValue');
+        my $length = scalar @$value;
+        my @array = @$value;
+        my $mapping = {};
+        $facetDsps->{$key} = $mapping;
+        for(my $index = 0; $index < $length; $index += 2){
+            my $dsp = $formField->getDisplayValue($array[$index]);
+            $mapping->{$array[$index]} = $dsp;
+        }
+    }
+    $content->{facet_dsps} = $facetDsps;
 
     return $json->encode($content);
 }

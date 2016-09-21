@@ -152,6 +152,8 @@ export default {
             params["facet.field"].push(key);
         }
 
+        params["form"] = this.prefs.form;
+
         if(this.sortField !== ""){
           params["sort"] = "" + this.sortField + " " + this.sort;
         }
@@ -159,14 +161,22 @@ export default {
         this.request = $.get(foswiki.preferences.SCRIPTURL + "/rest/SearchGridPlugin/searchproxy", params, function(result){
             self.$set('numResults', result.response.numFound);
             self.$set('results', result.response.docs);
+            console.log(result.facet_dsps);
             if(result.facet_counts){
                 var facetValues = result.facet_counts.facet_fields;
                 var newFacetValues = {};
                 for (var key in facetValues) {
                     var facet = [];
                     for(var i = 0; i < facetValues[key].length; i+=2){
-                        facet.push({'title': facetValues[key][i],
-                                    'count': facetValues[key][i+1]
+                        var field = facetValues[key][i];
+                        var displayValue = "";
+                        if(result.facet_dsps[key].hasOwnProperty(field))
+                          displayValue = result.facet_dsps[key][field];
+                        else
+                          displayValue = field;
+                        facet.push({'title': displayValue,
+                                    'count': facetValues[key][i+1],
+                                    'field': field
                                    });
                     }
                     newFacetValues[key]=facet;
