@@ -6,6 +6,9 @@
       <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @filter-changed="filterChanged" @register-facet-field="registerFacetField"></component>
     </template>
   </div>
+  <div>
+      <button v-on:click="fetchData">Filter</button>
+  </div>
   <div v-bind:class="{ 'invisible': !isLoading }" id="cssload-wrapper">
   <div id="cssload-border">
     <div id="cssload-whitespace">
@@ -111,14 +114,15 @@ export default {
           self.fetchData();
         });
       },
-      filterChanged: function(filterQuery, field){
+      filterChanged: function(filterQuery, field, fetchData = true){
         if(filterQuery === '') {
             delete this.filterQuerys[field];
         } else {
             this.filterQuerys[field] = filterQuery;
         }
         this.currentPage = 1;
-        this.fetchData();
+        if(fetchData)
+          this.fetchData();
       },
       clearFacets: function () {
         this.$broadcast('reset');

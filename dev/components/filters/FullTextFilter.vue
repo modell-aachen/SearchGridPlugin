@@ -20,7 +20,7 @@ export default {
     },
     ready: function () {
         this.$watch("filterText", function () {
-            this.$dispatch("filter-changed","*" + this.filterText + "*",this.params[1]);
+            this.$dispatch("filter-changed","*" + this.filterText + "*",this.params[1], false);
         });
     }
 }

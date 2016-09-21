@@ -2,7 +2,7 @@
     <div class="filter">
     <label style="display:block;" for="{{id}}">{{params[0]}}</label>
     <select id="{{id}}" v-model="filterValue">
-        <option v-bind:value="''"></option>
+        <option v-bind:value="''">All</option>
         <option v-if="value.count != 0" v-bind:value="value.title" v-for="value in facetValues[this.params[1]]">{{ value.title }} ({{ value.count }})</option>
     </select>
     </div>
@@ -23,7 +23,7 @@ export default {
     },
     ready: function () {
         this.$watch("filterValue", function () {
-            this.$dispatch("filter-changed",this.filterValue,this.params[1]);
+            this.$dispatch("filter-changed",this.filterValue,this.params[1], false);
         });
     },
     created: function () {
