@@ -1,10 +1,13 @@
 import Vue from 'vue/dist/vue.js'
-import TopicGrid from './components/TopicGrid.vue'
+import Grid from './components/Grid.vue'
 
 window.Vue = Vue;
-window.registerCustomComponent = function(name, component){
-    Vue.component(name, component);
+var SearchGridPlugin = {
+    registerField: function(name, component){
+        Vue.component(name, component);
+    }
 };
+window.SearchGridPlugin = SearchGridPlugin;
 
 $( function () {
     new Vue({
@@ -18,7 +21,7 @@ $( function () {
             }
         },
         components: {
-            grid: TopicGrid
+            grid: Grid
         }
     })
 })
