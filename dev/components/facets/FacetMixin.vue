@@ -1,5 +1,7 @@
 <script>
+import MaketextMixin from "../MaketextMixin.vue"
 export default {
+    mixins: [MaketextMixin],
 	data: function(){
 		return {
 			selectedFacet: ''

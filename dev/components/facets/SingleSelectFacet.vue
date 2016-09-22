@@ -2,7 +2,7 @@
 <div>
     <h2>{{title}}</h2>
     <ul>
-        <li><label><input type=radio value="" v-model="selectedFacet">All</label></li>
+        <li><label><input type=radio value="" v-model="selectedFacet">{{maketext("All")}}</label></li>
         <template v-for="value in facetValues[field] | orderBy 'title'">
         <li><label v-show="value.count > 0">
             <input v-show="value.count > 0" type ="radio" value="{{value.field}}" v-model="selectedFacet">

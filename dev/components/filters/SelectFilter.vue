@@ -2,24 +2,21 @@
     <div class="search-grid-filter">
     <label style="display:block;" for="{{id}}">{{params[0]}}</label>
     <select id="{{id}}" v-model="filterValue">
-        <option v-bind:value="''">{{maketext('all')}}</option>
+        <option v-bind:value="''">{{maketext('All')}}</option>
         <option v-if="value.count != 0" v-bind:value="value.field" v-for="value in facetValues[this.params[1]]">{{ value.title }} ({{ value.count }})</option>
     </select>
     </div>
 </template>
 
 <script>
+import MaketextMixin from '../MaketextMixin.vue'
 export default {
+    mixins: [MaketextMixin],
     props: ['params','facetValues'],
     data:  function () {
        return {
           filterValue: ''
        }
-    },
-    methods: {
-        maketext : function(text) {
-            return foswiki.jsi18n.get('SearchGrid', text);
-        }
     },
     computed: {
         id: function(){

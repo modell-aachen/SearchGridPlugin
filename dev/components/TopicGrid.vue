@@ -31,7 +31,7 @@
     <paginator v-if="pageCount > 1" @page-changed="pageChanged" :page-count="pageCount" :current-page.sync="currentPage"></paginator>
   </div>
   <div v-if="showFacets" id="modacSolrRightBar">
-    <h2 class='solrFilterResultsHeading' >Filter results</h2>
+    <h2 class='solrFilterResultsHeading' >{{maketext("Filter results")}}</h2>
     <button @click.stop="clearFacets()">Clear selection</button>
     <template v-for="facet in prefs.facets">
     <component :is="facet.component" :params="facet.params" :facet-values="facetValues" @filter-changed="filterChanged" @register-facet-field="registerFacetField"></component>
@@ -41,8 +41,9 @@
 </template>
 
 <script>
+import MaketextMixin from './MaketextMixin.vue'
 import GridHeader from './GridHeader.vue'
-import TitleField from './fields/TitleField.vue'
+import UrlField from './fields/UrlField.vue'
 import TextField from './fields/TextField.vue'
 import DateField from './fields/DateField.vue'
 import SolrField from './fields/SolrField.vue'
@@ -53,6 +54,7 @@ import SingleSelectFacet from './facets/SingleSelectFacet.vue'
 import Paginator from 'vue-simple-pagination/VueSimplePagination.vue'
 
 export default {
+    mixins: [MaketextMixin],
     data : function () {
        return {
           results: [],
@@ -188,7 +190,7 @@ export default {
     },
     components : {
       GridHeader,
-      TitleField,
+      UrlField,
       TextField,
       DateField,
       SolrField,
