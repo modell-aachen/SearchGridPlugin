@@ -1,5 +1,5 @@
 import Vue from 'vue/dist/vue.js'
-import TopicGrid from './components/TopicGrid.vue'
+import Grid from './components/Grid.vue'
 
 window.Vue = Vue;
 var SearchGridPlugin = {
@@ -21,7 +21,7 @@ $( function () {
             }
         },
         components: {
-            grid: TopicGrid
+            grid: Grid
         }
     })
 })
