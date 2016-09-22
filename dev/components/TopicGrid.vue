@@ -1,6 +1,7 @@
 
 <template>
 <div class="searchGridWrapper">
+  <div v-show="requestFailed" class="error">{{maketext("An error occured while processing the request:") + errorMessage}}</div>
   <div v-bind:class="{ 'invisible': !isLoading }" id="cssload-wrapper">
   <div id="cssload-border">
     <div id="cssload-whitespace">
@@ -71,7 +72,9 @@ export default {
             filters: [],
             facets: []
           },
-          id: {}
+          id: {},
+          requestFailed: false,
+          errorMessage: ""
        }
     },
     props: ['instances'],
@@ -160,7 +163,8 @@ export default {
           params["sort"] = "" + this.sortField + " " + this.sort;
         }
         $.ajaxSettings.traditional = true;
-        this.request = $.get(foswiki.preferences.SCRIPTURL + "/rest/SearchGridPlugin/searchproxy", params, function(result){
+        this.request = $.get(foswiki.preferences.SCRIPTURL + "/rest/SearchGridPlugin/searchproxy", params)
+        .done(function(result){
             self.$set('numResults', result.response.numFound);
             self.$set('results', result.response.docs);
             if(result.facet_counts){
@@ -185,6 +189,13 @@ export default {
                 self.$set('facetValues', newFacetValues);
             }
             self.request = null;
+            self.requestFailed = false;
+        })
+        .fail(function(xhr, status, error){
+          self.requestFailed = true;
+          self.errorMessage = xhr.statusText;
+          console.log(xhr);
+          self.request = null;
         });
       }
     },
@@ -383,5 +394,9 @@ table.tablesortercopy tr.odd:hover td {
   100% {
     left: 100%;
   }
+}
+
+.error {
+  color: red;
 }
 </style>
