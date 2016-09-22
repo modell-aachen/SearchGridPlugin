@@ -219,7 +219,10 @@ sub _searchProxy {
         if($doc{form}) {
             my ($fweb, $ftopic) = Foswiki::Func::normalizeWebTopicName($doc{web}, $doc{form});
             my $form = "$fweb.$ftopic";
-            $forms{$form} = Foswiki::Form->new($session, $fweb, $ftopic) unless ($forms{$form});
+            eval{
+                $forms{$form} = Foswiki::Form->new($session, $fweb, $ftopic) unless ($forms{$form});
+            };
+            next if $@;
             my $fields = $forms{$form}->getFields();
             my %tempDoc = %doc;
             while(my ($key, $value) = each(%tempDoc)) {
