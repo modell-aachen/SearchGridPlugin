@@ -192,9 +192,10 @@ export default {
             self.requestFailed = false;
         })
         .fail(function(xhr, status, error){
-          self.requestFailed = true;
-          self.errorMessage = xhr.statusText;
-          console.log(xhr);
+          if(xhr.statusText !== "abort"){
+            self.requestFailed = true;
+            self.errorMessage = xhr.statusText;
+          }
           self.request = null;
         });
       }
