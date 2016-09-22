@@ -4,20 +4,25 @@
 
 %SHORTDESCRIPTION%
 
-This Plugin provides a easy to use Macro for generating overvierws with data from Solr.
+This Plugin provides an easy to use macro for generating topic overviews with data provided by Solr.
 
 %TOC%
 
 ---++ Installation
 %$INSTALL_INSTRUCTIONS%
 
----++ Proxy
-The plugin ads a 'REST proxy' which will forward the solr request to the solr plugin and processe the answer that are the main display values are added. For fields which have an displayvalue like Select+value fields. The result set gets an extra field with prefix =_dv=. So for a =field_Status_s= there is also a =field_Status_s_dv= which is the mapped value of the field_Status_s field.
+
+---++ Macro
+%INCLUDE{"VarSEARCHGRID"}%
+
+---++ Solr Proxy
+The plugin adds a 'REST proxy' which will forward the solr request to the solr plugin and processe the answer that are the main display values are added. For fields which have an displayvalue like Select+value fields. The result set gets an extra field with prefix =_dv=. So for a =field_Status_s= there is also a =field_Status_s_dv= which is the mapped value of the field_Status_s field.
 
 The REST calls can be send to:
 =/bin/rest/SearchGridPlugin/searchproxy=
----++ Macro
-%INCLUDE{"VarSEARCHGRID"}%
+
+---++ Extension development
+
 
 ---++ Plugin Info
 

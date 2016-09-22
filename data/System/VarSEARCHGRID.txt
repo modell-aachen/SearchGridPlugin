@@ -1,60 +1,76 @@
 ---+ SEARCHGRID macro
 
-This us a macro from [[SearchGridPlugin]], used to render the search grid.
+This macro is provided by the [[SearchGridPlugin]]. It can be used to render grids that display arbitrary information provided by a Solr search query.
 
 %STARTINCLUDE%
-Renders the Solr search results and add filters and widgets.
+The main macro provided is the %<nop>SEARCHGRID% macro. Here is an example:
 
-Example:
+%SEARCHGRID{"type:topic"
+   headers="Title,Url,Date"
+   fields="text-field(title),url-field(url,url),date-field(createdate)"
+   sortFields="title,url,createdate"
+   filters="full-text-filter(Title,title)"
+   facets="multi-select-facet(Webs,web),single-select-facet(Author,author)"
+   resultsPerPage="10"
+   initialSort="title,asc"
+}%
+
+And here is the corresponding macro call:
 
 <verbatim class="tml">
-%SEARCHGRID{"type:topic web:InternalProjects"
-   headers="Topic,Status"
-   fields="title-field(title,url),text-field(field_Status_s_dv)"
-   filters="full-text-filter(Title,title),full-text-filter(Author,author),select-filter(Status,field_Status_s)"
-   sortFields="none,field_Status_s"
-   facets="multi-select-facet(field_Status_s),single-select-facet(author)"
+%SEARCHGRID{"type:topic"
+   headers="Title,Url,Date"
+   fields="text-field(title),url-field(url,url),date-field(createdate)"
+   sortFields="title,url,createdate"
+   filters="full-text-filter(Title,title)"
+   facets="multi-select-facet(Webs,web),single-select-facet(Author,author)"
+   resultsPerPage="10"
+   initialSort="title,asc"
 }%
 </verbatim>
 
 ---+++ Parameter
 
-| *Parameter* | *Description* | *Default* |
-| "..." | This is the default Solr query on which the result set will be rendered | |
-| headers | Comma-Seperated list of headers for the label. |  |
-| fields | List of fields to render. See [[#Fields][Fields]] |  |
-| filter | List of filters. See [[#Filters][Filters]] |  |
-| facets | List of facets to render. See [[#Facets][Facets]] |  |
-| sortFields | List of fields which should be sortable |  |
-| resultsPerPage | Sets the page shown on one page | 20 |
+| *Parameter* | *Description* | *Default* | *Example* |
+| "..." | This is the default Solr query on which the result set will be based on. | | "type:topic form:*DocumentForm" |
+| headers | Comma-separated list of headers in the grid. Automatic maketexting. |  | "Title,Author" |
+| sortFields | This list corresponds to the list of headers and defines on which data field a header should perform sorting. It needs to have as many entries as the headers list. If you do not want to enable sorting for a header, set the entry to "none". |  | "topic,none" |
+| fields | Defines which fields to render and how they should be rendered. See [[#Fields][Fields]]. |  | "url-field(title,url),text-field(author_s)" |
+| filter | List of filters which appear above the grid. See [[#Filters][Filters]]. |  | "full-text-filter(Title,title)" |
+| facets | List of facets which appear next to the grid. See [[#Facets][Facets]]. |  | "multi-select-facet(Webs,web),single-select-facet(Author,author)" |
+| resultsPerPage | Defines how many entries are shown per page. | 20 | "5" |
+| initialSort | Sets the initial sorting of the grid when it is first loaded. |  | "title,asc" |
+| form | The form provided by this parameter will be used to identify correct display values for data stored in form fields. E.g. if you create a facet for the user field "field_Creator_s" and you provide the form which defines the field, then the correct display value for the creators will be shown instead of their ids. |  | "Processes.DocumentForm" |
 
 ---+++ Fields
-The fields parameter define the components which should be loaded and rendered.
-There are different type of fields. They take some parameters which they render.
+Fields define which kind of data is shown in the columns of grid entries and how the data is presented.
+A field is always defined in the form "name(param1,param2,...)".
+The following fields are predefined and can be used as entries in the fields parameter of the search grid macro:
 
-   * title-field(string,url)
-      * Renders a link field. First parameter is rendered as label and the second used as link ref.
-   * text-field(string)
-      * Renders a simple text. Takes the display value as first parameter.
-   * date-field(date)
-      * Takes a date value as param and the field will render it human readable.
+   * text-field(text:solrField)
+      * Just renders the value stored in solrField as plain text.
+   * title-field(text:solrField,url:solrField)
+      * Renders a link. The first parameter indicates the field which holds the text and the second parameter indicates the field which holds the url.
+   * date-field(date:solrField)
+      * Takes a date value in ISO_8601 format and displays it as a locale date string.
    * solr-field()
-      * Takes no parameters and renders the result in a single column in a Solr style.
+      * Takes no parameters and renders the result in a single column in solr search style.
 
 ---+++ Filters
-Filters are rendered over the SearchGrid. They add extra filters to the search query and restrict the result set.
-All Filter take as first parameter the label of that field.
-   * full-text-filter(Title,title)
-      * This renders an input field. The second parameter is the field which should be filtered.
-   * select-filter(Status,field_Status_s)
-      * This renders a select list with all possible values to filter on. The second parameter is the field which should be filtered.
+Filters are rendered above the search grid. They add extra filters to the search query and restrict the result set.
+All filters take as their first parameter the filter label (which gets maketexted) and as the second parameter the field to which the filter is bound.
+   * full-text-filter(title:string, field:solrField)
+      * This renders an input field. It filters the result set for entries which contain the input as a substring in the given field.
+   * select-filter(title:string, field:solrField)
+      * This renders a select list with values to filter on.
 
 ---+++ Facets
-Facets are Filters which rendered as widgets on the right side. They add extra filters to the search query.
+Facets are also filters which are rendered in a widget next to the grid.
+There are two kinds of facets. Both take two parameters. The first one indicates the title of the facet (which gets maketexted) and the second one indicates the field to filter on.
 
-   * multi-select-facet(field_Status_s)
-      * This select facet contains the possible values as check boxes.
-   * single-select-facet(author)
-      * This select facet contains the possible values as radio boxes.
+   * multi-select-facet(title:string,field:solrField)
+      * This facet shows possible filter values as checkboxes. Selected values are OR-ed together and applied to the query as a filter. If no element is selected it does not apply any filter.
+   * single-select-facet(title:string,field:solrField)
+      * This select facet shows possible filter values as radio boxes. Only one option can be selected at a time and the result set is restricted accordingly.
 
 %STOPINCLUDE%
