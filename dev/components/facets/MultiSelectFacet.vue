@@ -1,10 +1,10 @@
 <template>
 <div>
-    <h2>{{params[0]}}</h2>
+    <h2>{{title}}</h2>
     <ul>
-        <template v-for="value in facetValues[params[0]] | orderBy 'title'">
+        <template v-for="value in facetValues[field] | orderBy 'title'">
         <li><label v-show="value.count > 0">
-            <input type ="checkbox" value="{{value.title}}" v-model="selectedFacet">
+            <input type ="checkbox" value="{{value.field}}" v-model="selectedFacet">
             {{getLabel(value.title, value.count)}}
         </label></li>
         </template>
@@ -37,7 +37,7 @@ export default {
             return queryString;
         },
         getFacetField: function(){
-            return `{!tag=${this.params[0]} q.op=OR}${this.params[0]}`;
+            return `{!tag=${this.field} q.op=OR}${this.field}`;
         }
     },
     ready: function () {

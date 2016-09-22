@@ -159,6 +159,7 @@ sub _searchGrid {
         my ($component) = $facet =~ /(.*?)\(/;
         my($params) = $facet =~ /\((.*?)\)/;
         my @paramsArray = split(/,/, $params);
+        $paramsArray[0] = $session->i18n->maketext($paramsArray[0]);
         my $newFacet = {
             component => $component,
             params => \@paramsArray
@@ -239,6 +240,7 @@ sub _searchProxy {
         while(my ($key, $value) = each($content->{facet_counts}->{facet_fields})) {
             $key =~ /^field_([A-Za-z0-9]*)_/;
             my $formField = $form->getField($1);
+            next unless $formField;
             next unless $formField->can('getDisplayValue');
             my $length = scalar @$value;
             my @array = @$value;
