@@ -7,15 +7,20 @@
 <script>
 import GridHeaderField from './GridHeaderField.vue'
 export default {
-    props: ['headers'],
+    props: ['headers', 'initialSort'],
     components: {
     	GridHeaderField
     },
     methods: {
     	applySorting: function(sortField, sort){
     		this.$broadcast('sort-processed');
-    		this.$dispatch('sort-changed', sortField, sort)
+    		this.$dispatch('sort-changed', sortField, sort);
     	}
+    },
+    ready: function() {
+        this.$watch('initialSort', function(){
+            this.$broadcast('set-initial-sorting', this.initialSort);
+        });
     }
 }
 </script>

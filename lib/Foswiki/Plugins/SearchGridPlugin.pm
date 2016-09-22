@@ -106,6 +106,7 @@ sub _searchGrid {
     my $fields = $params->{fields} || '';
     my $filters = $params->{filters} || '';
     my $sortFields = $params->{sortFields} || '';
+    my $initialSort = $params->{initialSort} || '';
     my $filterHeading = $params->{filterHeading} || 'Filter';
     my $facets = $params->{facets} || '';
     my $form = $params->{form} || '';
@@ -120,6 +121,15 @@ sub _searchGrid {
         language => Foswiki::Func::getPreferencesValue('LANGUAGE'),
         form => $form
     };
+
+    if($initialSort){
+        my @initialSortArray = (split(/,/,$initialSort));
+        $prefs->{initialSort} = {
+            field => $initialSortArray[0],
+            sort => $initialSortArray[1]
+        };
+    }
+
     my @parsedFields = ( $fields =~ /(.*?\(.*?\)),?/g );
     my @parsedSortFields = (split(/,/,$sortFields));
     my $index = 0;

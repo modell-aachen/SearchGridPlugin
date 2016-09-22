@@ -63,7 +63,12 @@ export default {
     		if(!this.triggeredSort)
     			this.sortState = sortStates["NONE"];
     		this.triggeredSort = false;
-    	}
+    	},
+        "set-initial-sorting": function(initialSorting) {
+            if(initialSorting.field === this.sortField){
+                this.sortState = sortStates[initialSorting.sort.toUpperCase()];
+            }
+        }
     }
 }
 </script>

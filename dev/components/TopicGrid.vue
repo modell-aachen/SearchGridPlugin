@@ -19,7 +19,7 @@
   </div>
   <div class="searchGridResults" v-bind:style="gridStyle">
     <table class="tablesortercopy">
-      <thead is="grid-header" :headers="prefs.fields" @sort-changed="sortChanged"></thead>
+      <thead is="grid-header" :headers="prefs.fields" :initial-sort="prefs.initialSort" @sort-changed="sortChanged"></thead>
       <tbody>
         <tr v-for="result in results">
           <template v-for="field in prefs.fields">
@@ -204,6 +204,10 @@ export default {
       var self = this;
       this.$set('prefs', JSON.parse($('.SEARCHGRIDPREF' + this.id).html()));
       self.$set('resultsPerPage', self.prefs.resultsPerPage);
+      if(this.prefs.hasOwnProperty("initialSort")){
+        this.sortField = this.prefs.initialSort.field;
+        this.sort = this.prefs.initialSort.sort;
+      }
       this.fetchData();
     },
     created: function () {
