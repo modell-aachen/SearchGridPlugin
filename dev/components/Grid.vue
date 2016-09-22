@@ -45,6 +45,7 @@
 import MaketextMixin from './MaketextMixin.vue'
 import GridHeader from './GridHeader.vue'
 import UrlField from './fields/UrlField.vue'
+import UrlFormatField from './fields/UrlFormatField.vue'
 import TextField from './fields/TextField.vue'
 import DateField from './fields/DateField.vue'
 import SolrField from './fields/SolrField.vue'
@@ -203,6 +204,7 @@ export default {
     components : {
       GridHeader,
       UrlField,
+      UrlFormatField,
       TextField,
       DateField,
       SolrField,
