@@ -11,7 +11,6 @@ package Foswiki::Plugins::SearchGridPlugin;
 
 use strict;
 use warnings;
-
 use Foswiki::Func    ();    # The plugins API
 use Foswiki::Plugins ();    # For the API version
 
@@ -118,7 +117,7 @@ sub _searchGrid {
         filters => [],
         filterHeading => $session->i18n->maketext($filterHeading),
         facets => [],
-        language => Foswiki::Func::getPreferencesValue('LANGUAGE'),
+        language => $session->i18n->language,
         form => $form
     };
 
@@ -185,7 +184,7 @@ sub _searchGrid {
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
         "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>","jsi18nCore"
     );
-    return '<grid @update-instance-counter="updateInstanceCounter" :instances="instances"></grid>';
+    return '%JSI18N{"MyPlugin" id="SearchGrid"}% <grid @update-instance-counter="updateInstanceCounter" :instances="instances"></grid>';
 }
 
 
