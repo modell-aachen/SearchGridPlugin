@@ -1,11 +1,8 @@
 {
-  "name": "seachGrid",
+  "name": "SeachGrid",
   "version": "1.0.0",
   "description": "Search Grid macro",
-  "main": "Gruntfile.js",
-  "directories": {
-    "test": "test"
-  },
+  "main": "pub/System/SearchGridPlugin/searchGrid.js",
   "scripts": {
     "build": "webpack -d --watch",
     "postinstall": "webpack -p"
@@ -23,7 +20,6 @@
     "babel-preset-es2015": "^6.3.13",
     "babel-runtime": "^5.8.34",
     "css-loader": "^0.23.0",
-    "load-grunt-tasks": "^3.5.2",
     "node-sass": "^3.10.0",
     "sass-loader": "^4.0.2",
     "vue-hot-reload-api": "^1.2.2",

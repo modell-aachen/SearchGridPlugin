@@ -214,18 +214,20 @@ export default {
       SingleSelectFacet,
       Paginator
     },
-    ready: function () {
+    beforeCompile: function() {
       var self = this;
       var pref = JSON.parse($('.SEARCHGRIDPREF' + this.id).html());
       self.$set('prefs', pref);
-      self.$set('resultsPerPage', self.prefs.resultsPerPage);
+      self.$set('resultsPerPage', pref.resultsPerPage);
+      self.$set('numResults', pref.result.response.numFound);
+      self.$set('results', pref.result.response.docs);
       if(this.prefs.hasOwnProperty("initialSort")){
         this.sortField = this.prefs.initialSort.field;
         this.sort = this.prefs.initialSort.sort;
       }
-      self.$set('numResults', self.prefs.result.response.numFound);
-      self.$set('results', self.prefs.result.response.docs);
-      self.setFacetValues(self.prefs.result);
+    },
+    ready: function () {
+      this.setFacetValues(this.prefs.result);
     },
     created: function () {
       this.$set('id', this.instances);
