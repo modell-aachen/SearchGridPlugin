@@ -291,7 +291,7 @@ sub _searchProxy {
         my ($fweb,$ftopic) = split(/\./,$formParam);
         my $form = Foswiki::Form->new($session, $fweb, $ftopic);
         my $facetDsps = {};
-        while(my ($key, $value) = each(@{$content->{facet_counts}->{facet_fields}})) {
+        while(my ($key, $value) = each(%{$content->{facet_counts}->{facet_fields}})) {
             $key =~ /^field_([A-Za-z0-9]*)_/;
             my $formField = $form->getField($1);
             next unless $formField;
