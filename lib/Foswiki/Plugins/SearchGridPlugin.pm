@@ -216,14 +216,14 @@ sub _callSearchProxy {
     my $session = shift;
     $session = $Foswiki::Plugins::SESSION unless $session;
     my $query = Foswiki::Func::getCgiQuery() || $session->{request};
-    my $json = JSON->new->allow_nonref;
+    my $json = JSON->new;
     return to_json(_searchProxy($session, undef, $query->{param}));
 }
 
 sub _searchProxy {
     my ($session, $query, $options) = @_;
     my %opts = %{$options};
-    my $json = JSON->new->allow_nonref;
+    my $json = JSON->new->utf8;
     my $meta = Foswiki::Meta->new($session);
 
     my $web = $session->{webName};
