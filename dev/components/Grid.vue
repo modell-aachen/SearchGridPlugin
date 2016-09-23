@@ -115,10 +115,6 @@ export default {
       registerFacetField: function(field){
         this.facetFields[field]=field;
         var self = this;
-        //TODO: trigger fetch only once
-        $(function(){
-          self.fetchData();
-        });
       },
       filterChanged: function(filterQuery, field, fetchData = true){
         if(filterQuery === '') {
@@ -166,29 +162,10 @@ export default {
         $.ajaxSettings.traditional = true;
         this.request = $.get(foswiki.preferences.SCRIPTURL + "/rest/SearchGridPlugin/searchproxy", params)
         .done(function(result){
+            result = JSON.parse(result);
             self.$set('numResults', result.response.numFound);
             self.$set('results', result.response.docs);
-            if(result.facet_counts){
-                var facetValues = result.facet_counts.facet_fields;
-                var newFacetValues = {};
-                for (var key in facetValues) {
-                    var facet = [];
-                    for(var i = 0; i < facetValues[key].length; i+=2){
-                        var field = facetValues[key][i];
-                        var displayValue = "";
-                        if(result.facet_dsps.hasOwnProperty(key) && result.facet_dsps[key].hasOwnProperty(field))
-                          displayValue = result.facet_dsps[key][field];
-                        else
-                          displayValue = field;
-                        facet.push({'title': displayValue,
-                                    'count': facetValues[key][i+1],
-                                    'field': field
-                                   });
-                    }
-                    newFacetValues[key]=facet;
-                }
-                self.$set('facetValues', newFacetValues);
-            }
+            self.setFacetValues(result);
             self.request = null;
             self.requestFailed = false;
         })
@@ -199,6 +176,29 @@ export default {
           }
           self.request = null;
         });
+      },
+      setFacetValues: function(result) {
+          if(result.facet_counts){
+              var facetValues = result.facet_counts.facet_fields;
+              var newFacetValues = {};
+              for (var key in facetValues) {
+                  var facet = [];
+                  for(var i = 0; i < facetValues[key].length; i+=2){
+                      var field = facetValues[key][i];
+                      var displayValue = "";
+                      if(result.facet_dsps.hasOwnProperty(key) && result.facet_dsps[key].hasOwnProperty(field))
+                      displayValue = result.facet_dsps[key][field];
+                      else
+                      displayValue = field;
+                      facet.push({'title': displayValue,
+                          'count': facetValues[key][i+1],
+                          'field': field
+                      });
+                  }
+                  newFacetValues[key]=facet;
+              }
+              this.$set('facetValues', newFacetValues);
+          }
       }
     },
     components : {
@@ -216,13 +216,16 @@ export default {
     },
     ready: function () {
       var self = this;
-      this.$set('prefs', JSON.parse($('.SEARCHGRIDPREF' + this.id).html()));
+      var pref = JSON.parse($('.SEARCHGRIDPREF' + this.id).html());
+      self.$set('prefs', pref);
       self.$set('resultsPerPage', self.prefs.resultsPerPage);
       if(this.prefs.hasOwnProperty("initialSort")){
         this.sortField = this.prefs.initialSort.field;
         this.sort = this.prefs.initialSort.sort;
       }
-      this.fetchData();
+      self.$set('numResults', self.prefs.result.response.numFound);
+      self.$set('results', self.prefs.result.response.docs);
+      self.setFacetValues(self.prefs.result);
     },
     created: function () {
       this.$set('id', this.instances);

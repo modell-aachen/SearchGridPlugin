@@ -79,7 +79,7 @@ sub initPlugin {
     # Allow a sub to be called from the REST interface
     # using the provided alias
     Foswiki::Func::registerRESTHandler( 'searchproxy',
-                                        \&_searchProxy,
+                                        \&_callSearchProxy,
                                         authenticate => 0,
                                         validate => 0,
                                         http_allow => 'GET,POST',
@@ -176,6 +176,9 @@ sub _searchGrid {
         push(@{$prefs->{facets}}, $newFacet);
     }
     #Foswiki::Plugins::VueJSPlugin::loadDependencies();
+
+    #First data fetch per backend.
+    $prefs->{result} = _buildQuery($session, $prefs);
     my $jPrefs = to_json($prefs);
     Foswiki::Func::addToZone( 'head', 'FONTAWESOME',
         '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FontAwesomeContrib/css/font-awesome.min.css" />');
@@ -187,16 +190,45 @@ sub _searchGrid {
     return '%JSI18N{"MyPlugin" id="SearchGrid"}% <grid @update-instance-counter="updateInstanceCounter" :instances="instances"></grid>';
 }
 
+# Build query data to fetch first search result in backend.
+sub _buildQuery {
+    my $session = shift;
+    my($prefs) = @_;
+    my %search = (
+        q => $prefs->{q},
+        start => 0,
+        rows => $prefs->{resultsPerPage},
+        facet => $prefs->{facets} ? 'true' : 'false',
+        form => $prefs->{form},
+        'facet.field' => []
+    );
+    foreach my $facet (@{$prefs->{facets}}) {
+        push(@{$search{'facet.field'}}, $facet->{params}[1]);
+    }
+    foreach my $filter (@{$prefs->{filters}}) {
+        push(@{$search{'facet.field'}}, $filter->{params}[1]) if $filter->{component} eq 'select-filter';
+    }
+    return _searchProxy($session, $prefs->{q}, \%search);
+}
+
+# REST helper to call real searchProxy
+sub _callSearchProxy {
+    my $session = shift;
+    $session = $Foswiki::Plugins::SESSION unless $session;
+    my $query = Foswiki::Func::getCgiQuery() || $session->{request};
+    my $json = JSON->new->allow_nonref;
+    return to_json(_searchProxy($session, undef, $query->{param}));
+}
 
 sub _searchProxy {
-    my $session = shift;
-    my $requestObject = Foswiki::Func::getRequestObject();
+    my ($session, $query, $options) = @_;
+    my %opts = %{$options};
     my $json = JSON->new->allow_nonref;
     my $meta = Foswiki::Meta->new($session);
 
     my $web = $session->{webName};
     my $topic = $session->{topicName};
-    my $query = Foswiki::Func::getCgiQuery();
+    #TODO: Extend by Template...
     my %workflowMapping = (
         "NEW" => "New",
         "DISCUSSION" => "Discussion",
@@ -208,10 +240,19 @@ sub _searchProxy {
         "CONTENT_REVIEW_DRAFT" => "Content review draft",
         "DISCARDED" => "Discarded",
     );
-    return 0 if $query->param('wt') && $query->param('wt') ne 'json';
-    my $content = Foswiki::Plugins::SolrPlugin::getSearcher($session)->restSOLRPROXY($web, $topic);
+    return 0 if $opts{'wt'} && $opts{'wt'} ne 'json';
 
-    $content = $json->decode($content);
+    my $wikiUser = Foswiki::Func::getWikiName();
+
+    unless (Foswiki::Func::isAnAdmin($wikiUser)) { # add ACLs
+        push @{$options->{fq}}, " (access_granted:$wikiUser OR access_granted:all)"
+    }
+    #my $content = Foswiki::Plugins::SolrPlugin::getSearcher($session)->restSOLRPROXY($web, $topic);
+    my $searcher = Foswiki::Plugins::SolrPlugin::getSearcher($session);
+    my $results = $searcher->solrSearch(undef, \%opts);
+    my $content = $results->raw_response;
+
+    $content = $json->decode($content->{_content});
     my %forms;
 
     foreach my $doc (@{%{$content}{response}->{docs}}) {
@@ -240,13 +281,14 @@ sub _searchProxy {
         }
     }
 
-    my $formParam = $requestObject->param('form') || "";
+    $opts{form} = $opts{form}[0] if ref $opts{form} eq "ARRAY";
+    my $formParam = $opts{form} || "";
     $content->{facet_dsps} = {};
     if($formParam){
         my ($fweb,$ftopic) = split(/\./,$formParam);
         my $form = Foswiki::Form->new($session, $fweb, $ftopic);
         my $facetDsps = {};
-        while(my ($key, $value) = each($content->{facet_counts}->{facet_fields})) {
+        while(my ($key, $value) = each(@{$content->{facet_counts}->{facet_fields}})) {
             $key =~ /^field_([A-Za-z0-9]*)_/;
             my $formField = $form->getField($1);
             next unless $formField;
@@ -262,7 +304,7 @@ sub _searchProxy {
         }
         $content->{facet_dsps} = $facetDsps;
     }
-    return $json->encode($content);
+    return $content;
 }
 1;
 
