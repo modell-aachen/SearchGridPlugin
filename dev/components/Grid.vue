@@ -115,10 +115,6 @@ export default {
       registerFacetField: function(field){
         this.facetFields[field]=field;
         var self = this;
-        //TODO: trigger fetch only once
-        $(function(){
-          self.fetchData();
-        });
       },
       filterChanged: function(filterQuery, field, fetchData = true){
         if(filterQuery === '') {
@@ -214,7 +210,7 @@ export default {
       SingleSelectFacet,
       Paginator
     },
-    ready: function () {
+    beforeCompile: function() {
       var self = this;
       this.$set('prefs', JSON.parse($('.SEARCHGRIDPREF' + this.id).html()));
       self.$set('resultsPerPage', self.prefs.resultsPerPage);
@@ -222,6 +218,8 @@ export default {
         this.sortField = this.prefs.initialSort.field;
         this.sort = this.prefs.initialSort.sort;
       }
+    },
+    ready: function () {
       this.fetchData();
     },
     created: function () {
