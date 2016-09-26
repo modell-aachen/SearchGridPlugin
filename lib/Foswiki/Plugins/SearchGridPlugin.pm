@@ -203,6 +203,7 @@ sub _buildQuery {
         facet => $prefs->{facets} ? 'true' : 'false',
         form => $prefs->{form},
         fl => $prefs->{fieldRestriction},
+        sort => "".$prefs->{initialSort}->{field}." ".$prefs->{initialSort}->{sort},
         'facet.field' => []
     );
     foreach my $facet (@{$prefs->{facets}}) {
