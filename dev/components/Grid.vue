@@ -144,6 +144,7 @@ export default {
           "rows":this.resultsPerPage,
           "start": (this.currentPage - 1) * this.resultsPerPage,
           "facet": true,
+          "fl" : this.prefs.fieldRestriction
         };
         params["fq"] = [];
         for (var key in this.filterQuerys) {

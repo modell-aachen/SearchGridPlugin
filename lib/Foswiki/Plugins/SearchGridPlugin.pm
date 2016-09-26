@@ -109,6 +109,7 @@ sub _searchGrid {
     my $filterHeading = $params->{filterHeading} || 'Filter';
     my $facets = $params->{facets} || '';
     my $form = $params->{form} || '';
+    my $fieldRestriction = $params->{fieldRestriction} || '';
 
     my $prefs = {
         q => $defaultQuery,
@@ -118,7 +119,8 @@ sub _searchGrid {
         filterHeading => $session->i18n->maketext($filterHeading),
         facets => [],
         language => $session->i18n->language,
-        form => $form
+        form => $form,
+        fieldRestriction => $fieldRestriction
     };
 
     if($initialSort){
@@ -200,6 +202,7 @@ sub _buildQuery {
         rows => $prefs->{resultsPerPage},
         facet => $prefs->{facets} ? 'true' : 'false',
         form => $prefs->{form},
+        fl => $prefs->{fieldRestriction},
         'facet.field' => []
     );
     foreach my $facet (@{$prefs->{facets}}) {
