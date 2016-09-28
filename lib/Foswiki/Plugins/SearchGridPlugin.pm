@@ -203,9 +203,11 @@ sub _buildQuery {
         facet => $prefs->{facets} ? 'true' : 'false',
         form => $prefs->{form},
         fl => $prefs->{fieldRestriction},
-        sort => "".$prefs->{initialSort}->{field}." ".$prefs->{initialSort}->{sort},
         'facet.field' => []
     );
+    if($prefs->{initialSort}){
+        $search{"sort"} = "".$prefs->{initialSort}->{field}." ".$prefs->{initialSort}->{sort};
+    }
     foreach my $facet (@{$prefs->{facets}}) {
         push(@{$search{'facet.field'}}, $facet->{params}[1]);
     }
