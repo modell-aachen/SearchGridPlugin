@@ -15,6 +15,13 @@ export default {
         field: function(){
             return this.params[1];
         },
+        limit: function(){
+            if(this.params.length >= 3){
+                return this.params[2];
+            }
+            else
+                return -1;
+        },
         // Used as facet.field in solr queries.
         facetField: function(){
             return `{!ex=${this.field}}${this.field}`;

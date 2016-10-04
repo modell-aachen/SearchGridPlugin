@@ -32,7 +32,7 @@ export default {
         getOptions: function(search, loading, offset){
             loading(true);
             var self = this;
-            this.$dispatch("get-facet-info", this.field, this.facetField, search, offset, function(result){
+            this.$dispatch("get-facet-info", this, search, offset, function(result){
                 if(result.length == 0 && offset > 0){
                     self.moreResultsText = "No more results available";
                 }

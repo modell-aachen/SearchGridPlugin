@@ -179,6 +179,7 @@ export default {
         params["fq"] = this.collectFilterQueries();
         for(var i = 0; i < this.facets.length; i++){
           params["facet.field"].push(this.facets[i].facetField);
+          params[`f.${this.facets[i].field}.facet.limit`] = this.facets[i].limit;
         }
 
         if(this.sortField !== ""){
@@ -206,16 +207,16 @@ export default {
           self.request = null;
         });
       },
-      fetchFacetCharacteristics: function(field, facetField, searchTerm, offset, callback){
-        var searchTermKey = `f.${field}.facet.contains`;
-        var ignoreCaseKey = `f.${field}.facet.contains.ignoreCase`;
+      fetchFacetCharacteristics: function(facet, searchTerm, offset, callback){
+        var searchTermKey = `f.${facet.field}.facet.contains`;
+        var ignoreCaseKey = `f.${facet.field}.facet.contains.ignoreCase`;
         var params = {
           "q":this.prefs.q,
           "rows": 0,
           "facet": true,
-          "facet.field": facetField,
+          "facet.field": facet.facetField,
           "facet.offset": offset,
-          "facet.limit": 5,
+          "facet.limit": facet.limit,
           "facet.sort": "count",
           form: this.prefs.form
         };
@@ -231,7 +232,7 @@ export default {
         $.get(foswiki.preferences.SCRIPTURL + "/rest/SearchGridPlugin/searchproxy", params)
         .done(function(result){
           result = JSON.parse(result);
-          var parsedResult = self.parseFacetResult(field, result.facet_counts.facet_fields[field], result.facet_dsps);
+          var parsedResult = self.parseFacetResult(facet.field, result.facet_counts.facet_fields[facet.field], result.facet_dsps);
           callback(parsedResult);
         });
       },

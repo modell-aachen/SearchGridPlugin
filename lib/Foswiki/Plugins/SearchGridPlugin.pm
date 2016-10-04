@@ -211,7 +211,17 @@ sub _buildQuery {
         $search{"sort"} = "".$prefs->{initialSort}->{field}." ".$prefs->{initialSort}->{sort};
     }
     foreach my $facet (@{$prefs->{facets}}) {
-        push(@{$search{'facet.field'}}, $facet->{params}[1]);
+        my $fieldName  = $facet->{params}[1];
+        push(@{$search{'facet.field'}}, $fieldName);
+        my $limit;
+        if ($facet->{params}[2]){
+            $limit = $facet->{params}[2];
+        }
+        else {
+            $limit = -1;
+        }
+        $search{"f.$fieldName.facet.limit"} = $limit;
+
     }
     foreach my $filter (@{$prefs->{filters}}) {
         push(@{$search{'facet.field'}}, $filter->{params}[1]) if $filter->{component} eq 'select-filter';
