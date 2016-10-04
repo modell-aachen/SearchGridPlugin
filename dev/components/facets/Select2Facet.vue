@@ -3,7 +3,7 @@
 <h2>{{title}} ({{totalCount}})</h2>
 <div class="bootstrap-container">
 <v-select multiple label="field" :placeholder="title" :debounce="500" :value.sync="selectedFacet" :options="options | orderBy 'count' -1" :on-search="onSearch" :on-change="onChange" :get-option-label="getOptionLabel" :get-selected-option-label="getSelectedOptionLabel" :prevent-search-filter="true" :on-get-more-options="onGetMoreOptions">
-    <template slot="more-results">{{moreResultsText}}</template>
+    <template slot="more-results">{{maketext(moreResultsText)}}</template>
 </v-select>
 </div>
 </div>
@@ -19,12 +19,12 @@ export default {
         return {
             selectedFacet: [],
             options: [],
-            moreResultsText: "Click to show more results"
+            moreResultsText: "Show more results"
         };
     },
     watch: {
         facetCharacteristics() {
-            this.moreResultsText = "Click to show more results";
+            this.moreResultsText = "Show more results";
             this.buildOptions(this.facetCharacteristics);
         }
     },
@@ -34,10 +34,10 @@ export default {
             var self = this;
             this.$dispatch("get-facet-info", this.field, this.facetField, search, offset, function(result){
                 if(result.length == 0 && offset > 0){
-                    self.moreResultsText = "No more results";
+                    self.moreResultsText = "No more results available";
                 }
                 else{
-                    self.moreResultsText = "Click to show more results";
+                    self.moreResultsText = "Show more results";
                     self.buildOptions(result, offset != 0);
                 }
                 loading(false);
