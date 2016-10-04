@@ -9,11 +9,11 @@ The main macro provided is the %<nop>SEARCHGRID% macro. Here is an example:
    headers="Title,Url,Date"
    fields="text-field(title),url-field(url,url),date-field(createdate)"
    sortFields="title,url,createdate"
-   filters="full-text-filter(Title,title)"
-   facets="multi-select-facet(Webs,web),single-select-facet(Author,author)"
+   filters="full-text-filter(Title,title),select-filter(Language,language)"
+   facets="select-2-facet(Webs,web),single-select-facet(Author,author),multi-select-facet(Form,form)"
    resultsPerPage="10"
    initialSort="title,desc"
-   fieldRestriction="title,url,author,createdate,web"
+   fieldRestriction="title,url,author,createdate,web,type,language"
 }%
 
 And here is the corresponding macro call:
@@ -23,11 +23,11 @@ And here is the corresponding macro call:
    headers="Title,Url,Date"
    fields="text-field(title),url-field(url,url),date-field(createdate)"
    sortFields="title,url,createdate"
-   filters="full-text-filter(Title,title)"
-   facets="multi-select-facet(Webs,web),single-select-facet(Author,author)"
+   filters="full-text-filter(Title,title),select-filter(Language,language)"
+   facets="select-2-facet(Webs,web),single-select-facet(Author,author),multi-select-facet(Form,form)"
    resultsPerPage="10"
    initialSort="title,desc"
-   fieldRestriction="title,url,author,createdate,web"
+   fieldRestriction="title,url,author,createdate,web,type,language"
 }%
 </verbatim>
 
@@ -55,7 +55,7 @@ The following fields are predefined and can be used as entries in the fields par
    * url-field(text:solrField,url:solrField)
       * Renders a link. The first parameter indicates the field which holds the text and the second parameter indicates the field which holds the url.
    * url-format-field(text:String,url:FormatString[, icon:String])
-      * Renders a advanced link. The first parameter is a text shown as display value. The second parameter indicates the url format string. $<solr-fields> would be replaced with corresponding value from the solr result. When a third parameter is given it would render the link in an icon field.
+      * Renders a advanced link. The first parameter is a text shown as display value. The second parameter indicates the url format string. $solrField would be replaced with corresponding value from the solr result. When a third parameter is given it would render the link in an icon field.
       * Example: =url-format-field(New Template,%<nop>SCRIPTURLPATH{"edit"}%/%<nop>BASEWEB%/InternalProjectAUTOINC0000?template=InternalProjectEdit;templatetopic=$web.$topic;formtemplate=InternalProjectForm;t=%<nop>GMTIME{$epoch}%,%<nop>PUBURLPATH%/%<nop>SYSTEMWEB%/FamFamFamSilkIcons/page_copy.png)=
    * date-field(date:solrField)
       * Takes a date value in ISO_8601 format and displays it as a locale date string.

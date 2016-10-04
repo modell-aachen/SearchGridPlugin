@@ -1,13 +1,14 @@
 <template>
     <div class="search-grid-filter">
     <label for="{{id}}">{{params[0]}}</label>
-    <input id="{{id}}" v-model="filterText" debounce="500">
+    <input id="{{id}}" v-model="filterText">
     </div>
 </template>
 
 <script>
+import FacetMixin from '../facets/FacetMixin.vue'
 export default {
-    props: ['params'],
+    mixins: [FacetMixin],
     data:  function () {
        return {
           filterText: ''
@@ -15,13 +16,18 @@ export default {
     },
     computed: {
       id: function(){
-        return this.params[0] + "_id";
+        return this.params[0] + "_filter";
+      },
+      totalCount: function(){
+        return "";
+      },
+      filterQuery: function() {
+        if(this.filterText === '')
+          return null;
+        var field = `{!tag=${this.field} q.op=OR}${this.field}`;
+        var queryString = `*${this.filterText}*`
+        return `${field}:${queryString}`;
       }
-    },
-    ready: function () {
-        this.$watch("filterText", function () {
-            this.$dispatch("filter-changed","*" + this.filterText + "*",this.params[1], false);
-        });
     }
 }
 </script>

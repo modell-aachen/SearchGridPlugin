@@ -4,27 +4,58 @@ export default {
     mixins: [MaketextMixin],
 	data: function(){
 		return {
-			selectedFacet: ''
+			selectedFacet: []
 		}
 	},
-    props: ['params','facetValues'],
+    props: ['params','facetValues','facetTotalCounts'],
     computed: {
         title: function(){
             return this.params[0];
         },
         field: function(){
             return this.params[1];
+        },
+        // Used as facet.field in solr queries.
+        facetField: function(){
+            return `{!ex=${this.field}}${this.field}`;
+        },
+        totalCount: function(){
+            return this.facetTotalCounts[this.field];
+        },
+        filterQuery: function(){
+            var field = `{!tag=${this.field} q.op=OR}${this.field}`;
+            var queryString = "";
+            if(this.selectedFacet.length > 0){
+                for(var i=0; i < this.selectedFacet.length; i++){
+                    queryString += this.selectedFacet[i].field;
+                    if(i != this.selectedFacet.length - 1)
+                        queryString += " ";
+                }
+                queryString = "(" + this.escapeSolrQuery(queryString) + ")";
+
+            }
+            else
+                return null;
+            return `${field}:${queryString}`;
+        },
+        facetCharacteristics: function(){
+            return this.facetValues[this.field];
         }
     },
     methods: {
     	getLabel: function(value, count){
     		return value + " (" + count + ")";
-    	}
+    	},
+        escapeSolrQuery: function(string){
+            return string.replace(/\+|-|:|\(|\)|\|\||&&|\!|\"/g, function(finding){
+                return `\\${finding}`;
+            });
+        }
     },
-    ready: function () {
-        this.$dispatch("register-facet-field","{!ex=" + this.field + "}" + this.field);
+    beforeCompile: function () {
+        this.$dispatch("register-facet",this);
         this.$watch("selectedFacet", function () {
-            this.$dispatch("filter-changed",this.getFacetQuery(),this.getFacetField());
+            this.$dispatch("facet-changed");
         });
     }
 }

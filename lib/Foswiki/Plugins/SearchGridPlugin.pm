@@ -214,7 +214,25 @@ sub _buildQuery {
     foreach my $filter (@{$prefs->{filters}}) {
         push(@{$search{'facet.field'}}, $filter->{params}[1]) if $filter->{component} eq 'select-filter';
     }
-    return _searchProxy($session, $prefs->{q}, \%search);
+
+    my $searchProxyResult = _searchProxy($session, $prefs->{q}, \%search);
+
+    # We additionally add the total number of characteristics per facet
+    # For now we do a separate search for this
+    $searchProxyResult->{facetTotalCounts} = {};
+    $search{"rows"} = 0;
+    $search{"form"} = '';
+    $search{"facet.limit"} = -1;
+
+    my $facetCountResult = _searchProxy($session, $prefs->{q}, \%search);
+    $facetCountResult = $facetCountResult->{facet_counts}->{facet_fields};
+    foreach my $facet (@{$prefs->{facets}}){
+        my $facetName = $facet->{params}[1];
+        my @facetArray = @{$facetCountResult->{$facetName}};
+        $searchProxyResult->{facetTotalCounts}->{$facetName} = scalar(@facetArray)/2;
+    }
+
+    return $searchProxyResult;
 }
 
 # REST helper to call real searchProxy

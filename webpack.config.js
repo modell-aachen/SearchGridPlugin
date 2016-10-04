@@ -1,10 +1,10 @@
 var path = require('path')
-var projectRoot = path.resolve(__dirname, '../../..')
+var projectRoot = path.resolve(__dirname);
 var webpack = require('webpack')
 
 module.exports = {
   babel: {
-    presets: ['es2015']
+    presets: ['es2015','stage-2']
   },
   entry: {
     app: './dev/main.js'
@@ -22,7 +22,10 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'babel',
-        exclude: /node_modules/
+        include: [
+          projectRoot + '/dev',
+          projectRoot + '/node_modules/vue-select/'
+        ]
       },
       {
         test: /\.json$/,
@@ -35,6 +38,14 @@ module.exports = {
       {
         test: /\.css$/,
         loader: 'style-loader!css-loader'
+      },
+      {
+        test: /\.less$/,
+        loader: 'style-loader!less-loader'
+      },
+      {
+        test: /\.(woff2?|eot|ttf|otf|svg)(\?.*)?$/,
+        loader: 'url'
       }
     ]
   },

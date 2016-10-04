@@ -2,9 +2,9 @@
 <div>
     <h2>{{title}}</h2>
     <ul>
-        <template v-for="value in facetValues[field] | orderBy 'title'">
-        <li><label v-show="value.count > 0">
-            <input type ="checkbox" value="{{value.field}}" v-model="selectedFacet">
+        <template v-for="value in facetCharacteristics | orderBy 'title'">
+        <li v-show="value.count > 0"><label>
+            <input type ="checkbox" value="{{value.field}}" v-model="selectedCheckboxes">
             {{getLabel(value.title, value.count)}}
         </label></li>
         </template>
@@ -18,31 +18,35 @@ export default {
     mixins: [FacetMixin],
 	data: function(){
 		return {
-			selectedFacet: []
+            selectedCheckboxes: [],
+            facetMap: {}
 		}
 	},
-    props: ['params','facetValues'],
-    methods: {
-    	getFacetQuery: function(){
-            var queryString = "";
-            if(this.selectedFacet.length > 0){
-                queryString = "(";
-                for(var i=0; i < this.selectedFacet.length; i++){
-                    queryString += this.selectedFacet[i]
-                    if(i != this.selectedFacet.length - 1)
-                        queryString += " ";
-                }
-                queryString += ")";
+    watch: {
+        selectedCheckboxes() {
+            this.selectedFacet = [];
+            for(var i = 0; i < this.selectedCheckboxes.length; i++){
+                var facetKey = this.selectedCheckboxes[i];
+                this.selectedFacet.push(this.facetMap[facetKey]);
             }
-            return queryString;
         },
-        getFacetField: function(){
-            return `{!tag=${this.field} q.op=OR}${this.field}`;
+        facetCharacteristics(){
+            this.updateFacetMap();
         }
     },
-    ready: function () {
+    methods: {
+        updateFacetMap(){
+            this.facetMap = {};
+            for(var i = 0; i < this.facetCharacteristics.length; i++){
+                var currentCharacteristic = this.facetCharacteristics[i];
+                this.facetMap[currentCharacteristic.field] = currentCharacteristic;
+            }
+        }
+    },
+    beforeCompile: function () {
+        this.updateFacetMap();
         this.$on('reset', function () {
-            this.selectedFacet = [];
+            this.selectedCheckboxes = [];
         });
     }
 }
