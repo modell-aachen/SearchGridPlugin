@@ -189,7 +189,7 @@ sub _searchGrid {
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
         "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>","jsi18nCore"
     );
-    return '%JSI18N{"MyPlugin" id="SearchGrid"}% <grid @update-instance-counter="updateInstanceCounter" :instances="instances"></grid>';
+    return '%JSI18N{"SearchGridPlugin" id="SearchGrid"}% <grid @update-instance-counter="updateInstanceCounter" :instances="instances"></grid>';
 }
 
 # Build query data to fetch first search result in backend.

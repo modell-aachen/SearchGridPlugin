@@ -60,3 +60,12 @@ export default {
     }
 }
 </script>
+
+<style lang="sass">
+.facet {
+    .facet-list {
+        list-style: none !important;
+        padding: 0px;
+    }
+}
+</style>

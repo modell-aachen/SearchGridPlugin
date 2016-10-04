@@ -1,7 +1,7 @@
 <template>
-<div>
+<div class="facet">
     <h2>{{title}}</h2>
-    <ul>
+    <ul class="facet-list">
         <li><label><input type=radio value="" v-model="selectedRadio">{{maketext("All")}}</label></li>
         <template v-for="value in facetCharacteristics | orderBy 'title'">
         <li v-show="value.count > 0"><label>

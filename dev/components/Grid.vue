@@ -27,8 +27,8 @@
   </div>
 </div>
 <div v-if="showFacets" style="flex: 1; margin: 5px;">
-  <h2 class='solrFilterResultsHeading' >{{maketext("Filter results")}}</h2>
-  <button @click.stop="clearFacets()">{{maketext("Clear selection")}}</button>
+  <h1 class='solrFilterResultsHeading' >{{maketext("Facets")}}</h1>
+  <button @click.stop="clearFacets()">{{maketext("Reset all")}}</button>
   <template v-for="facet in prefs.facets">
   <component :is="facet.component" :params="facet.params" :facet-values="facetValues" @facet-changed="facetChanged" :facet-total-counts="prefs.result.facetTotalCounts" @get-facet-info="fetchFacetCharacteristics" @register-facet="registerFacet"></component>
   </template>

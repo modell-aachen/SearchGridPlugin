@@ -1,7 +1,7 @@
 <template>
-<div>
+<div class="facet">
     <h2>{{title}}</h2>
-    <ul>
+    <ul class="facet-list">
         <template v-for="value in facetCharacteristics | orderBy 'title'">
         <li v-show="value.count > 0"><label>
             <input type ="checkbox" value="{{value.field}}" v-model="selectedCheckboxes">
