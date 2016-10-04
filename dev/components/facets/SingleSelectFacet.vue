@@ -4,7 +4,7 @@
     <ul class="facet-list">
         <li><label><input type=radio value="" v-model="selectedRadio">{{maketext("All")}}</label></li>
         <template v-for="value in facetCharacteristics | orderBy 'title'">
-        <li v-show="value.count > 0"><label>
+        <li v-show="value.count > 0 || isSelected(value)"><label>
             <input type ="radio" value="{{value.field}}" v-model="selectedRadio">
             {{getLabel(value.title, value.count)}}
         </label></li>
@@ -23,6 +23,13 @@ export default {
             selectedRadio: ''
         }
     },
+    methods: {
+        isSelected(value){
+            if(this.selectedFacet.length == 0)
+                return false;
+            return value.field === this.selectedFacet[0].field;
+        }
+    },
     watch: {
         selectedRadio(){
             this.selectedFacet = [];
@@ -32,6 +39,7 @@ export default {
                 var currentCharacteristic = this.facetCharacteristics[i];
                 if(currentCharacteristic.field === this.selectedRadio){
                     this.selectedFacet.push(currentCharacteristic);
+                    console.log(this.selectedFacet);
                     break;
                 }
             }

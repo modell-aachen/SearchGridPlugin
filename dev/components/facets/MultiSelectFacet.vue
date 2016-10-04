@@ -3,7 +3,7 @@
     <h2>{{title}}</h2>
     <ul class="facet-list">
         <template v-for="value in facetCharacteristics | orderBy 'title'">
-        <li v-show="value.count > 0"><label>
+        <li v-show="value.count > 0 || isSelected(value)"><label>
             <input type ="checkbox" value="{{value.field}}" v-model="selectedCheckboxes">
             {{getLabel(value.title, value.count)}}
         </label></li>
@@ -41,6 +41,15 @@ export default {
                 var currentCharacteristic = this.facetCharacteristics[i];
                 this.facetMap[currentCharacteristic.field] = currentCharacteristic;
             }
+        },
+        isSelected(value){
+            if(this.selectedFacet.length == 0)
+                return false;
+            for(var i = 0; i < this.selectedFacet.length; i++){
+                if(this.selectedFacet[i].field === value.field)
+                    return true;
+            }
+            return false;
         }
     },
     beforeCompile: function () {
