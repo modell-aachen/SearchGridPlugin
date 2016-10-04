@@ -1,5 +1,5 @@
 <template>
-<div id="cssload-wrapper">
+<div id="loading-bar">
 </div>
 <div class="search-grid" style="display:flex;">
 <div class="searchGridWrapper" v-bind:style="gridStyle">
@@ -185,9 +185,7 @@ export default {
           params["sort"] = "" + this.sortField + " " + this.sort;
         }
         $.ajaxSettings.traditional = true;
-        NProgress.configure({
-          parent: '#cssload-wrapper'
-        });
+
         NProgress.start();
         this.request = $.get(foswiki.preferences.SCRIPTURL + "/rest/SearchGridPlugin/searchproxy", params)
         .done(function(result){
@@ -204,6 +202,7 @@ export default {
             self.requestFailed = true;
             self.errorMessage = xhr.statusText;
           }
+          NProgress.done();
           self.request = null;
         });
       },
@@ -280,6 +279,11 @@ export default {
         this.sort = this.prefs.initialSort.sort;
       }
       this.parseAllFacetResults(this.prefs.result);
+
+      NProgress.configure({
+        parent: '#loading-bar',
+        showSpinner: false
+      });
     }
 }
 </script>
@@ -296,95 +300,12 @@ export default {
   width: 100%;
   margin-bottom: 5px;
 }
-#cssload-wrapper {
+#loading-bar {
   width: 100%;
   height: 4px;
   overflow: hidden;
-}
-
-#cssload-wrapper.invisible {
-  visibility: hidden;
-}
-
-#cssload-border {
-  border: 1px solid rgb(255,255,255);
-  height: 100%;
-  width: 100%;
-  left: -50%;
-  top: -50%;
-  padding: 1px 1px;
-}
-
-#cssload-whitespace {
-  overflow: hidden;
-  height: 100%;
-  width: 100%;
-  margin: 0 auto;
-  overflow: hidden;
-  position: relative;
-}
-
-#cssload-line {
-  position: absolute;
-  height: 100%;
-  width: 100%;
-  background-color: rgb(27,145,224);
-  animation: cssload-slide 2s steps(120) infinite;
-    -o-animation: cssload-slide 2s steps(120) infinite;
-    -ms-animation: cssload-slide 2s steps(120) infinite;
-    -webkit-animation: cssload-slide 2s steps(120) infinite;
-    -moz-animation: cssload-slide 2s steps(120) infinite;
-}
-
-
-
-@keyframes cssload-slide {
-  0% {
-    left: -100%;
-  }
-
-  100% {
-    left: 100%;
-  }
-}
-
-@-o-keyframes cssload-slide {
-  0% {
-    left: -100%;
-  }
-
-  100% {
-    left: 100%;
-  }
-}
-
-@-ms-keyframes cssload-slide {
-  0% {
-    left: -100%;
-  }
-
-  100% {
-    left: 100%;
-  }
-}
-
-@-webkit-keyframes cssload-slide {
-  0% {
-    left: -100%;
-  }
-
-  100% {
-    left: 100%;
-  }
-}
-
-@-moz-keyframes cssload-slide {
-  0% {
-    left: -100%;
-  }
-
-  100% {
-    left: 100%;
+  &.invisible {
+    visibility: hidden;
   }
 }
 
