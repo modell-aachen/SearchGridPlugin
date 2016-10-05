@@ -1,5 +1,7 @@
 %META:TOPICPARENT{name="Plugins"}%
 
+%JQREQUIRE{"chili"}%
+
 ---+ Search Grid Plugin
 
 %SHORTDESCRIPTION%
@@ -22,8 +24,30 @@ The REST calls can be send to:
 =/bin/rest/SearchGridPlugin/searchproxy=
 
 ---++ Extension development
+Other apps can define and register custom fields for the search grid. For each new field they need to define a new VueJS component. A barebone component for a grid field and its registration would look like this:
 
+<verbatim class="js">
+var CustomField = Vue.extend({
+	props: ['doc','params'],
+	template: "<td>I am the custom component. Bow before me.</td>",
+	ready: function(){
+		console.log(this.params[0]);
+		console.log(this.params[1]);
+	}
+});
 
+SearchGridPlugin.registerField("CustomField", CustomField);
+</verbatim>
+
+Then in the macro call it can be set as a field like this:
+<verbatim>
+...
+fields="custom-field(Hello,World)"
+...
+</verbatim>
+In this case the component would just show "I am the custom component. Bow before me." in the table and write to the console "Hello" and "World" when it has beend added to the DOM.
+
+The component also has access to its corresponding document data in the grid via the doc prop.
 ---++ Plugin Info
 
 |  Author: | Foswiki:Main.PluginAuthor |
