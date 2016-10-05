@@ -210,6 +210,14 @@ sub _buildQuery {
     if($prefs->{initialSort}){
         $search{"sort"} = "".$prefs->{initialSort}->{field}." ".$prefs->{initialSort}->{sort};
     }
+    foreach my $filter (@{$prefs->{filters}}) {
+        push(@{$search{'facet.field'}}, $filter->{params}[1]) if $filter->{component} eq 'select-filter';
+    }
+    # Here we create a copy of the search settings
+    # before setting the facet limits. This will be reused
+    # to query the total facet counts later.
+    my %searchCopy = %search;
+
     foreach my $facet (@{$prefs->{facets}}) {
         my $fieldName  = $facet->{params}[1];
         push(@{$search{'facet.field'}}, $fieldName);
@@ -223,20 +231,17 @@ sub _buildQuery {
         $search{"f.$fieldName.facet.limit"} = $limit;
 
     }
-    foreach my $filter (@{$prefs->{filters}}) {
-        push(@{$search{'facet.field'}}, $filter->{params}[1]) if $filter->{component} eq 'select-filter';
-    }
 
     my $searchProxyResult = _searchProxy($session, $prefs->{q}, \%search);
 
     # We additionally add the total number of characteristics per facet
     # For now we do a separate search for this
     $searchProxyResult->{facetTotalCounts} = {};
-    $search{"rows"} = 0;
-    $search{"form"} = '';
-    $search{"facet.limit"} = -1;
+    $searchCopy{"rows"} = 0;
+    $searchCopy{"form"} = '';
+    $searchCopy{"facet.limit"} = -1;
 
-    my $facetCountResult = _searchProxy($session, $prefs->{q}, \%search);
+    my $facetCountResult = _searchProxy($session, $prefs->{q}, \%searchCopy);
     $facetCountResult = $facetCountResult->{facet_counts}->{facet_fields};
     foreach my $facet (@{$prefs->{facets}}){
         my $facetName = $facet->{params}[1];
