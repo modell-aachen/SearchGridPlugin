@@ -2,14 +2,14 @@
 <div id="loading-bar">
 </div>
 <div class="search-grid" style="display:flex;">
-<div class="searchGridWrapper" v-bind:style="gridStyle">
+<div class="searchGridWrapper flatskin-wrapped" v-bind:style="gridStyle">
   <div v-show="requestFailed" class="error">{{maketext("An error occured while processing the request:") + errorMessage}}</div>
-  <div v-if="showFilters" class="search-grid-filters">
+  <div v-if="showFilters" class="search-grid-filters row align-bottom">
     <template v-for="filter in prefs.filters">
       <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
     </template>
-    <div class="flatskin-wrapped">
-      <button v-if="showFilters" v-on:click="fetchData" >Filter</button>
+    <div class="columns">
+      <button class="ma-button" v-if="showFilters" v-on:click="fetchData" >Filter</button>
     </div>
   </div>
   <div class="searchGridResults flatskin-wrapped">
@@ -28,7 +28,7 @@
 </div>
 <div v-if="showFacets" style="flex: 1; margin: 5px;" class="flatskin-wrapped">
   <h1 class='solrFilterResultsHeading' >{{maketext("Facets")}}</h1>
-  <button @click.stop="clearFacets()">{{maketext("Reset all")}}</button>
+  <button class="ma-button" @click.stop="clearFacets()">{{maketext("Reset all")}}</button>
   <template v-for="facet in prefs.facets">
     <component :is="facet.component" :params="facet.params" :facet-values="facetValues" @facet-changed="facetChanged" :facet-total-counts="prefs.result.facetTotalCounts" @get-facet-info="fetchFacetCharacteristics" @register-facet="registerFacet"></component>
   </template>
@@ -298,20 +298,20 @@ export default {
   width: 100%;
   display: inline-block;
 }
-.search-grid-filter {
-  float: left;
-  margin-right: 10px;
-}
-.search-grid-filter {
-  label,input,select {
-    display:block;
-  }
-}
-.search-grid-filters {
-  float: left;
-  width: 100%;
-  margin-bottom: 5px;
-}
+// .search-grid-filter {
+//   float: left;
+//   margin-right: 10px;
+// }
+// .search-grid-filter {
+//   label,input,select {
+//     display:block;
+//   }
+// }
+// .search-grid-filters {
+//   float: left;
+//   width: 100%;
+//   margin-bottom: 5px;
+// }
 #loading-bar {
   width: 100%;
   height: 4px;

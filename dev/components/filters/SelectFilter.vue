@@ -1,5 +1,5 @@
 <template>
-    <div class="search-grid-filter flatskin-wrapped">
+    <div class="search-grid-filter columns shrink">
     <label for="{{id}}">{{params[0]}}</label>
     <select id="{{id}}" v-model="selectedOption">
         <option v-bind:value="''">{{maketext('All')}}</option>
@@ -21,6 +21,9 @@ export default {
     computed: {
         id: function(){
             return this.params[0] + "_filter";
+        },
+        totalCount: function(){
+            return "";
         }
     },
     watch: {

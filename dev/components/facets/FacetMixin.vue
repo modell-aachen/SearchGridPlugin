@@ -73,6 +73,9 @@ export default {
     .facet-list {
         list-style: none !important;
         padding: 0px;
+        li {
+            margin-bottom: 5px;
+        }
     }
 }
 </style>

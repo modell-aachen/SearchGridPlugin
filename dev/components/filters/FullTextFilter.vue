@@ -1,7 +1,10 @@
 <template>
-    <div class="search-grid-filter flatskin-wrapped">
+    <div class="search-grid-filter columns shrink">
     <label for="{{id}}">{{params[0]}}</label>
-    <input id="{{id}}" v-model="filterText" debounce="500" >
+    <div class="input-group">
+      <span class="input-group-label"><i class="fa fa-search" aria-hidden="true"></i></span>
+      <input class="input-group-field" type="text" id="{{id}}" v-model="filterText" debounce="500" >
+    </div>
     </div>
 </template>
 
