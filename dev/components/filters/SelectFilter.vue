@@ -39,6 +39,9 @@ export default {
                 }
             }
         }
+    },
+    beforeCompile: function(){
+        this.selectedFacetUnwatch();
     }
 }
 </script>

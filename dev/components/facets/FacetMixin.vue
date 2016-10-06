@@ -4,7 +4,8 @@ export default {
     mixins: [MaketextMixin],
 	data: function(){
 		return {
-			selectedFacet: []
+			selectedFacet: [],
+            selectedFacetUnwatch: "blub"
 		}
 	},
     props: ['params','facetValues','facetTotalCounts'],
@@ -60,8 +61,9 @@ export default {
         }
     },
     beforeCompile: function () {
+        console.log("mixin compile");
         this.$dispatch("register-facet",this);
-        this.$watch("selectedFacet", function () {
+        this.selectedFacetUnwatch = this.$watch("selectedFacet", function () {
             this.$dispatch("facet-changed");
         });
     }
