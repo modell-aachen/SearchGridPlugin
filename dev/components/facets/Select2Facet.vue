@@ -53,7 +53,7 @@ export default {
             return option.label;
         },
         getSelectedOptionLabel: function(option){
-            return option.field;
+            return option.title;
         },
         buildOptions: function(facets, append=false){
             var options = [];
@@ -61,6 +61,7 @@ export default {
                 var facet = facets[i];
                 options.push({
                     label: this.getLabel(facet.title, facet.count),
+                    title: facet.title,
                     field: facet.field,
                     count: facet.count
                 });

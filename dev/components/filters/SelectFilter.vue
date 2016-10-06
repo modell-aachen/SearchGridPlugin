@@ -1,6 +1,6 @@
 <template>
-    <div class="search-grid-filter">
-    <label style="display:block;" for="{{id}}">{{params[0]}}</label>
+    <div class="search-grid-filter flatskin-wrapped">
+    <label for="{{id}}">{{params[0]}}</label>
     <select id="{{id}}" v-model="selectedOption">
         <option v-bind:value="''">{{maketext('All')}}</option>
         <option v-if="value.count != 0" v-bind:value="value.field" v-for="value in facetValues[this.params[1]]">{{ value.title }} ({{ value.count }})</option>

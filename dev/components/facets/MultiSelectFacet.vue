@@ -3,16 +3,20 @@
     <h2>{{title}}</h2>
     <ul class="facet-list">
         <template v-for="value in facetCharacteristics | orderBy 'title'">
-        <li v-show="value.count > 0 || isSelected(value)"><label>
-            <input type ="checkbox" value="{{value.field}}" v-model="selectedCheckboxes">
-            {{getLabel(value.title, value.count)}}
-        </label></li>
+        <li v-show="value.count > 0 || isSelected(value)">
+            <input id="{{id(value.field)}}" type ="checkbox" value="{{value.field}}" v-model="selectedCheckboxes">
+            <label for="{{id(value.field)}}">
+                 {{getLabel(value.title, value.count)}}
+            </label>
+        </li>
         </template>
     </ul>
 </div>
 </template>
 
 <script>
+var id = -1;
+
 import FacetMixin from './FacetMixin.vue'
 export default {
     mixins: [FacetMixin],
@@ -50,6 +54,18 @@ export default {
                     return true;
             }
             return false;
+        },
+         id: function(field){
+            if(id === -1){
+                id = Math.random();
+                var retValue = this.field + "_" + field + "_facet_" + id;
+                return retValue;
+            } else {
+                var retValue = this.field + "_" + field + "_facet_" + id;
+                id = -1;
+                return retValue;
+            }
+
         }
     },
     beforeCompile: function () {

@@ -1,7 +1,7 @@
 <template>
-    <div class="search-grid-filter">
+    <div class="search-grid-filter flatskin-wrapped">
     <label for="{{id}}">{{params[0]}}</label>
-    <input id="{{id}}" v-model="filterText">
+    <input id="{{id}}" v-model="filterText" debounce="500" >
     </div>
 </template>
 
@@ -32,14 +32,3 @@ export default {
 }
 </script>
 
-<style lang="sass">
-.search-grid-filter {
-  float: left;
-  margin-right: 10px;
-}
-.search-grid-filter {
-  label,input,select {
-    display:block;
-  }
-}
-</style>

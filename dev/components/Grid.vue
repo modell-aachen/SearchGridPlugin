@@ -8,32 +8,31 @@
     <template v-for="filter in prefs.filters">
       <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
     </template>
-  </div>
-  <div>
-      <button v-if="showFilters" v-on:click="fetchData">Filter</button>
+    <div class="flatskin-wrapped">
+      <button v-if="showFilters" v-on:click="fetchData" >Filter</button>
+    </div>
   </div>
   <div class="searchGridResults flatskin-wrapped">
-    <table class="ma-table">
+    <table class="ma-table ma-striped" width="100%">
       <thead is="grid-header" :headers="prefs.fields" :initial-sort="prefs.initialSort" @sort-changed="sortChanged"></thead>
       <tbody>
         <tr v-for="result in results">
           <template v-for="field in prefs.fields">
-          <component :is="field.component" :doc="result" :params="field.params" :language="prefs.language"></component>
+            <component :is="field.component" :doc="result" :params="field.params" :language="prefs.language"></component>
           </template>
         </tr>
       </tbody>
     </table>
-    <paginator v-if="pageCount > 1" @page-changed="pageChanged" :page-count="pageCount" :current-page.sync="currentPage"></paginator>
+    <paginator class="ma-pager-new" v-if="pageCount > 1" @page-changed="pageChanged" :page-count="pageCount" :current-page.sync="currentPage"></paginator>
   </div>
 </div>
-<div v-if="showFacets" style="flex: 1; margin: 5px;">
+<div v-if="showFacets" style="flex: 1; margin: 5px;" class="flatskin-wrapped">
   <h1 class='solrFilterResultsHeading' >{{maketext("Facets")}}</h1>
   <button @click.stop="clearFacets()">{{maketext("Reset all")}}</button>
   <template v-for="facet in prefs.facets">
-  <component :is="facet.component" :params="facet.params" :facet-values="facetValues" @facet-changed="facetChanged" :facet-total-counts="prefs.result.facetTotalCounts" @get-facet-info="fetchFacetCharacteristics" @register-facet="registerFacet"></component>
+    <component :is="facet.component" :params="facet.params" :facet-values="facetValues" @facet-changed="facetChanged" :facet-total-counts="prefs.result.facetTotalCounts" @get-facet-info="fetchFacetCharacteristics" @register-facet="registerFacet"></component>
   </template>
 </div>
-<div>
 </template>
 
 <script>
@@ -291,11 +290,23 @@ export default {
 
 <style lang="sass">
 /*------------ facets --------*/
+.searchGridWrapper {
+  overflow: auto;
+}
+
 .searchGridResults {
   width: 100%;
   display: inline-block;
 }
-
+.search-grid-filter {
+  float: left;
+  margin-right: 10px;
+}
+.search-grid-filter {
+  label,input,select {
+    display:block;
+  }
+}
 .search-grid-filters {
   float: left;
   width: 100%;
