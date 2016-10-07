@@ -24,6 +24,9 @@ export default {
         },
         totalCount: function(){
             return "";
+        },
+        isDefault: function(){
+            return this.selectedOption === '';
         }
     },
     watch: {
@@ -42,6 +45,9 @@ export default {
     },
     beforeCompile: function(){
         this.selectedFacetUnwatch();
+        this.$on('clear-filters', function () {
+            this.selectedOption = '';
+        });
     }
 }
 </script>

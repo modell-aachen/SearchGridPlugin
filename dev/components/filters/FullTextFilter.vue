@@ -24,6 +24,9 @@ export default {
       totalCount: function(){
         return "";
       },
+      isDefault: function() {
+        return this.filterText === '';
+      },
       filterQuery: function() {
         if(this.filterText === '')
           return null;
@@ -31,7 +34,12 @@ export default {
         var queryString = `*${this.filterText}*`
         return `${field}:${queryString}`;
       }
-    }
+    },
+    beforeCompile: function(){
+      this.$on('clear-filters', function () {
+          this.filterText = '';
+      });
+  }
 }
 </script>
 

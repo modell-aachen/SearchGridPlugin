@@ -4,5 +4,7 @@ jsi18n.add('SearchGrid', {
       "Facets": "Facetten",
       "Reset all": "Alle zurücksetzen",
       "Show more results": "Zeige mehr Ergebnisse",
-      "No more results available": "Keine weiteren Ergebnisse vorhanden"
+      "No more results available": "Keine weiteren Ergebnisse vorhanden",
+      "Apply filters": "Filter anwenden",
+      "Remove filters": "Filter aufheben"
 });

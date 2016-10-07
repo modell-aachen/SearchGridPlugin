@@ -9,7 +9,8 @@
       <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
     </template>
     <div class="columns">
-      <button class="ma-button" v-if="showFilters" v-on:click="fetchData" >Filter</button>
+      <button class="ma-button" v-if="showFilters" v-on:click="applyFilters" >{{maketext("Apply filters")}}</button>
+      <button v-show="isFilterApplied" class="ma-button alert" v-on:click="clearFilters" >{{maketext("Remove filters")}}</button>
     </div>
   </div>
   <div class="searchGridResults flatskin-wrapped">
@@ -88,7 +89,8 @@ export default {
           requestFailed: false,
           errorMessage: "",
           facets: [],
-          filters: []
+          filters: [],
+          isFilterApplied: false
        }
     },
     props: ['instances'],
@@ -144,6 +146,30 @@ export default {
       },
       clearFacets: function () {
         this.$broadcast('reset');
+      },
+      clearFilters: function(){
+        this.$broadcast('clear-filters');
+        this.isFilterApplied = false;
+        this.$nextTick(function(){
+          this.fetchData();
+        });
+      },
+      applyFilters: function(){
+        //TODO:
+        //Currently all filters are stored in the facets array.
+        //Here we want to check whether any of them is not on the default
+        //value. It would be better if they would register in their own array
+        //in addition to the facet arrray.
+        this.isFilterApplied = false;
+        for(var i = 0; i < this.facets.length; i++){
+          //Only filters have the 'isDefault' property
+          if(this.facets[i].hasOwnProperty('isDefault') &&
+             !this.facets[i].isDefault){
+            this.isFilterApplied = true;
+            break;
+          }
+        }
+        this.fetchData();
       },
       sortChanged: function(sortField, sort){
         this.sortField = sortField;
