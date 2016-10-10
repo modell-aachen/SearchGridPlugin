@@ -1,0 +1,84 @@
+---+ SEARCHGRID macro
+
+This macro is provided by the [[SearchGridPlugin]]. It can be used to render grids that display arbitrary information provided by a Solr search query.
+
+%STARTINCLUDE%
+The main macro provided is the %<nop>SEARCHGRID% macro. Here is an example:
+
+%SEARCHGRID{"type:topic"
+   headers="Title,Url,Date"
+   fields="text-field(title),url-field(url,url),date-field(createdate)"
+   sortFields="title,url,createdate"
+   filters="full-text-filter(Title,title),select-filter(Language,language)"
+   facets="select-2-facet(Webs,web,10),single-select-facet(Author,author),multi-select-facet(Form,form)"
+   resultsPerPage="10"
+   initialSort="title,desc"
+   fieldRestriction="title,url,author,createdate,web,type,language"
+}%
+
+And here is the corresponding macro call:
+
+<verbatim class="tml">
+%SEARCHGRID{"type:topic"
+   headers="Title,Url,Date"
+   fields="text-field(title),url-field(url,url),date-field(createdate)"
+   sortFields="title,url,createdate"
+   filters="full-text-filter(Title,title),select-filter(Language,language)"
+   facets="select-2-facet(Webs,web,10),single-select-facet(Author,author),multi-select-facet(Form,form)"
+   resultsPerPage="10"
+   initialSort="title,desc"
+   fieldRestriction="title,url,author,createdate,web,type,language"
+}%
+</verbatim>
+
+---+++ Parameters
+
+| *Parameter* | *Description* | *Default* | *Example* |
+| "..." | This is the default Solr query on which the result set will be based on. | | "type:topic form:*DocumentForm" |
+| headers | Comma-separated list of headers in the grid. Automatic maketexting. |  | "Title,Author" |
+| sortFields | This list corresponds to the list of headers and defines on which data field a header should perform sorting. It needs to have as many entries as the headers list. If you do not want to enable sorting for a header, set the entry to "none". |  | "topic,none" |
+| fields | Defines which fields to render and how they should be rendered. See [[#Fields][Fields]]. |  | "url-field(title,url),text-field(author_s)" |
+| fieldRestriction | Defines which fields should be provided by the solar API in order to minimze the response size. This should be a list of all solr fields needed by the fields, filters and facets used in the grid. |  | "title,url" |
+| filter | List of filters which appear above the grid. See [[#Filters][Filters]]. |  | "full-text-filter(Title,title)" |
+| facets | List of facets which appear next to the grid. See [[#Facets][Facets]]. |  | "multi-select-facet(Webs,web),single-select-facet(Author,author)" |
+| resultsPerPage | Defines how many entries are shown per page. | 20 | "5" |
+| initialSort | Sets the initial sorting of the grid when it is first loaded. |  | "title,asc" |
+| form | The form provided by this parameter will be used to identify correct display values for data stored in form fields. E.g. if you create a facet for the user field "field_Creator_s" and you provide the form which defines the field, then the correct display value for the creators will be shown instead of their ids. |  | "Processes.DocumentForm" |
+
+---+++ Fields
+Fields define which kind of data is shown in the columns of grid entries and how the data is presented.
+A field is always defined in the form "name(param1,param2,...)".
+The following fields are predefined and can be used as entries in the fields parameter of the search grid macro:
+
+   * text-field(text:solrField)
+      * Just renders the value stored in solrField as plain text.
+   * url-field(text:solrField,url:solrField)
+      * Renders a link. The first parameter indicates the field which holds the text and the second parameter indicates the field which holds the url.
+   * url-format-field(text:String,url:FormatString[, icon:String])
+      * Renders a advanced link. The first parameter is a text shown as display value. The second parameter indicates the url format string. $solrField would be replaced with corresponding value from the solr result. When a third parameter is given it would render the link in an icon field.
+      * Example: =url-format-field(New Template,%<nop>SCRIPTURLPATH{"edit"}%/%<nop>BASEWEB%/InternalProjectAUTOINC0000?template=InternalProjectEdit;templatetopic=$web.$topic;formtemplate=InternalProjectForm;t=%<nop>GMTIME{$epoch}%,%<nop>PUBURLPATH%/%<nop>SYSTEMWEB%/FamFamFamSilkIcons/page_copy.png)=
+   * date-field(date:solrField)
+      * Takes a date value in ISO_8601 format and displays it as a locale date string.
+   * solr-field()
+      * Takes no parameters and renders the result in a single column in solr search style.
+
+---+++ Filters
+Filters are rendered above the search grid. They add extra filters to the search query and restrict the result set.
+All filters take as their first parameter the filter label (which gets maketexted) and as the second parameter the field to which the filter is bound.
+   * full-text-filter(title:string, field:solrField)
+      * This renders an input field. It filters the result set for entries which contain the input as a substring in the given field.
+   * select-filter(title:string, field:solrField)
+      * This renders a select list with values to filter on.
+
+---+++ Facets
+Facets are also filters which are rendered in a widget next to the grid.
+There are three kinds of facets. Both take two parameters. The first one indicates the title of the facet (which gets maketexted), the second one indicates the field to filter on and the third one indicates how many results should be shown (default is all).
+
+   * multi-select-facet(title:string,field:solrField,limit:number)
+      * This facet shows possible filter values as checkboxes. Selected values are OR-ed together and applied to the query as a filter. If no element is selected it does not apply any filter.
+   * single-select-facet(title:string,field:solrField,limit:number)
+      * This facet shows possible filter values as radio boxes. Only one option can be selected at a time and the result set is restricted accordingly.
+   * select-2-facet(title:string,field:solrField,limit:number)
+      * This facet is similar to the multi-select-facet as it allows to select more than one value. The difference is that it can dynamically fetch further results based on a search term. This makes it well suited to create facets for fields which may have a large number of different values.
+
+%STOPINCLUDE%
