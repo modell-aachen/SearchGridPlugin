@@ -310,7 +310,7 @@ sub _searchProxy {
             while(my ($key, $value) = each(%tempDoc)) {
                 if ($key =~ /^field_([A-Za-z0-9]*)_/ && $key !~ /_dv$/) {
                     my $formField = $forms{$form}->getField($1);
-                    next unless $formField->can('getDisplayValue');
+                    next unless $formField && $formField->can('getDisplayValue');
                     my $dsp = $formField->getDisplayValue($doc->{$key});
                     next unless $dsp;
                     $dsp = $meta->expandMacros($dsp);
