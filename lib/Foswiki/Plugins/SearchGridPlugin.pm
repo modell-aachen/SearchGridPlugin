@@ -320,8 +320,12 @@ sub _searchProxy {
             }
         }
         if ($doc{workflowmeta_name_s}) {
-                my $newName = $session->i18n->maketext($workflowMapping{$doc{workflowmeta_name_s}});
-                $doc->{workflowmeta_name_s_dv} = $newName;
+            my $newName = $session->i18n->maketext($workflowMapping{$doc{workflowmeta_name_s}});
+            $doc->{workflowmeta_name_s_dv} = $newName;
+        }
+        for (grep {$doc{$_} =~ /%/ } keys %doc ) {
+            $doc{$_} =~ s/&quot;/"/g;
+            $doc->{$_} = Foswiki::Func::expandCommonVariables($doc{$_}, $topic, $web, $meta);
         }
     }
 
