@@ -6,6 +6,9 @@ module.exports = {
   babel: {
     presets: ['es2015','stage-2']
   },
+  eslint: {
+    configFile: projectRoot + '/.eslintrc'
+  },
   entry: {
     app: './dev/main.js'
   },
@@ -16,6 +19,15 @@ module.exports = {
   module: {
     loaders: [
       {
+        enforce: "pre",
+        test: /\.vue$/,
+        loader: "eslint-loader",
+        include: [
+          projectRoot + '/dev',
+          projectRoot + '/tests'
+        ]
+      },
+      {
         test: /\.vue$/,
         loader: 'vue'
       },
@@ -24,8 +36,8 @@ module.exports = {
         loader: 'babel',
         include: [
           projectRoot + '/dev',
-          projectRoot + '/node_modules/vue-select/'
-        ]
+          projectRoot + '/node_modules/vue-select/',
+          projectRoot + '/tests'        ]
       },
       {
         test: /\.json$/,

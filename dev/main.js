@@ -1,5 +1,6 @@
-import Vue from 'vue/dist/vue.js'
+import Vue from 'vue'
 import Grid from './components/Grid.vue'
+import $ from 'jquery'
 
 window.Vue = Vue;
 var SearchGridPlugin = {

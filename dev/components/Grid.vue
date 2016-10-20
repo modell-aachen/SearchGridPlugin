@@ -18,9 +18,8 @@
       <thead is="grid-header" :headers="prefs.fields" :initial-sort="prefs.initialSort" @sort-changed="sortChanged"></thead>
       <tbody>
         <tr v-for="result in results">
-          <template v-for="field in prefs.fields">
-            <component :is="field.component" :doc="result" :params="field.params" :language="prefs.language"></component>
-          </template>
+            <td v-for="field in prefs.fields" :is="field.component" :doc="result" :params="field.params">
+            </td>
         </tr>
       </tbody>
     </table>
@@ -52,6 +51,7 @@ import Select2Facet from './facets/Select2Facet.vue'
 import Paginator from 'vue-simple-pagination/VueSimplePagination.vue'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+import $ from 'jquery'
 
 export default {
     mixins: [MaketextMixin],
@@ -83,7 +83,8 @@ export default {
           facetFields: {},
           prefs: {
             filters: [],
-            facets: []
+            facets: [],
+            fields: []
           },
           id: {},
           requestFailed: false,
