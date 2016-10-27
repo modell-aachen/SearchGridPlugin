@@ -1,6 +1,6 @@
 <template>
 <div class="facet">
-<h2>{{title}} ({{totalCount}})</h2>
+<h4>{{title}} ({{totalCount}})</h4>
 <div class="bootstrap-container">
 <v-select multiple label="field" :placeholder="title" :debounce="500" :value.sync="selectedFacet" :options="options | orderBy 'count' -1" :on-search="onSearch" :on-change="onChange" :get-option-label="getOptionLabel" :get-selected-option-label="getSelectedOptionLabel" :prevent-search-filter="true" :on-get-more-options="onGetMoreOptions">
     <template slot="more-results">{{maketext(moreResultsText)}}</template>

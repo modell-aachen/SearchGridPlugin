@@ -1,6 +1,6 @@
 <template>
 <div class="facet">
-    <h2>{{title}}</h2>
+    <h4>{{title}}</h4>
     <ul class="facet-list">
         <li>
             <input id="{{id('All')}}" type=radio value="" v-model="selectedRadio">

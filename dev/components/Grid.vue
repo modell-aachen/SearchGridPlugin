@@ -1,37 +1,48 @@
 <template>
-<div id="loading-bar">
-</div>
-<div class="search-grid" style="display:flex;">
-<div class="searchGridWrapper flatskin-wrapped" v-bind:style="gridStyle">
-  <div v-show="requestFailed" class="error">{{maketext("An error occured while processing the request:") + errorMessage}}</div>
-  <div v-if="showFilters" class="search-grid-filters row align-bottom">
+<div class="flatskin-wrapped">
+  <div id="loading-bar">
+  </div>
+  <div class="expanded row"> <!--Toplevel container -->
+  <div class="columns"> <!-- Filters and table -->
+  <div class="expanded row wrapper search-grid-filters"> <!-- Filters -->
+      <div>
+      <div class="expanded row align-bottom">
     <template v-for="filter in prefs.filters">
-      <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
+    <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
     </template>
     <div class="columns">
-      <button class="ma-button" v-if="showFilters" v-on:click="applyFilters" >{{maketext("Apply filters")}}</button>
-      <button v-show="isFilterApplied" class="ma-button alert" v-on:click="clearFilters" >{{maketext("Remove filters")}}</button>
+      <a class="button" v-if="showFilters" v-on:click="applyFilters" >{{maketext("Apply filters")}}</a>
+      <a class="alert button" v-show="isFilterApplied" v-on:click="clearFilters" >{{maketext("Remove filters")}}</a>
     </div>
-  </div>
-  <div class="searchGridResults flatskin-wrapped">
-    <table class="ma-table ma-striped" width="100%">
-      <thead is="grid-header" :headers="prefs.fields" :initial-sort="prefs.initialSort" @sort-changed="sortChanged"></thead>
-      <tbody>
-        <tr v-for="result in results">
-            <td v-for="field in prefs.fields" :is="field.component" :doc="result" :params="field.params">
-            </td>
-        </tr>
-      </tbody>
-    </table>
-    <paginator class="ma-pager-new" v-if="pageCount > 1" @page-changed="pageChanged" :page-count="pageCount" :current-page.sync="currentPage"></paginator>
-  </div>
+    </div>
+      </div>
 </div>
-<div v-if="showFacets" style="flex: 1; margin: 5px;" class="flatskin-wrapped">
-  <h1 class='solrFilterResultsHeading' >{{maketext("Facets")}}</h1>
-  <button class="ma-button" @click.stop="clearFacets()">{{maketext("Reset all")}}</button>
-  <template v-for="facet in prefs.facets">
-    <component :is="facet.component" :params="facet.params" :facet-values="facetValues" @facet-changed="facetChanged" :facet-total-counts="prefs.result.facetTotalCounts" @get-facet-info="fetchFacetCharacteristics" @register-facet="registerFacet"></component>
-  </template>
+<div class="expanded row searchGridResults"> <!-- Table -->
+<!-- <div class="columns"> -->
+  <table>
+  <thead is="grid-header" :headers="prefs.fields" :initial-sort="prefs.initialSort" @sort-changed="sortChanged"></thead>
+  <tbody>
+    <tr v-for="result in results">
+      <td v-for="field in prefs.fields" :is="field.component" :doc="result" :params="field.params">
+      </td>
+    </tr>
+  </tbody>
+</table>
+<paginator class="ma-pager-new" v-if="pageCount > 1" @page-changed="pageChanged" :page-count="pageCount" :current-page.sync="currentPage"></paginator>
+<!-- </div> -->
+</div>
+</div>
+<div class="small-4 columns" v-if="showFacets"> <!-- Facets -->
+<div class="wrapper">
+<div>
+<h1 class='primary' ><a class="button float-right" @click.stop="clearFacets()">{{maketext("Reset all")}}</a>{{maketext("Facets")}}</h1>
+<template v-for="facet in prefs.facets">
+<component :is="facet.component" :params="facet.params" :facet-values="facetValues" @facet-changed="facetChanged" :facet-total-counts="prefs.result.facetTotalCounts" @get-facet-info="fetchFacetCharacteristics" @register-facet="registerFacet"></component>
+</template>
+</div>
+</div>
+</div>
+</div>
 </div>
 </template>
 

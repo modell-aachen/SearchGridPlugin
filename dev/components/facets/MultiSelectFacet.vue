@@ -1,6 +1,6 @@
 <template>
 <div class="facet">
-    <h2>{{title}}</h2>
+    <h4>{{title}}</h4>
     <ul class="facet-list">
         <template v-for="value in facetCharacteristics | orderBy 'title'">
         <li v-show="value.count > 0 || isSelected(value)">
