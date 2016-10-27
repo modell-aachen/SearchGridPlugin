@@ -185,7 +185,7 @@ sub _searchGrid {
     Foswiki::Func::addToZone( 'head', 'FONTAWESOME',
         '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FontAwesomeContrib/css/font-awesome.min.css" />');
     Foswiki::Func::addToZone( 'head', 'FLATSKIN_WRAPPED',
-        '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FlatSkin/css/flatskin.wrapped.min.css" />');
+        '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FlatSkin/css/flatskin_wrapped.min.css" />');
     Foswiki::Func::addToZone( 'script', 'SEARCHGRIDPREF'. $searchGridCounter++,
         "<script type='text/json'>$jPrefs</script>");
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
