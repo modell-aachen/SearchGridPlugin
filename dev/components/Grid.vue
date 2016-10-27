@@ -4,14 +4,14 @@
   </div>
   <div class="expanded row"> <!--Toplevel container -->
   <div class="columns"> <!-- Filters and table -->
-  <div class="expanded row wrapper search-grid-filters"> <!-- Filters -->
+  <div v-if="showFilters" class="expanded row wrapper search-grid-filters"> <!-- Filters -->
       <div>
       <div class="expanded row align-bottom">
     <template v-for="filter in prefs.filters">
     <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
     </template>
     <div class="columns">
-      <a class="button" v-if="showFilters" v-on:click="applyFilters" >{{maketext("Apply filters")}}</a>
+      <a class="button" v-on:click="applyFilters" >{{maketext("Apply filters")}}</a>
       <a class="alert button" v-show="isFilterApplied" v-on:click="clearFilters" >{{maketext("Remove filters")}}</a>
     </div>
     </div>
