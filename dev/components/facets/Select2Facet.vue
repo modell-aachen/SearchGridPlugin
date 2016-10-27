@@ -1,6 +1,6 @@
 <template>
 <div class="facet">
-<h4>{{title}} ({{totalCount}})</h4>
+<h4>{{header}}</h4>
 <div class="bootstrap-container">
 <v-select multiple label="field" :placeholder="title" :debounce="500" :value.sync="selectedFacet" :options="options | orderBy 'count' -1" :on-search="onSearch" :on-change="onChange" :get-option-label="getOptionLabel" :get-selected-option-label="getSelectedOptionLabel" :prevent-search-filter="true" :on-get-more-options="onGetMoreOptions">
     <template slot="more-results">{{maketext(moreResultsText)}}</template>
@@ -21,6 +21,11 @@ export default {
             options: [],
             moreResultsText: "Show more results"
         };
+    },
+    computed: {
+        header() {
+            return `${this.title} (${this.totalCount})`;
+        }
     },
     watch: {
         facetCharacteristics() {
