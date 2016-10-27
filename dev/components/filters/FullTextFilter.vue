@@ -3,7 +3,7 @@
     <label for="{{id}}">{{params[0]}}</label>
     <div class="input-group">
       <span class="input-group-label"><i class="fa fa-search" aria-hidden="true"></i></span>
-      <input class="input-group-field" type="text" id="{{id}}" v-model="filterText" debounce="500" >
+      <input class="input-group-field" type="text" id="{{id}}" v-model="filterText">
     </div>
     </div>
 </template>
