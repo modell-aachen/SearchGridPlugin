@@ -11,8 +11,10 @@
     <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
     </template>
     <div class="columns">
+    <div class="button-group">
       <a class="button" v-on:click="applyFilters" >{{maketext("Apply filters")}}</a>
       <a class="alert button" v-show="isFilterApplied" v-on:click="clearFilters" >{{maketext("Remove filters")}}</a>
+    </div>
     </div>
     </div>
       </div>
