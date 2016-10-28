@@ -12,7 +12,7 @@
     </template>
     <div class="columns">
     <div class="button-group">
-      <a class="button" v-on:click="applyFilters" >{{maketext("Apply filters")}}</a>
+      <a class="primary button" v-on:click="applyFilters" >{{maketext("Apply filters")}}</a>
       <a class="alert button" v-show="isFilterApplied" v-on:click="clearFilters" >{{maketext("Remove filters")}}</a>
     </div>
     </div>
@@ -37,7 +37,7 @@
 <div class="small-4 columns" v-if="showFacets"> <!-- Facets -->
 <div class="wrapper">
 <div>
-<h1 class='primary' ><a class="button float-right" @click.stop="clearFacets()">{{maketext("Reset all")}}</a>{{maketext("Facets")}}</h1>
+<h1 class='primary' ><a class="primary button float-right" @click.stop="clearFacets()">{{maketext("Reset all")}}</a>{{maketext("Facets")}}</h1>
 <template v-for="facet in prefs.facets">
 <component :is="facet.component" :params="facet.params" :facet-values="facetValues" @facet-changed="facetChanged" :facet-total-counts="prefs.result.facetTotalCounts" @get-facet-info="fetchFacetCharacteristics" @register-facet="registerFacet"></component>
 </template>
