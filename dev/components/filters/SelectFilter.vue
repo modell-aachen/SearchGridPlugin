@@ -1,5 +1,5 @@
 <template>
-    <div class="search-grid-filter columns shrink">
+    <div class="search-grid-filter small-3 columns">
     <label for="{{id}}">{{params[0]}}</label>
     <select id="{{id}}" v-model="selectedOption">
         <option v-bind:value="''">{{maketext('All')}}</option>
