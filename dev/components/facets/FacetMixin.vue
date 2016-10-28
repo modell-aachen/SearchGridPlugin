@@ -61,7 +61,6 @@ export default {
         }
     },
     beforeCompile: function () {
-        console.log("mixin compile");
         this.$dispatch("register-facet",this);
         this.selectedFacetUnwatch = this.$watch("selectedFacet", function () {
             this.$dispatch("facet-changed");
