@@ -296,7 +296,7 @@ sub _searchProxy {
     $content = $json->decode($content->{_content});
     my %forms;
 
-    foreach my $doc (@{%{$content}->{response}->{docs}}) {
+    foreach my $doc (@{$content->{response}->{docs}}) {
         my %doc = %{$doc};
         if($doc{form}) {
             my ($fweb, $ftopic) = Foswiki::Func::normalizeWebTopicName($doc{web}, $doc{form});
