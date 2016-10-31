@@ -32,7 +32,7 @@
 <!-- </div> -->
 </div>
 </div>
-<div class="small-4 columns" v-if="showFacets"> <!-- Facets -->
+<div class="small-3 columns" v-if="showFacets"> <!-- Facets -->
 <div class="wrapper">
 <div>
 <h1 class='primary facets-header' ><a class="small filter-reset button float-right" @click.stop="clearFacets()">{{maketext("Reset all")}}<i class="fa fa-times fa-lg" aria-hidden="true"></i></a>{{maketext("Facets")}}</h1>
@@ -324,7 +324,6 @@ export default {
 </script>
 
 <style lang="sass">
-/*------------ facets --------*/
 .searchGridWrapper {
   overflow: auto;
 }
@@ -333,20 +332,6 @@ export default {
   width: 100%;
   display: inline-block;
 }
-// .search-grid-filter {
-//   float: left;
-//   margin-right: 10px;
-// }
-// .search-grid-filter {
-//   label,input,select {
-//     display:block;
-//   }
-// }
-// .search-grid-filters {
-//   float: left;
-//   width: 100%;
-//   margin-bottom: 5px;
-// }
 
 .error {
   color: red;
