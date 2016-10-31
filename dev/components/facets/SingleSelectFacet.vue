@@ -56,7 +56,6 @@ export default {
                 var currentCharacteristic = this.facetCharacteristics[i];
                 if(currentCharacteristic.field === this.selectedRadio){
                     this.selectedFacet.push(currentCharacteristic);
-                    console.log(this.selectedFacet);
                     break;
                 }
             }
