@@ -3,30 +3,30 @@
   <div class="expanded row"> <!--Toplevel container -->
   <div class="columns"> <!-- Filters and table -->
   <div v-if="showFilters" class="expanded row wrapper search-grid-filters"> <!-- Filters -->
-      <div>
-      <div class="expanded row align-bottom">
-    <template v-for="filter in prefs.filters">
-    <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
-    </template>
-    <div class="columns">
-    <div class="button-group">
-      <a class="primary button" v-on:click="applyFilters" >{{maketext("Apply filters")}}</a>
-      <a class="alert button" v-show="isFilterApplied" v-on:click="clearFilters" >{{maketext("Remove filters")}}</a>
-    </div>
-    </div>
-    </div>
+  <div>
+    <div class="expanded row align-bottom">
+      <template v-for="filter in prefs.filters">
+      <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
+      </template>
+      <div class="columns">
+        <div class="button-group">
+          <a class="primary button" v-on:click="applyFilters" >{{maketext("Apply filters")}}</a>
+          <a class="alert button" v-show="isFilterApplied" v-on:click="clearFilters" >{{maketext("Remove filters")}}</a>
+        </div>
       </div>
+    </div>
+  </div>
 </div>
 <div class="expanded row searchGridResults"> <!-- Table -->
 <!-- <div class="columns"> -->
-  <table>
-  <thead is="grid-header" :headers="prefs.fields" :initial-sort="prefs.initialSort" @sort-changed="sortChanged"></thead>
-  <tbody>
-    <tr v-for="result in results">
-      <td v-for="field in prefs.fields" :is="field.component" :doc="result" :params="field.params">
-      </td>
-    </tr>
-  </tbody>
+<table>
+<thead is="grid-header" :headers="prefs.fields" :initial-sort="prefs.initialSort" @sort-changed="sortChanged"></thead>
+<tbody>
+  <tr v-for="result in results">
+    <td v-for="field in prefs.fields" :is="field.component" :doc="result" :params="field.params">
+    </td>
+  </tr>
+</tbody>
 </table>
 <paginator class="ma-pager-new" v-if="pageCount > 1" @page-changed="pageChanged" :page-count="pageCount" :current-page.sync="currentPage"></paginator>
 <!-- </div> -->
@@ -35,7 +35,7 @@
 <div class="small-4 columns" v-if="showFacets"> <!-- Facets -->
 <div class="wrapper">
 <div>
-<h1 class='primary facets-header' ><a class="button float-right" @click.stop="clearFacets()">{{maketext("Reset all")}}</a>{{maketext("Facets")}}</h1>
+<h1 class='primary facets-header' ><a class="small filter-reset button float-right" @click.stop="clearFacets()">{{maketext("Reset all")}}<i class="fa fa-times fa-lg" aria-hidden="true"></i></a>{{maketext("Facets")}}</h1>
 <template v-for="facet in prefs.facets">
 <component :is="facet.component" :params="facet.params" :facet-values="facetValues" @facet-changed="facetChanged" :facet-total-counts="prefs.result.facetTotalCounts" @get-facet-info="fetchFacetCharacteristics" @register-facet="registerFacet"></component>
 </template>
@@ -354,5 +354,20 @@ export default {
 
 h1.facets-header {
   margin: 0px;
+}
+
+.filter-reset {
+  i {
+    margin-left: 5px;
+  }
+}
+
+.search-grid-filters {
+  .input-group,
+  .button-group,
+  select,
+   {
+    margin-bottom: 0px;
+  }
 }
 </style>
