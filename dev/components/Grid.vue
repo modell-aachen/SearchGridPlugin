@@ -1,7 +1,5 @@
 <template>
-<div class="flatskin-wrapped">
-  <div id="loading-bar">
-  </div>
+<div class="flatskin-wrapped" v-bind:id="'grid-' + id">
   <div class="expanded row"> <!--Toplevel container -->
   <div class="columns"> <!-- Filters and table -->
   <div v-if="showFilters" class="expanded row wrapper search-grid-filters"> <!-- Filters -->
@@ -305,11 +303,9 @@ export default {
         }
       }
     },
-    created: function () {
+    beforeCompile: function() {
       this.id = this.instances;
       this.$dispatch("update-instance-counter", this.id);
-    },
-    beforeCompile: function() {
       this.prefs = JSON.parse($('.SEARCHGRIDPREF' + this.id).html());
       this.resultsPerPage = this.prefs.resultsPerPage;
       this.numResults = this.prefs.result.response.numFound;
@@ -321,7 +317,6 @@ export default {
       this.parseAllFacetResults(this.prefs.result);
 
       NProgress.configure({
-        parent: '#loading-bar',
         showSpinner: false
       });
     }
@@ -352,14 +347,6 @@ export default {
 //   width: 100%;
 //   margin-bottom: 5px;
 // }
-#loading-bar {
-  width: 100%;
-  height: 4px;
-  overflow: hidden;
-  &.invisible {
-    visibility: hidden;
-  }
-}
 
 .error {
   color: red;
