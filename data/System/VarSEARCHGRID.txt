@@ -65,8 +65,8 @@ The following fields are predefined and can be used as entries in the fields par
 ---+++ Filters
 Filters are rendered above the search grid. They add extra filters to the search query and restrict the result set.
 All filters take as their first parameter the filter label (which gets maketexted) and as the second parameter the field to which the filter is bound.
-   * full-text-filter(title:string, field:solrField)
-      * This renders an input field. It filters the result set for entries which contain the input as a substring in the given field.
+   * full-text-filter(title:string, field1:solrField, field2:solrField, ...)
+      * This renders an input field. It filters the result set for entries which contain the input as a substring in the given fields.
    * select-filter(title:string, field:solrField)
       * This renders a select list with values to filter on.
 

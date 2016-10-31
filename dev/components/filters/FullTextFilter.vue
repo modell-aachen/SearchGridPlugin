@@ -30,9 +30,17 @@ export default {
       filterQuery: function() {
         if(this.filterText === '')
           return null;
-        var field = `{!tag=${this.field} q.op=OR}${this.field}`;
-        var queryString = `*${this.filterText}*`
-        return `${field}:${queryString}`;
+        var queries = "(";
+        for(var i = 1; i < this.params.length; i++) {
+          var currentField = this.params[i];
+          var field = `{!tag=${currentField} q.op=OR}${currentField}`;
+          var queryString = `*${this.filterText}*`
+          queries += `${field}:${queryString}`;
+          if(i != this.params.length - 1)
+            queries += " OR ";
+        }
+        queries += ')';
+        return queries;
       }
     },
     beforeCompile: function(){
