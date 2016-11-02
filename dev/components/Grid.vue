@@ -17,9 +17,8 @@
     </div>
   </div>
 </div>
-<div class="expanded row searchGridResults"> <!-- Table -->
-<!-- <div class="columns"> -->
-<table>
+<div class="expanded row searchGridResults" v-bind:class="isGridView ? ['small-up-1', 'medium-up-2', 'large-up-4'] : []"> <!-- Table -->
+<table v-show="!isGridView">
 <thead is="grid-header" :headers="prefs.fields" :initial-sort="prefs.initialSort" @sort-changed="sortChanged"></thead>
 <tbody>
   <tr v-for="result in results">
@@ -28,8 +27,21 @@
   </tr>
 </tbody>
 </table>
+<div v-if="hasGridView" v-show="isGridView" class="columns" v-for="result in results">
+<div :is="prefs.gridField.component" :doc="result" :params="prefs.gridField.params"></div>
+</div>
+</div>
+<div class="expanded row">
+<div class="columns">
+
 <paginator class="ma-pager-new" v-if="pageCount > 1" @page-changed="pageChanged" :page-count="pageCount" :current-page.sync="currentPage"></paginator>
-<!-- </div> -->
+</div>
+<div class="shrink columns">
+<a v-if="hasGridView" class="small button" @click.stop="toggleGridView()">
+  <i v-show="isGridView" class="fa fa-table" aria-hidden="true"></i>
+  <i v-show="!isGridView" class="fa fa-th-large" aria-hidden="true"></i>
+</a>
+</div>
 </div>
 </div>
 <div class="small-3 columns" v-if="showFacets"> <!-- Facets -->
@@ -54,6 +66,7 @@ import UrlFormatField from './fields/UrlFormatField.vue'
 import TextField from './fields/TextField.vue'
 import DateField from './fields/DateField.vue'
 import SolrField from './fields/SolrField.vue'
+import TestGridField from './fields/TestGridField.vue'
 import FullTextFilter from './filters/FullTextFilter.vue'
 import SelectFilter from './filters/SelectFilter.vue'
 import MultiSelectFacet from './facets/MultiSelectFacet.vue'
@@ -73,6 +86,7 @@ export default {
       TextField,
       DateField,
       SolrField,
+      TestGridField,
       FullTextFilter,
       SelectFilter,
       MultiSelectFacet,
@@ -102,7 +116,9 @@ export default {
           errorMessage: "",
           facets: [],
           filters: [],
-          isFilterApplied: false
+          isFilterApplied: false,
+          hasGridView: false,
+          isGridView: false
        }
     },
     props: ['instances'],
@@ -138,6 +154,9 @@ export default {
         var self = this;
         self.$set('resultsPerPage', self.prefs.resultsPerPage);
         this.fetchData();
+      },
+      toggleGridView: function() {
+        this.isGridView = !this.isGridView;
       },
       registerFacet: function(facet){
         this.facets.push(facet);
@@ -310,6 +329,7 @@ export default {
       this.resultsPerPage = this.prefs.resultsPerPage;
       this.numResults = this.prefs.result.response.numFound;
       this.results = this.prefs.result.response.docs;
+      this.hasGridView = this.prefs.hasOwnProperty('gridField');
       if(this.prefs.hasOwnProperty("initialSort")){
         this.sortField = this.prefs.initialSort.field;
         this.sort = this.prefs.initialSort.sort;

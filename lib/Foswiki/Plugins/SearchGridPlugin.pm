@@ -110,6 +110,7 @@ sub _searchGrid {
     my $facets = $params->{facets} || '';
     my $form = $params->{form} || '';
     my $fieldRestriction = $params->{fieldRestriction} || '';
+    my $gridField = $params->{gridField} || '';
 
     my $prefs = {
         q => $defaultQuery,
@@ -120,7 +121,7 @@ sub _searchGrid {
         facets => [],
         language => $session->i18n->language,
         form => $form,
-        fieldRestriction => $fieldRestriction
+        fieldRestriction => $fieldRestriction,
     };
 
     if($initialSort){
@@ -134,6 +135,7 @@ sub _searchGrid {
     my @parsedFields = ( $fields =~ /(.*?\(.*?\)),?/g );
     my @parsedSortFields = (split(/,/,$sortFields));
     my $index = 0;
+    # Parse fields
     foreach my $field ($fields =~ /(.*?\(.*?\)),?/g) {
         my @headers = split(/,/,$headers);
         my $field = {
@@ -153,6 +155,17 @@ sub _searchGrid {
 
         $index++;
     }
+    # Parse grid field
+    if($gridField){
+        my ($component) = $gridField =~ /(.*?)\(/;
+        my ($params) = $gridField =~ /\((.*?)\)/;
+        my @paramsArray = split(/,/, $params);
+        $prefs->{gridField} = {
+            component => $component,
+            params => \@paramsArray
+        }
+    }
+    # Parse filters
     my @parsedFilters = ( $filters =~ /(.*?\(.*?\)),?/g );
     foreach my $filter (@parsedFilters) {
         my ($component) = $filter =~ /(.*?)\(/;
@@ -165,6 +178,7 @@ sub _searchGrid {
         };
         push(@{$prefs->{filters}}, $newFilter);
     }
+    # Parse facets
     my @parsedFacets = ( $facets =~ /(.*?\(.*?\)),?/g );
     foreach my $facet (@parsedFacets) {
         my ($component) = $facet =~ /(.*?)\(/;

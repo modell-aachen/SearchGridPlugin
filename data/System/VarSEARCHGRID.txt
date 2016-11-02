@@ -14,6 +14,7 @@ The main macro provided is the %<nop>SEARCHGRID% macro. Here is an example:
    resultsPerPage="10"
    initialSort="title,desc"
    fieldRestriction="title,url,author,createdate,web,type,language"
+   gridField="test-grid-field(title,url,createdate)"
 }%
 
 And here is the corresponding macro call:
@@ -28,6 +29,7 @@ And here is the corresponding macro call:
    resultsPerPage="10"
    initialSort="title,desc"
    fieldRestriction="title,url,author,createdate,web,type,language"
+   gridField="test-grid-field(title,url,createdate)"
 }%
 </verbatim>
 
@@ -38,6 +40,7 @@ And here is the corresponding macro call:
 | headers | Comma-separated list of headers in the grid. Automatic maketexting. |  | "Title,Author" |
 | sortFields | This list corresponds to the list of headers and defines on which data field a header should perform sorting. It needs to have as many entries as the headers list. If you do not want to enable sorting for a header, set the entry to "none". |  | "topic,none" |
 | fields | Defines which fields to render and how they should be rendered. See [[#Fields][Fields]]. |  | "url-field(title,url),text-field(author_s)" |
+| gridField | If this is set to a field component then the grid view is enabled. The specified field component is responsible for rendering a single entry in grid view. |  | "test-grid-field(title,url,createdate)" |
 | fieldRestriction | Defines which fields should be provided by the solar API in order to minimze the response size. This should be a list of all solr fields needed by the fields, filters and facets used in the grid. |  | "title,url" |
 | filter | List of filters which appear above the grid. See [[#Filters][Filters]]. |  | "full-text-filter(Title,title)" |
 | facets | List of facets which appear next to the grid. See [[#Facets][Facets]]. |  | "multi-select-facet(Webs,web),single-select-facet(Author,author)" |
@@ -61,6 +64,8 @@ The following fields are predefined and can be used as entries in the fields par
       * Takes a date value in ISO_8601 format and displays it as a locale date string.
    * solr-field()
       * Takes no parameters and renders the result in a single column in solr search style.
+   * test-grid-field(field1:solrField,field2:solrField,...)
+      * This field is for testing purposes only and can be used as a field component to enable grid view. It just shows the values of all fields given as parameters in a list. In general grid view components are application specific, so applications should define and register their own grid field components to enable grid view.
 
 ---+++ Filters
 Filters are rendered above the search grid. They add extra filters to the search query and restrict the result set.
