@@ -1,5 +1,5 @@
 <template>
-    <div class="search-grid-filter small-3 columns">
+    <div class="search-grid-filter fullt-text-filter small-3 columns">
     <label for="{{id}}">{{params[0]}}</label>
     <div class="input-group">
       <span class="input-group-label"><i class="fa fa-search" aria-hidden="true"></i></span>

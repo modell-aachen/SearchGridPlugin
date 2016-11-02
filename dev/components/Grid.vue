@@ -44,7 +44,7 @@
 </div>
 </div>
 </div>
-<div class="small-3 columns" v-if="showFacets"> <!-- Facets -->
+<div class="small-3 columns search-grid-facets" v-if="showFacets"> <!-- Facets -->
 <div class="wrapper">
 <div>
 <h1 class='primary facets-header' ><a class="small filter-reset button float-right" @click.stop="clearFacets()">{{maketext("Reset all")}}<i class="fa fa-times fa-lg" aria-hidden="true"></i></a>{{maketext("Facets")}}</h1>
