@@ -62,6 +62,9 @@ module.exports = {
     ]
   },
   vue: {
+    loaders: {
+      js: 'isparta'
+    },
   plugins: [
   new webpack.optimize.UglifyJsPlugin({
       compress: false,

@@ -69,19 +69,30 @@ module.exports = function(config) {
     browsers: ['PhantomJSCustom'],
 
     customLaunchers: {
-    PhantomJSCustom: {
-    base: 'PhantomJS',
-    options: {
-        onCallback: function(data){
-            if (data.type === "render") {
-                // this function will not have the scope of karma.conf.js so we must define any global variable inside it
-                if (window.renderId === undefined) { window.renderId = 0; }
-                page.render(data.fname || ("screenshot_" + (window.renderId++) + ".png"));
+        PhantomJSCustom: {
+            base: 'PhantomJS',
+            options: {
+                onCallback: function(data){
+                    if (data.type === "render") {
+                        // this function will not have the scope of karma.conf.js so we must define any global variable inside it
+                        if (window.renderId === undefined) { window.renderId = 0; }
+                        page.render(data.fname || ("screenshot_" + (window.renderId++) + ".png"));
+                    }
+                }
             }
         }
-    }
-}
-},
+    },
+
+    reporters: ['progress','coverage'],
+
+    coverageReporter: {
+        dir: 'tests/coverage',
+        type: 'text',
+        instrumenters: { isparta : require('isparta') },
+        instrumenter: {
+            '**/*.js': 'isparta'
+        }
+    },
 
 
     // Continuous Integration mode

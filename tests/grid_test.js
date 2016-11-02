@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Grid from '../dev/components/Grid.vue'
-import DummyResponse from './dummy_response.json'
-import DummyPrefs from './dummy_prefs.json'
+import DummyResponse from './mockup_data/dummy_response.json'
+import DummyPrefs from './mockup_data/dummy_prefs.json'
 import $ from 'jquery'
 
 let createGrid = (instance) => {
@@ -16,8 +16,8 @@ let createGrid = (instance) => {
 
 window.foswiki = {
   jsi18n: {
-    get(){
-      return "MAKETEXT";
+    get(module, text){
+      return "MT:" + text;
     }
   }
 };
