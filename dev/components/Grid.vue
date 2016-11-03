@@ -368,6 +368,7 @@ h1.facets-header {
   margin-bottom: 10px;
   .input-group,
   .button-group,
+  .button-group .button,
   select,
    {
     margin-bottom: 0px;
