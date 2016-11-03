@@ -365,11 +365,17 @@ h1.facets-header {
 }
 
 .search-grid-filters {
+  margin-bottom: 10px;
   .input-group,
   .button-group,
   select,
    {
     margin-bottom: 0px;
   }
+}
+
+.columns.search-grid-results {
+  padding-left: 0;
+  padding-right: 0;
 }
 </style>
