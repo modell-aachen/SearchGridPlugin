@@ -17,8 +17,9 @@
     </div>
   </div>
 </div>
-<div class="expanded row searchGridResults" v-bind:class="isGridView ? ['small-up-1', 'medium-up-2', 'large-up-4'] : []"> <!-- Table -->
-<table v-show="!isGridView">
+<div class="expanded row" v-bind:class="isGridView ? ['small-up-1', 'medium-up-2', 'large-up-4'] : []"> <!-- Table -->
+<div v-show="!isGridView" class="columns search-grid-results">
+<table>
 <thead is="grid-header" :headers="prefs.fields" :initial-sort="prefs.initialSort" @sort-changed="sortChanged"></thead>
 <tbody>
   <tr v-for="result in results">
@@ -27,6 +28,7 @@
   </tr>
 </tbody>
 </table>
+</div>
 <div v-if="hasGridView" v-show="isGridView" class="columns" v-for="result in results">
 <div :is="prefs.gridField.component" :doc="result" :params="prefs.gridField.params"></div>
 </div>
@@ -346,11 +348,6 @@ export default {
 <style lang="sass">
 .searchGridWrapper {
   overflow: auto;
-}
-
-.searchGridResults {
-  width: 100%;
-  display: inline-block;
 }
 
 .error {

@@ -24,7 +24,7 @@ describe("The grid component", () => {
       expect(grid.sort).toBe(mockupGridPrefs.initialSort.sort);
     });
     it("should render the initial result set correctly", () => {
-      let gridRows = $(grid.$el).find('.searchGridResults tbody').find('tr');
+      let gridRows = $(grid.$el).find('.search-grid-results tbody').find('tr');
       expect(gridRows.length).toBe(mockupGridPrefs.result.response.docs.length);
       for(var i = 0; i < gridRows.length; i++){
         expect($(gridRows[i]).find('td').length).toBe(mockupGridPrefs.fields.length);
