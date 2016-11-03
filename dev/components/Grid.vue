@@ -304,6 +304,10 @@ export default {
                 else
                   displayValue = field;
 
+                //Remove empty/whitespace entries to not feel broken
+                if(field.match(/^\s*$/))
+                  continue;
+
                 facet.push({
                   'title': displayValue,
                   'count': facetResult[i+1],
