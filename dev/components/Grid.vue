@@ -137,19 +137,6 @@ export default {
       isLoading: function() {
         return this.request != null;
       },
-      gridStyle: function(){
-        if(this.showFacets){
-          return {
-            flex: "0 0 75%",
-            margin: "5px"
-          };
-        }
-        else{
-          return {
-            width: "100%"
-          };
-        }
-      }
     },
     methods: {
       pageChanged: function(){
