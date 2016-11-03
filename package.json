@@ -59,6 +59,6 @@
     "url-loader": "^0.5.7",
     "vue": "1.0.26",
     "vue-select": "github:Mortymus/vue-select",
-    "vue-simple-pagination": "0.0.0"
+    "vue-simple-pagination": "github:Mortymus/vue-simple-pagination"
   }
 }
