@@ -55,7 +55,7 @@ export default {
     		return value + " (" + count + ")";
     	},
         escapeSolrQuery: function(string){
-            return string.replace(/\+|-|:|\(|\)|\|\||&&|\!|\"/g, function(finding){
+            return string.replace(/\+|-|:|\(|\)|\|\||&&|\!|\"|\s/g, function(finding){
                 return `\\${finding}`;
             });
         }
