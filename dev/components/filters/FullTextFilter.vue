@@ -14,7 +14,8 @@ export default {
     mixins: [FacetMixin],
     data:  function () {
        return {
-          filterText: ''
+          filterText: '',
+          isFilter: true
        }
     },
     computed: {
