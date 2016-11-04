@@ -22,5 +22,9 @@ export default {
 	setupGrid() {
 		createPref(0, GridPrefs);
 		return [createGrid(0), GridPrefs];
-	}
+	},
+  createVueComponent(componentDefinition, constructionOptions) {
+    const Ctor = Vue.extend(componentDefinition);
+    return new Ctor(constructionOptions);
+  }
 }
