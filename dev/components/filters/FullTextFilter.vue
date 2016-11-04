@@ -27,6 +27,9 @@ export default {
       isDefault: function() {
         return this.filterText === '';
       },
+      limit: function() {
+        return -1;
+      },
       filterQuery: function() {
         if(this.filterText === '')
           return null;
