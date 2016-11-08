@@ -55,6 +55,8 @@ The following fields are predefined and can be used as entries in the fields par
 
    * text-field(text:solrField)
       * Just renders the value stored in solrField as plain text.
+   * image-field(imageURL:solrField,url:solrField,cssClass:String)
+      * Renders an image based on the given imageURL. It also allows to set a link on the image via the url parameter. To provide some additional styling a css class can be set. The markup will then be =a.cssClass>img=.
    * url-field(text:solrField,url:solrField)
       * Renders a link. The first parameter indicates the field which holds the text and the second parameter indicates the field which holds the url.
    * url-format-field(text:String,url:FormatString[, icon:String])

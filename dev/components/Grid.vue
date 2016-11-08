@@ -73,6 +73,7 @@ import UrlFormatField from './fields/UrlFormatField.vue'
 import TextField from './fields/TextField.vue'
 import DateField from './fields/DateField.vue'
 import SolrField from './fields/SolrField.vue'
+import ImageField from './fields/ImageField.vue'
 import TestGridField from './fields/TestGridField.vue'
 import FullTextFilter from './filters/FullTextFilter.vue'
 import SelectFilter from './filters/SelectFilter.vue'
@@ -93,6 +94,7 @@ export default {
       TextField,
       DateField,
       SolrField,
+      ImageField,
       TestGridField,
       FullTextFilter,
       SelectFilter,
