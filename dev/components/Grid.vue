@@ -22,7 +22,8 @@
                 </div>
                 <div class="expanded row" v-bind:class="isGridView ? ['small-up-1', 'medium-up-2', 'large-up-4'] : []">
                     <!-- Table -->
-                    <div v-show="!isGridView" class="columns search-grid-results">
+                    <div class="columns" v-show="results.length == 0"><p>{{maketext("No results")}}</p></div>
+                    <div v-show="!isGridView && results.length > 0" class="columns search-grid-results">
                         <table>
                             <thead is="grid-header" :headers="prefs.fields" :initial-sort="prefs.initialSort" @sort-changed="sortChanged"></thead>
                             <tbody>
@@ -33,7 +34,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div v-if="hasGridView" v-show="isGridView" class="columns" v-for="result in results">
+                    <div v-if="hasGridView" v-show="isGridView && results.length > 0" class="columns" v-for="result in results">
                         <div :is="prefs.gridField.component" :doc="result" :params="prefs.gridField.params"></div>
                     </div>
                 </div>
