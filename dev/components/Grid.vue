@@ -17,6 +17,16 @@
                                     <a class="alert button" v-show="isFilterApplied" v-on:click="clearFilters">{{maketext("Remove filters")}}</a>
                                 </div>
                             </div>
+                            <div class="shrink columns">
+                                <div class="button-group">
+                                    <a v-if="hasGridView" v-bind:class="{disabled: !isGridView}" class="small button" @click.stop="toggleGridView()">
+                                        <i class="fa fa-bars" aria-hidden="true"></i>
+                                    </a>
+                                    <a v-if="hasGridView" v-bind:class="{disabled: isGridView}" class="small button" @click.stop="toggleGridView()">
+                                        <i class="fa fa-th-large" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -41,12 +51,6 @@
                 <div class="expanded row">
                     <div class="columns">
                         <paginator class="ma-pager-new" v-if="pageCount > 1" @page-changed="pageChanged" :page-count="pageCount" :current-page.sync="currentPage"></paginator>
-                    </div>
-                    <div class="shrink columns">
-                        <a v-if="hasGridView" class="small button" @click.stop="toggleGridView()">
-                            <i v-show="isGridView" class="fa fa-table" aria-hidden="true"></i>
-                            <i v-show="!isGridView" class="fa fa-th-large" aria-hidden="true"></i>
-                        </a>
                     </div>
                 </div>
             </div>
