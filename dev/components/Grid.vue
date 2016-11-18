@@ -18,11 +18,11 @@
                                 </div>
                             </div>
                             <div class="shrink columns">
-                                <div class="button-group">
-                                    <a v-if="hasGridView" v-bind:class="{disabled: !isGridView}" class="small button" @click.stop="toggleGridView()">
+                                <div class="grid-toggle button-group">
+                                    <a v-if="hasGridView" v-bind:class="{disabled: isGridView, selected: !isGridView}" class="small button" @click.stop="toggleGridView()">
                                         <i class="fa fa-bars" aria-hidden="true"></i>
                                     </a>
-                                    <a v-if="hasGridView" v-bind:class="{disabled: isGridView}" class="small button" @click.stop="toggleGridView()">
+                                    <a v-if="hasGridView" v-bind:class="{disabled: !isGridView, selected: isGridView}" class="small button" @click.stop="toggleGridView()">
                                         <i class="fa fa-th-large" aria-hidden="true"></i>
                                     </a>
                                 </div>
@@ -382,5 +382,14 @@ h1.facets-header {
 .columns.search-grid-results {
   padding-left: 0;
   padding-right: 0;
+}
+
+.grid-toggle .button {
+  &.selected {
+    cursor: default;
+  }
+  &.disabled{
+    cursor: pointer;
+  }
 }
 </style>
