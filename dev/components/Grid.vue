@@ -19,10 +19,10 @@
                             </div>
                             <div class="shrink columns">
                                 <div class="grid-toggle button-group">
-                                    <a v-if="hasGridView" v-bind:class="{disabled: isGridView, selected: !isGridView}" class="small button" @click.stop="toggleGridView()">
+                                    <a v-if="hasGridView" v-bind:class="{disabled: isGridView, selected: !isGridView}" class="small button" @click.stop="toggleGridView('table')">
                                         <i class="fa fa-bars" aria-hidden="true"></i>
                                     </a>
-                                    <a v-if="hasGridView" v-bind:class="{disabled: !isGridView, selected: isGridView}" class="small button" @click.stop="toggleGridView()">
+                                    <a v-if="hasGridView" v-bind:class="{disabled: !isGridView, selected: isGridView}" class="small button" @click.stop="toggleGridView('grid')">
                                         <i class="fa fa-th-large" aria-hidden="true"></i>
                                     </a>
                                 </div>
@@ -156,7 +156,12 @@ export default {
         self.$set('resultsPerPage', self.prefs.resultsPerPage);
         this.fetchData();
       },
-      toggleGridView: function() {
+      toggleGridView: function(changeTo) {
+        if(changeTo === "table" && !this.isGridView)
+          return;
+        if(changeTo === "grid" && this.isGridView)
+          return;
+
         this.isGridView = !this.isGridView;
       },
       registerFacet: function(facet){
