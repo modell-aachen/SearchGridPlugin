@@ -88,7 +88,6 @@ import Select2Facet from './facets/Select2Facet.vue'
 import Paginator from 'vue-simple-pagination/VueSimplePagination.vue'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import $ from 'jquery'
 
 export default {
     mixins: [MaketextMixin],

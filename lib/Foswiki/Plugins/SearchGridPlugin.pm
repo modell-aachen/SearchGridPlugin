@@ -205,6 +205,7 @@ sub _searchGrid {
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
         "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>","jsi18nCore"
     );
+    Foswiki::Plugins::JQueryPlugin::createPlugin('jqp::moment', $session);
     return '%JSI18N{"SearchGridPlugin" id="SearchGrid"}% <grid @update-instance-counter="updateInstanceCounter" :instances="instances"></grid>';
 }
 
