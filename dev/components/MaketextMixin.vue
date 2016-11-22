@@ -1,5 +1,5 @@
 <script>
-/*global foswiki:true*/
+/*global foswiki*/
 export default {
     methods: {
         maketext : function(text) {

@@ -71,7 +71,7 @@
 
 
 <script>
-/*global $ foswiki:true*/
+/*global $ foswiki*/
 import MaketextMixin from './MaketextMixin.vue'
 import GridHeader from './GridHeader.vue'
 import UrlField from './fields/UrlField.vue'
