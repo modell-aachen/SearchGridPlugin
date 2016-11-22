@@ -35,11 +35,11 @@ export default {
             var queryString = "";
             if(this.selectedFacet.length > 0){
                 for(var i=0; i < this.selectedFacet.length; i++){
-                    queryString += this.selectedFacet[i].field;
+                    queryString += this.escapeSolrQuery(this.selectedFacet[i].field);
                     if(i != this.selectedFacet.length - 1)
                         queryString += " ";
                 }
-                queryString = "(" + this.escapeSolrQuery(queryString) + ")";
+                queryString = "(" + queryString + ")";
 
             }
             else
