@@ -56,12 +56,13 @@ export default {
             return false;
         },
          id: function(field){
+            var retValue;
             if(id === -1){
                 id = Math.random();
-                var retValue = this.field + "_" + field + "_facet_" + id;
+                retValue = this.field + "_" + field + "_facet_" + id;
                 return retValue;
             } else {
-                var retValue = this.field + "_" + field + "_facet_" + id;
+                retValue = this.field + "_" + field + "_facet_" + id;
                 id = -1;
                 return retValue;
             }

@@ -2,12 +2,12 @@
 import MaketextMixin from "../MaketextMixin.vue"
 export default {
     mixins: [MaketextMixin],
-	data: function(){
-		return {
-			selectedFacet: [],
+    data: function(){
+        return {
+            selectedFacet: [],
             selectedFacetUnwatch: "blub"
-		}
-	},
+        }
+    },
     props: ['params','facetValues','facetTotalCounts'],
     computed: {
         title: function(){
@@ -51,9 +51,9 @@ export default {
         }
     },
     methods: {
-    	getLabel: function(value, count){
-    		return value + " (" + count + ")";
-    	},
+        getLabel: function(value, count){
+            return value + " (" + count + ")";
+        },
         escapeSolrQuery: function(string){
             return string.replace(/\+|-|:|\(|\)|\|\||&&|\!|\"|\s/g, function(finding){
                 return `\\${finding}`;

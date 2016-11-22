@@ -15,6 +15,7 @@
 </template>
 
 <script>
+/*global foswiki moment:true*/
 export default {
     props: ['doc','params','language'],
     data: function () {

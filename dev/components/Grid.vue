@@ -71,6 +71,7 @@
 
 
 <script>
+/*global $ foswiki:true*/
 import MaketextMixin from './MaketextMixin.vue'
 import GridHeader from './GridHeader.vue'
 import UrlField from './fields/UrlField.vue'
@@ -139,7 +140,7 @@ export default {
       pageCount: function(){
         return Math.ceil(this.numResults / this.resultsPerPage);
       },
-      showFilters: function(){
+      showFilters: function( ){
         return this.prefs.filters.length > 0;
       },
       showFacets: function(){
@@ -260,7 +261,7 @@ export default {
             self.requestFailed = false;
             NProgress.done();
         })
-        .fail(function(xhr, status, error){
+        .fail(function(xhr){
           if(xhr.statusText !== "abort"){
             self.requestFailed = true;
             self.errorMessage = xhr.statusText;
@@ -324,7 +325,6 @@ export default {
         if(result.facet_counts){
           var parsedFacetValues = {};
           var facetValues = result.facet_counts.facet_fields;
-          var newFacetValues = {};
           for (var key in facetValues) {
               parsedFacetValues[key] = this.parseFacetResult(key, facetValues[key], result.facet_dsps);
           }

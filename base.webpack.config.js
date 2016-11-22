@@ -12,10 +12,7 @@ var includeDirs = [
 
 module.exports = {
   babel: {
-    presets: ['es2015','stage-2']
-  },
-  eslint: {
-    configFile: projectRoot + '/.eslintrc'
+    presets: ['es2015']
   },
   entry: {
     app: './dev/main.js'
@@ -26,15 +23,6 @@ module.exports = {
   },
   module: {
     loaders: [
-      {
-        enforce: "pre",
-        test: /\.vue$/,
-        loader: "eslint-loader",
-        include: [
-          projectRoot + '/dev',
-          projectRoot + '/tests'
-        ]
-      },
       {
         test: /\.vue$/,
         loader: 'vue',
@@ -71,10 +59,5 @@ module.exports = {
         include: includeDirs
       }
     ]
-  },
-  vue: {
-    loaders: {
-      js: 'isparta'
-    }
-}
+  }
 }

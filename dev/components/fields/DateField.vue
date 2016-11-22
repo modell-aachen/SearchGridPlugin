@@ -4,6 +4,7 @@
 
 <script>
 export default {
+	/*global moment:true*/
     props: ['doc','params'],
     computed: {
         date: function(){
