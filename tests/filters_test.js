@@ -8,12 +8,16 @@ import MockupFacetValues from "./mockup_data/facet_values.json"
 import './mockup_functions/jsi18n.js'
 
 describe("The full-text-filter", () => {
-	let fullTextFilter = Helpers.createVueComponent(FullTextFilter, {
-		el : () => {return 'body'},
-		replace: false,
-		propsData: {
-			params: ["TitleText", "title", "language"]
-		}
+	let fullTextFilter = null;
+	beforeEach(() => {
+		$('body').empty();
+		fullTextFilter = Helpers.createVueComponent(FullTextFilter, {
+			el : () => {return 'body'},
+			replace: false,
+			propsData: {
+				params: ["TitleText", "title", "language"]
+			}
+		});
 	});
 	it('should return the correct filter query', () => {
 		fullTextFilter.filterText = "";
@@ -44,13 +48,16 @@ describe("The full-text-filter", () => {
 });
 
 describe("The select-filter", () => {
-	let selectFilter = Helpers.createVueComponent(SelectFilter, {
-		el : () => {return 'body'},
-		replace: false,
-		propsData: {
-			facetValues: MockupFacetValues,
-			params: ["TitleText", "language"]
-		}
+	let selectFilter = null;
+	beforeEach(() => {
+		selectFilter = Helpers.createVueComponent(SelectFilter, {
+			el : () => {return 'body'},
+			replace: false,
+			propsData: {
+				facetValues: MockupFacetValues,
+				params: ["TitleText", "language"]
+			}
+		});
 	});
 
 	it("should have the correct ID", () => {
@@ -77,7 +84,7 @@ describe("The select-filter", () => {
 	  expect(selectFilter.selectedOption).toBe('');
 	});
 
-	it('should update the selected facet value when the selected option is changed', () => {
+	it('should update the selected facet value when the selected option is changed', (done) => {
 	  selectFilter.selectedOption = 'de';
 	  selectFilter.$nextTick(() => {
 	  	expect(selectFilter.selectedFacet[0].field).toBe('de');
@@ -87,6 +94,7 @@ describe("The select-filter", () => {
 	  		selectFilter.selectedOption = "";
 	  		selectFilter.$nextTick(() => {
 		  		expect(selectFilter.selectedFacet.length).toBe(0);
+		  		done();
 		  	});
 	  	});
 	  });

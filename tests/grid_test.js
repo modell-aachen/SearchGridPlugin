@@ -4,7 +4,10 @@ import $ from 'jquery'
 import './mockup_functions/jsi18n.js'
 
 describe("The grid component", () => {
-  let [grid, mockupGridPrefs] = Helpers.setupGrid();
+  let [grid, mockupGridPrefs] = [];
+  beforeAll(() => {
+    [grid, mockupGridPrefs] = Helpers.setupGrid();
+  });
 
   describe("loads preferences on init and", () => {
     it("should set the preferences correctly", () => {
