@@ -1,5 +1,6 @@
 <script>
 import MaketextMixin from "../MaketextMixin.vue"
+import RandomString from "randomstring";
 export default {
     mixins: [MaketextMixin],
     data: function(){
@@ -10,6 +11,9 @@ export default {
     },
     props: ['params','facetValues','facetTotalCounts'],
     computed: {
+        id(){
+            return RandomString.generate();
+        },
         title: function(){
             return this.params[0];
         },
