@@ -69,6 +69,11 @@ export default {
                 this.sortState = sortStates[initialSorting.sort.toUpperCase()];
             }
         }
+    },
+    ready: function() {
+        if(! this.sortField){
+            this.sortField = "none";
+        }
     }
 }
 </script>
