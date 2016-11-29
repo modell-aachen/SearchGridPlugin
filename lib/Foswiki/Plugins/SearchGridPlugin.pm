@@ -196,6 +196,8 @@ sub _searchGrid {
     #First data fetch per backend.
     $prefs->{result} = _buildQuery($session, $prefs);
     my $jPrefs = to_json($prefs);
+    #Fix: $n would expanded form Foswiki and destroies the JSON.
+    $jPrefs =~ s/ \$n //g;
     Foswiki::Func::addToZone( 'head', 'FONTAWESOME',
         '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FontAwesomeContrib/css/font-awesome.min.css" />');
     Foswiki::Func::addToZone( 'head', 'FLATSKIN_WRAPPED',
