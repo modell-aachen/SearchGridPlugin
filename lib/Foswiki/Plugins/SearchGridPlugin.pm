@@ -155,41 +155,29 @@ sub _searchGrid {
     }
     # Parse grid field
     if($gridField){
-        my ($component) = $gridField =~ /(.*?)\(/;
-        my ($params) = $gridField =~ /\((.*?)\)/;
-        my @paramsArray = split(/,/, $params);
+        my $gridField = @{_parseCommands($gridField)}[0];
         $prefs->{gridField} = {
-            component => $component,
-            params => \@paramsArray
+            component => $gridField->{command},
+            params => $gridField->{params}
         }
     }
     # Parse filters
-    my @parsedFilters = ( $filters =~ /(.*?\(.*?\)),?/g );
-    foreach my $filter (@parsedFilters) {
-        my ($component) = $filter =~ /(.*?)\(/;
-        my($params) = $filter =~ /\((.*?)\)/;
-        my @paramsArray = split(/,/, $params);
-        $paramsArray[0] = $session->i18n->maketext($paramsArray[0]);
+    foreach my $filter (@{_parseCommands($filters)}) {
         my $newFilter = {
-            component => $component,
-            params => \@paramsArray
+            component => $filter->{command},
+            params => $filter->{params}
         };
         push(@{$prefs->{filters}}, $newFilter);
     }
     # Parse facets
-    my @parsedFacets = ( $facets =~ /(.*?\(.*?\)),?/g );
-    foreach my $facet (@parsedFacets) {
-        my ($component) = $facet =~ /(.*?)\(/;
-        my($params) = $facet =~ /\((.*?)\)/;
-        my @paramsArray = split(/,/, $params);
-        $paramsArray[0] = $session->i18n->maketext($paramsArray[0]);
+    foreach my $facet (@{_parseCommands($facets)}) {
+        @{$facet->{params}}[0] = $session->i18n->maketext(@{$facet->{params}}[0]);
         my $newFacet = {
-            component => $component,
-            params => \@paramsArray
+            component => $facet->{command},
+            params => $facet->{params}
         };
         push(@{$prefs->{facets}}, $newFacet);
     }
-    #Foswiki::Plugins::VueJSPlugin::loadDependencies();
 
     #First data fetch per backend.
     $prefs->{result} = _buildQuery($session, $prefs);
