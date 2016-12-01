@@ -135,8 +135,10 @@ sub _searchGrid {
     my @parsedFields = ( $fields =~ /(.*?\(.*?\)),?/g );
     my @parsedSortFields = (split(/,/,$sortFields));
     my $index = 0;
+
+    my $fieldConfigs = _parseCommands($fields);
     # Parse fields
-    foreach my $field ($fields =~ /(.*?\(.*?\)),?/g) {
+    foreach my $fieldConfig (@$fieldConfigs) {
         my @headers = split(/,/,$headers);
         my $field = {
             sortField => $parsedSortFields[$index]
@@ -144,13 +146,9 @@ sub _searchGrid {
         if( @headers ){
             $field->{title} = $session->i18n->maketext($headers[$index]);
         }
-        my $parsedField = $parsedFields[$index];
-        my ($component) = $parsedField =~ /(.*?)\(/;
-        $field->{component} = $component;
-        my($params) = $parsedField =~ /\((.*?)\)/;
+        $field->{component} = $fieldConfig->{command};
 
-        my @paramsArray = split(/,/, $params);
-        $field->{params} = \@paramsArray;
+        $field->{params} = $fieldConfig->{params};
         push(@{$prefs->{fields}}, $field);
 
         $index++;
@@ -276,6 +274,25 @@ sub _callSearchProxy {
     my $query = Foswiki::Func::getCgiQuery() || $session->{request};
     my $json = JSON->new;
     return to_json(_searchProxy($session, undef, $query->{param}));
+}
+
+# Input: 'command1(param1,param2),command2(param1,param2)'
+# Output: [{command => 'command1', params => [param1,param2]}, {command => 'command2', params => [param1,param2]}]
+sub _parseCommands {
+    my $input = shift;
+    my $result = [];
+
+    foreach my $commandString ($input =~ /\s*(.*?\(.*?\))\s*,?\s*/g) {
+        my $commandResult = {};
+        my ($command) = $commandString =~ /\s*(.*?)\s*\(/;
+        $commandResult->{command} = $command;
+        my($params) = $commandString =~ /\(\s*(.*?)\s*\)/;
+
+        my @paramsArray = split(/\s*,\s*/, $params);
+        $commandResult->{params} = \@paramsArray;
+        push(@$result, $commandResult);
+    }
+    return $result;
 }
 
 sub _searchProxy {
