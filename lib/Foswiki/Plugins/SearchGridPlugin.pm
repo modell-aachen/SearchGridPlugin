@@ -214,8 +214,7 @@ sub _searchGrid {
 
 # Build query data to fetch first search result in backend.
 sub _buildQuery {
-    my $session = shift;
-    my($prefs) = @_;
+    my ($session, $prefs) = @_;
     my %search = (
         q => $prefs->{q},
         start => 0,
