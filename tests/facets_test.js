@@ -5,7 +5,7 @@ import MultiSelectFacet from '../dev/components/facets/MultiSelectFacet.vue'
 
 import MockupFacetValues from "./mockup_data/facet_values.json"
 
-import './mockup_functions/jsi18n.js'
+import './mockup_functions/foswiki.js'
 
 describe("The single-select-facet", () => {
   let singleSelectFacet = null;

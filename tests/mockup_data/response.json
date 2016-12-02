@@ -1,0 +1,124 @@
+{
+	"facet_dsps": {},
+	"responseHeader": {
+		"params": {
+			"rows": "10",
+			"facet.limit": "5",
+			"facet": "true",
+			"fl": "title,url,author,createdate,web,type,language",
+			"f.author.facet.limit": "-1",
+			"fq": "(host:foswiki)",
+			"form": "",
+			"f.web.facet.limit": "10",
+			"f.language.facet.limit": "-1",
+			"wt": "json",
+			"facet.field": ["{!ex=title}title", "{!ex=language}language", "{!ex=web}web", "{!ex=author}author", "{!ex=form}form"],
+			"start": "0",
+			"f.form.facet.limit": "-1",
+			"sort": "title asc",
+			"facet.sort": "count",
+			"q": "type:topic"
+		},
+		"QTime": 115,
+		"status": 0
+	},
+	"facet_counts": {
+		"facet_heatmaps": {},
+		"facet_fields": {
+			"web": ["System", 846, "Standards", 585, "Main", 36, "Settings.Processes", 21, "Sandbox", 9, "Settings", 5, "Aachen.Processes", 4, "OUTemplate", 3, "OUTemplate.Processes", 3, "Aachen", 1],
+			"language": ["de", 1507, "en", 7],
+			"title": ["WebContentTemplates", 5, "Processes", 3, "Responsibilities", 3, "WebLeftBarExample", 3, "DocumentForm", 2],
+			"author": ["UnknownUser", 856, "AdminUser", 634, "WikiGuest", 17, "RegistrationAgent", 5, "JohnDoe", 2, "ProjectContributor", 0, "micha", 0],
+			"form": ["ChapterForm", 565, "PackageForm", 35, "FAQForm", 13, "StandardForm", 11, "System.UserForm", 8, "Settings.Processes.GlobalDocumentForm", 5, "%SYSTEMWEB%.UserForm", 2, "AuditReportForm", 2, "Settings.Processes.LocalDocumentForm", 2, "GlossarForm", 1, "InternalProjectForm", 1, "RiskForm", 1, "System.SeleniumTestUserForm", 1, "DocumentForm", 0, "Minutes.MinutesTaskForm", 0, "NominalForm", 0]
+		},
+		"facet_intervals": {},
+		"facet_ranges": {},
+		"facet_dates": {},
+		"facet_queries": {}
+	},
+	"response": {
+		"docs": [{
+			"url": "/System/ACRONYM",
+			"web": "System",
+			"createdate": "2015-07-02T00:19:29Z",
+			"language": "de",
+			"title": "ACRONYM",
+			"type": "topic",
+			"author": "UnknownUser"
+		}, {
+			"language": "de",
+			"createdate": "2016-12-01T15:57:05Z",
+			"type": "topic",
+			"title": "AZAV",
+			"author": "AdminUser",
+			"url": "/Standards/AZAV",
+			"web": "Standards"
+		}, {
+			"author": "AdminUser",
+			"title": "AZAV - 1",
+			"type": "topic",
+			"language": "de",
+			"createdate": "2016-12-01T15:57:06Z",
+			"web": "Standards",
+			"url": "/Standards/AZAVChapter0000"
+		}, {
+			"web": "Standards",
+			"url": "/Standards/AZAVChapter0001",
+			"author": "AdminUser",
+			"title": "AZAV - 1.1",
+			"type": "topic",
+			"createdate": "2016-12-01T15:57:06Z",
+			"language": "de"
+		}, {
+			"author": "AdminUser",
+			"type": "topic",
+			"title": "AZAV - 1.2",
+			"createdate": "2016-12-01T15:57:06Z",
+			"language": "de",
+			"web": "Standards",
+			"url": "/Standards/AZAVChapter0002"
+		}, {
+			"title": "AZAV - 1.3",
+			"type": "topic",
+			"language": "de",
+			"createdate": "2016-12-01T15:57:06Z",
+			"author": "AdminUser",
+			"url": "/Standards/AZAVChapter0003",
+			"web": "Standards"
+		}, {
+			"language": "de",
+			"createdate": "2016-12-01T15:57:06Z",
+			"type": "topic",
+			"title": "AZAV - 1.4",
+			"author": "AdminUser",
+			"url": "/Standards/AZAVChapter0004",
+			"web": "Standards"
+		}, {
+			"web": "Standards",
+			"url": "/Standards/AZAVChapter0005",
+			"author": "AdminUser",
+			"language": "de",
+			"createdate": "2016-12-01T15:57:06Z",
+			"title": "AZAV - 2",
+			"type": "topic"
+		}, {
+			"url": "/Standards/AZAVChapter0006",
+			"web": "Standards",
+			"createdate": "2016-12-01T15:57:06Z",
+			"language": "de",
+			"title": "AZAV - 2.1",
+			"type": "topic",
+			"author": "AdminUser"
+		}, {
+			"web": "Standards",
+			"url": "/Standards/AZAVChapter0007",
+			"author": "AdminUser",
+			"type": "topic",
+			"title": "AZAV - 2.2",
+			"language": "de",
+			"createdate": "2016-12-01T15:57:06Z"
+		}],
+		"start": 0,
+		"numFound": 1514
+	}
+}

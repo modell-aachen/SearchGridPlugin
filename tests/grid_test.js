@@ -1,12 +1,21 @@
 import Helpers from './helpers.js'
 import $ from 'jquery'
+import 'jasmine-ajax'
+import ResponseMockup from './mockup_data/response.json'
 
-import './mockup_functions/jsi18n.js'
+import './mockup_functions/foswiki.js'
 
 describe("The grid component", () => {
   let [grid, mockupGridPrefs] = [];
-  beforeAll(() => {
+
+  beforeEach(() => {
     [grid, mockupGridPrefs] = Helpers.setupGrid();
+    jasmine.Ajax.install();
+  });
+
+  afterEach(() => {
+    $('body').empty();
+    jasmine.Ajax.uninstall();
   });
 
   describe("loads preferences on init and", () => {
@@ -45,5 +54,30 @@ describe("The grid component", () => {
       let gridFacets = $(grid.$el).find('.search-grid-facets .facet');
       expect(gridFacets.length).toBe(mockupGridPrefs.facets.length);
     });
+  });
+
+  it('should be in a loading state when fetching data', () => {
+    expect(grid.isLoading).toBe(false);
+    grid.fetchData();
+    expect(grid.isLoading).toBe(true);
+    jasmine.Ajax.requests.mostRecent().respondWith({
+      "status": 200,
+      "contentType": 'text/plain',
+      "responseText": JSON.stringify(ResponseMockup)
+    });
+    expect(grid.isLoading).toBe(false);
+  });
+
+  it('should set an error message when fetching data fails', () => {
+    grid.fetchData();
+    expect(grid.requestFailed).toBe(false);
+    jasmine.Ajax.requests.mostRecent().respondWith({
+      "status": 500,
+      "contentType": 'text/plain',
+      "responseText": "Server error",
+      "statusText": "Server error"
+    });
+    expect(grid.requestFailed).toBe(true);
+    expect(grid.errorMessage).toBe("Server error");
   });
 });
