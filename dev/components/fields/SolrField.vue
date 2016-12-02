@@ -15,9 +15,7 @@
 </template>
 
 <script>
-import Moment from 'moment'
-import 'moment/locale/de'
-import 'moment/locale/fr'
+/*global foswiki moment*/
 export default {
     props: ['doc','params','language'],
     data: function () {
@@ -34,7 +32,7 @@ export default {
             }
         },
         date: function(){
-            return Moment(this.doc['date']).locale(this.language).format('LLLL');
+            return moment(this.doc['date']).locale(this.language).format('LLLL');
         }
     }
 }

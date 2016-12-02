@@ -1,41 +1,77 @@
 <template>
-<div id="loading-bar">
-</div>
-<div class="search-grid" style="display:flex;">
-<div class="searchGridWrapper flatskin-wrapped" v-bind:style="gridStyle">
-  <div v-show="requestFailed" class="error">{{maketext("An error occured while processing the request:") + errorMessage}}</div>
-  <div v-if="showFilters" class="search-grid-filters row align-bottom">
-    <template v-for="filter in prefs.filters">
-      <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
-    </template>
-    <div class="columns">
-      <button class="ma-button" v-if="showFilters" v-on:click="applyFilters" >{{maketext("Apply filters")}}</button>
-      <button v-show="isFilterApplied" class="ma-button alert" v-on:click="clearFilters" >{{maketext("Remove filters")}}</button>
+    <div class="flatskin-wrapped" v-bind:id="'grid-' + id">
+        <div class="expanded row">
+            <!--Toplevel container -->
+            <div class="columns">
+                <!-- Filters and table -->
+                <div v-if="showFilters" class="expanded row wrapper search-grid-filters">
+                    <!-- Filters -->
+                    <div>
+                        <div class="expanded row align-bottom">
+                            <template v-for="filter in prefs.filters">
+                                <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
+                            </template>
+                            <div class="columns">
+                                <div class="button-group">
+                                    <a class="primary button" v-on:click="applyFilters">{{maketext("Apply filters")}}</a>
+                                    <a class="alert button" v-show="isFilterApplied" v-on:click="clearFilters">{{maketext("Remove filters")}}</a>
+                                </div>
+                            </div>
+                            <div class="shrink columns">
+                                <div class="grid-toggle button-group">
+                                    <a v-if="hasGridView" v-bind:class="{disabled: isGridView, selected: !isGridView}" class="small button" @click.stop="toggleGridView('table')">
+                                        <i class="fa fa-bars" aria-hidden="true"></i>
+                                    </a>
+                                    <a v-if="hasGridView" v-bind:class="{disabled: !isGridView, selected: isGridView}" class="small button" @click.stop="toggleGridView('grid')">
+                                        <i class="fa fa-th-large" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="expanded row" v-bind:class="isGridView ? ['small-up-1', 'medium-up-2', 'large-up-4'] : []">
+                    <!-- Table -->
+                    <div class="columns" v-show="results.length == 0"><p>{{maketext("No results")}}</p></div>
+                    <div v-show="!isGridView && results.length > 0" class="columns search-grid-results">
+                        <table>
+                            <thead is="grid-header" :headers="prefs.fields" :initial-sort="prefs.initialSort" @sort-changed="sortChanged"></thead>
+                            <tbody>
+                                <tr v-for="result in results">
+                                    <td v-for="field in prefs.fields" :is="field.component" :doc="result" :params="field.params">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div v-if="hasGridView" v-show="isGridView && results.length > 0" class="columns" v-for="result in results">
+                        <div :is="prefs.gridField.component" :doc="result" :params="prefs.gridField.params"></div>
+                    </div>
+                </div>
+                <div class="expanded row">
+                    <div class="columns">
+                        <paginator class="ma-pager-new" v-if="pageCount > 1" @page-changed="pageChanged" :page-count="pageCount" :current-page.sync="currentPage"></paginator>
+                    </div>
+                </div>
+            </div>
+            <div class="small-3 columns search-grid-facets" v-if="showFacets">
+                <!-- Facets -->
+                <div class="wrapper">
+                    <div>
+                        <h1 class='primary facets-header'><a class="small filter-reset button float-right" @click.stop="clearFacets()">{{maketext("Reset all")}}<i class="fa fa-times fa-lg" aria-hidden="true"></i></a>{{maketext("Facets")}}</h1>
+                        <template v-for="facet in prefs.facets">
+                            <component :is="facet.component" :params="facet.params" :facet-values="facetValues" @facet-changed="facetChanged" :facet-total-counts="prefs.result.facetTotalCounts" @get-facet-info="fetchFacetCharacteristics" @register-facet="registerFacet"></component>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="searchGridResults flatskin-wrapped">
-    <table class="ma-table ma-striped" width="100%">
-      <thead is="grid-header" :headers="prefs.fields" :initial-sort="prefs.initialSort" @sort-changed="sortChanged"></thead>
-      <tbody>
-        <tr v-for="result in results">
-            <td v-for="field in prefs.fields" :is="field.component" :doc="result" :params="field.params">
-            </td>
-        </tr>
-      </tbody>
-    </table>
-    <paginator class="ma-pager-new" v-if="pageCount > 1" @page-changed="pageChanged" :page-count="pageCount" :current-page.sync="currentPage"></paginator>
-  </div>
-</div>
-<div v-if="showFacets" style="flex: 1; margin: 5px;" class="flatskin-wrapped">
-  <h1 class='solrFilterResultsHeading' >{{maketext("Facets")}}</h1>
-  <button class="ma-button" @click.stop="clearFacets()">{{maketext("Reset all")}}</button>
-  <template v-for="facet in prefs.facets">
-    <component :is="facet.component" :params="facet.params" :facet-values="facetValues" @facet-changed="facetChanged" :facet-total-counts="prefs.result.facetTotalCounts" @get-facet-info="fetchFacetCharacteristics" @register-facet="registerFacet"></component>
-  </template>
-</div>
 </template>
 
+
 <script>
+/*global $ foswiki*/
 import MaketextMixin from './MaketextMixin.vue'
 import GridHeader from './GridHeader.vue'
 import UrlField from './fields/UrlField.vue'
@@ -43,6 +79,8 @@ import UrlFormatField from './fields/UrlFormatField.vue'
 import TextField from './fields/TextField.vue'
 import DateField from './fields/DateField.vue'
 import SolrField from './fields/SolrField.vue'
+import ImageField from './fields/ImageField.vue'
+import TestGridField from './fields/TestGridField.vue'
 import FullTextFilter from './filters/FullTextFilter.vue'
 import SelectFilter from './filters/SelectFilter.vue'
 import MultiSelectFacet from './facets/MultiSelectFacet.vue'
@@ -51,7 +89,6 @@ import Select2Facet from './facets/Select2Facet.vue'
 import Paginator from 'vue-simple-pagination/VueSimplePagination.vue'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import $ from 'jquery'
 
 export default {
     mixins: [MaketextMixin],
@@ -62,6 +99,8 @@ export default {
       TextField,
       DateField,
       SolrField,
+      ImageField,
+      TestGridField,
       FullTextFilter,
       SelectFilter,
       MultiSelectFacet,
@@ -91,7 +130,9 @@ export default {
           errorMessage: "",
           facets: [],
           filters: [],
-          isFilterApplied: false
+          isFilterApplied: false,
+          hasGridView: false,
+          isGridView: false
        }
     },
     props: ['instances'],
@@ -99,7 +140,7 @@ export default {
       pageCount: function(){
         return Math.ceil(this.numResults / this.resultsPerPage);
       },
-      showFilters: function(){
+      showFilters: function( ){
         return this.prefs.filters.length > 0;
       },
       showFacets: function(){
@@ -108,25 +149,20 @@ export default {
       isLoading: function() {
         return this.request != null;
       },
-      gridStyle: function(){
-        if(this.showFacets){
-          return {
-            flex: "0 0 75%",
-            margin: "5px"
-          };
-        }
-        else{
-          return {
-            width: "100%"
-          };
-        }
-      }
     },
     methods: {
       pageChanged: function(){
         var self = this;
         self.$set('resultsPerPage', self.prefs.resultsPerPage);
         this.fetchData();
+      },
+      toggleGridView: function(changeTo) {
+        if(changeTo === "table" && !this.isGridView)
+          return;
+        if(changeTo === "grid" && this.isGridView)
+          return;
+
+        this.isGridView = !this.isGridView;
       },
       registerFacet: function(facet){
         this.facets.push(facet);
@@ -205,7 +241,8 @@ export default {
         params["fq"] = this.collectFilterQueries();
         for(var i = 0; i < this.facets.length; i++){
           params["facet.field"].push(this.facets[i].facetField);
-          params[`f.${this.facets[i].field}.facet.limit`] = this.facets[i].limit;
+          if(!this.facets[i].isFilter)
+            params[`f.${this.facets[i].field}.facet.limit`] = this.facets[i].limit;
         }
 
         if(this.sortField !== ""){
@@ -224,7 +261,7 @@ export default {
             self.requestFailed = false;
             NProgress.done();
         })
-        .fail(function(xhr, status, error){
+        .fail(function(xhr){
           if(xhr.statusText !== "abort"){
             self.requestFailed = true;
             self.errorMessage = xhr.statusText;
@@ -272,6 +309,10 @@ export default {
                 else
                   displayValue = field;
 
+                //Remove empty/whitespace entries to not feel broken
+                if(field.match(/^\s*$/))
+                  continue;
+
                 facet.push({
                   'title': displayValue,
                   'count': facetResult[i+1],
@@ -284,7 +325,6 @@ export default {
         if(result.facet_counts){
           var parsedFacetValues = {};
           var facetValues = result.facet_counts.facet_fields;
-          var newFacetValues = {};
           for (var key in facetValues) {
               parsedFacetValues[key] = this.parseFacetResult(key, facetValues[key], result.facet_dsps);
           }
@@ -292,15 +332,14 @@ export default {
         }
       }
     },
-    created: function () {
+    beforeCompile: function() {
       this.id = this.instances;
       this.$dispatch("update-instance-counter", this.id);
-    },
-    beforeCompile: function() {
       this.prefs = JSON.parse($('.SEARCHGRIDPREF' + this.id).html());
       this.resultsPerPage = this.prefs.resultsPerPage;
       this.numResults = this.prefs.result.response.numFound;
       this.results = this.prefs.result.response.docs;
+      this.hasGridView = this.prefs.hasOwnProperty('gridField');
       if(this.prefs.hasOwnProperty("initialSort")){
         this.sortField = this.prefs.initialSort.field;
         this.sort = this.prefs.initialSort.sort;
@@ -308,7 +347,6 @@ export default {
       this.parseAllFacetResults(this.prefs.result);
 
       NProgress.configure({
-        parent: '#loading-bar',
         showSpinner: false
       });
     }
@@ -316,39 +354,46 @@ export default {
 </script>
 
 <style lang="sass">
-/*------------ facets --------*/
 .searchGridWrapper {
   overflow: auto;
 }
 
-.searchGridResults {
-  width: 100%;
-  display: inline-block;
+.error {
+  color: red;
 }
-// .search-grid-filter {
-//   float: left;
-//   margin-right: 10px;
-// }
-// .search-grid-filter {
-//   label,input,select {
-//     display:block;
-//   }
-// }
-// .search-grid-filters {
-//   float: left;
-//   width: 100%;
-//   margin-bottom: 5px;
-// }
-#loading-bar {
-  width: 100%;
-  height: 4px;
-  overflow: hidden;
-  &.invisible {
-    visibility: hidden;
+
+h1.facets-header {
+  margin: 0px;
+}
+
+.filter-reset {
+  i {
+    margin-left: 5px;
   }
 }
 
-.error {
-  color: red;
+.search-grid-filters {
+  margin-bottom: 10px;
+  .input-group,
+  .button-group,
+  .button-group .button,
+  select,
+   {
+    margin-bottom: 0px;
+  }
+}
+
+.columns.search-grid-results {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.grid-toggle .button {
+  &.selected {
+    cursor: default;
+  }
+  &.disabled{
+    cursor: pointer;
+  }
 }
 </style>

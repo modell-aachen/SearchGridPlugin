@@ -110,6 +110,7 @@ sub _searchGrid {
     my $facets = $params->{facets} || '';
     my $form = $params->{form} || '';
     my $fieldRestriction = $params->{fieldRestriction} || '';
+    my $gridField = $params->{gridField} || '';
 
     my $prefs = {
         q => $defaultQuery,
@@ -120,7 +121,7 @@ sub _searchGrid {
         facets => [],
         language => $session->i18n->language,
         form => $form,
-        fieldRestriction => $fieldRestriction
+        fieldRestriction => $fieldRestriction,
     };
 
     if($initialSort){
@@ -134,6 +135,7 @@ sub _searchGrid {
     my @parsedFields = ( $fields =~ /(.*?\(.*?\)),?/g );
     my @parsedSortFields = (split(/,/,$sortFields));
     my $index = 0;
+    # Parse fields
     foreach my $field ($fields =~ /(.*?\(.*?\)),?/g) {
         my @headers = split(/,/,$headers);
         my $field = {
@@ -153,6 +155,17 @@ sub _searchGrid {
 
         $index++;
     }
+    # Parse grid field
+    if($gridField){
+        my ($component) = $gridField =~ /(.*?)\(/;
+        my ($params) = $gridField =~ /\((.*?)\)/;
+        my @paramsArray = split(/,/, $params);
+        $prefs->{gridField} = {
+            component => $component,
+            params => \@paramsArray
+        }
+    }
+    # Parse filters
     my @parsedFilters = ( $filters =~ /(.*?\(.*?\)),?/g );
     foreach my $filter (@parsedFilters) {
         my ($component) = $filter =~ /(.*?)\(/;
@@ -165,6 +178,7 @@ sub _searchGrid {
         };
         push(@{$prefs->{filters}}, $newFilter);
     }
+    # Parse facets
     my @parsedFacets = ( $facets =~ /(.*?\(.*?\)),?/g );
     foreach my $facet (@parsedFacets) {
         my ($component) = $facet =~ /(.*?)\(/;
@@ -182,22 +196,25 @@ sub _searchGrid {
     #First data fetch per backend.
     $prefs->{result} = _buildQuery($session, $prefs);
     my $jPrefs = to_json($prefs);
+    #Fix: $n and $quot are automatically expanded by foswiki and destroy the json.
+    #So they are replaced.
+    $jPrefs =~ s/(\$n|\$quot)//g;
     Foswiki::Func::addToZone( 'head', 'FONTAWESOME',
         '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FontAwesomeContrib/css/font-awesome.min.css" />');
     Foswiki::Func::addToZone( 'head', 'FLATSKIN_WRAPPED',
-        '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FlatSkin/css/flatskin.wrapped.min.css" />');
+        '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FlatSkin/css/flatskin_wrapped.min.css" />');
     Foswiki::Func::addToZone( 'script', 'SEARCHGRIDPREF'. $searchGridCounter++,
         "<script type='text/json'>$jPrefs</script>");
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
         "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>","jsi18nCore"
     );
+    Foswiki::Plugins::JQueryPlugin::createPlugin('jqp::moment', $session);
     return '%JSI18N{"SearchGridPlugin" id="SearchGrid"}% <grid @update-instance-counter="updateInstanceCounter" :instances="instances"></grid>';
 }
 
 # Build query data to fetch first search result in backend.
 sub _buildQuery {
-    my $session = shift;
-    my($prefs) = @_;
+    my ($session, $prefs) = @_;
     my %search = (
         q => $prefs->{q},
         start => 0,

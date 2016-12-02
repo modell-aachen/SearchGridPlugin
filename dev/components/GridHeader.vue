@@ -9,13 +9,13 @@ import GridHeaderField from './GridHeaderField.vue'
 export default {
     props: ['headers', 'initialSort'],
     components: {
-    	GridHeaderField
+        GridHeaderField
     },
     methods: {
-    	applySorting: function(sortField, sort){
-    		this.$broadcast('sort-processed');
-    		this.$dispatch('sort-changed', sortField, sort);
-    	}
+        applySorting: function(sortField, sort){
+            this.$broadcast('sort-processed');
+            this.$dispatch('sort-changed', sortField, sort);
+        }
     },
     ready: function() {
         this.$watch('initialSort', function(){

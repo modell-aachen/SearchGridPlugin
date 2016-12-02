@@ -1,1 +1,4 @@
 node_modules/
+pub/System/SearchGridPlugin/searchGrid.js
+pub/System/SearchGridPlugin/searchGrid.js.map
+yarn.lock

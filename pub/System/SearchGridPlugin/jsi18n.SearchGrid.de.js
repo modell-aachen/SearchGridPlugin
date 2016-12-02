@@ -6,5 +6,7 @@ jsi18n.add('SearchGrid', {
       "Show more results": "Zeige mehr Ergebnisse",
       "No more results available": "Keine weiteren Ergebnisse vorhanden",
       "Apply filters": "Filter anwenden",
-      "Remove filters": "Filter aufheben"
+      "Remove filters": "Filter aufheben",
+      "Search term...": "Suchbegriff...",
+      "No results": "Keine Ergebnisse"
 });

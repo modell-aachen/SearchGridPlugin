@@ -1,15 +1,19 @@
 <script>
 import MaketextMixin from "../MaketextMixin.vue"
+import RandomString from "randomstring";
 export default {
     mixins: [MaketextMixin],
-	data: function(){
-		return {
-			selectedFacet: [],
+    data: function(){
+        return {
+            selectedFacet: [],
             selectedFacetUnwatch: "blub"
-		}
-	},
+        }
+    },
     props: ['params','facetValues','facetTotalCounts'],
     computed: {
+        id(){
+            return RandomString.generate();
+        },
         title: function(){
             return this.params[0];
         },
@@ -35,11 +39,11 @@ export default {
             var queryString = "";
             if(this.selectedFacet.length > 0){
                 for(var i=0; i < this.selectedFacet.length; i++){
-                    queryString += this.selectedFacet[i].field;
+                    queryString += this.escapeSolrQuery(this.selectedFacet[i].field);
                     if(i != this.selectedFacet.length - 1)
                         queryString += " ";
                 }
-                queryString = "(" + this.escapeSolrQuery(queryString) + ")";
+                queryString = "(" + queryString + ")";
 
             }
             else
@@ -51,17 +55,16 @@ export default {
         }
     },
     methods: {
-    	getLabel: function(value, count){
-    		return value + " (" + count + ")";
-    	},
+        getLabel: function(value, count){
+            return value + " (" + count + ")";
+        },
         escapeSolrQuery: function(string){
-            return string.replace(/\+|-|:|\(|\)|\|\||&&|\!|\"/g, function(finding){
+            return string.replace(/\+|-|:|\(|\)|\|\||&&|\!|\"|\s/g, function(finding){
                 return `\\${finding}`;
             });
         }
     },
     beforeCompile: function () {
-        console.log("mixin compile");
         this.$dispatch("register-facet",this);
         this.selectedFacetUnwatch = this.$watch("selectedFacet", function () {
             this.$dispatch("facet-changed");

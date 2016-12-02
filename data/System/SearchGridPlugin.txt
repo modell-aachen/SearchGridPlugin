@@ -18,11 +18,22 @@ This Plugin provides an easy to use macro for generating topic overviews with da
 %INCLUDE{"VarSEARCHGRID"}%
 
 ---++ Solr Proxy
-The plugin adds a 'REST proxy' which will forward the solr request to the solr plugin and processe the answer that are the main display values are added. For fields which have an displayvalue like Select+value fields. The result set gets an extra field with prefix =_dv=. So for a =field_Status_s= there is also a =field_Status_s_dv= which is the mapped value of the field_Status_s field.
+The plugin adds a 'REST proxy' which will forward the solr request to the solr plugin and processe the answer that are the main display values are added. For fields which have an displayvalue like Select+value fields. The result set gets an extra field with postfix =_dv=. So for a =field_Status_s= there is also a =field_Status_s_dv= which is the mapped value of the field_Status_s field.
 
 The REST calls can be send to:
 =/bin/rest/SearchGridPlugin/searchproxy=
 
+---+++ Display values
+Thera a two main ways to get some display values. One for the fields and one for the facets.
+---++++ Field display values
+A Field display value can be obtained by adding _dv to a solr field. The Searchgrid tries to get some more readable values. This is only possible when the search result contains a form field. It will try to perform a RENDERFORDISPLAY on the wanted value, when it is successful, a field with the <field>_dv will be added to the result set and can be use. To perform an that the field must be returned by Solr, so when the =fieldRestriction= parameter is used, the field value without the _dv must be given.
+<verbatim>
+Get Responsible as display value use:
+   fields="text-field(field_Responsible_s_dv)"
+   fieldRestriction="field_Responsible_s"
+</verbatim>
+---++++ Facet display values
+To get more readable values for the facets, the =form= parameter must be given. Solr does not provides no more informations for the facet fields, so the user has to specify how to render the display value. Here is no _dv value needed.
 ---++ Extension development
 Other apps can define and register custom fields for the search grid. For each new field they need to define a new VueJS component. A barebone component for a grid field and its registration would look like this:
 
