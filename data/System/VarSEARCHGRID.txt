@@ -86,21 +86,21 @@ The following fields are predefined and can be used as entries in the fields par
       <tr>
          <td>Date</td>
          <td>date-field(date:solrField)</td>
-         <td>date-field(field_avatar_s, topictitle)</td>
+         <td>Takes a date value in ISO_8601 format and displays it as a locale date string.</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::DATE"}%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::DATE" CODE="1"}%</td>
       </tr>
       <tr>
          <td>Solr (TBD)</td>
-         <td>Takes no parameters and renders the result in a single column in solr search style. This is only for demonstration and testing and *not production ready*!</td>
          <td>solr-field()</td>
+         <td>Takes no parameters and renders the result in a single column in solr search style. This is only for demonstration and testing and *not production ready*!</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::SOLR"}%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::SOLR" CODE="1"}%</td>
       </tr>
       <tr>
          <td>Test</td>
-         <td>This field is for testing purposes only and can be used as a field component to enable grid view. It just shows the values of all fields given as parameters in a list. In general grid view components are application specific, so applications should define and register their own grid field components to enable grid view.</td>
          <td>test-field(field1:solrField,field2:solrField,...)</td>
+         <td>This field is for testing purposes only and can be used as a field component to enable grid view. It just shows the values of all fields given as parameters in a list. In general grid view components are application specific, so applications should define and register their own grid field components to enable grid view.</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::TEST"}%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::TEST" CODE="1"}%</td>
       </tr>
