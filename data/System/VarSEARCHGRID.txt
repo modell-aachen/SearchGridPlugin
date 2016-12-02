@@ -185,20 +185,116 @@ The following fields are predefined and can be used as entries in the fields par
 ---+++ Filters
 Filters are rendered above the search grid. They add extra filters to the search query and restrict the result set.
 All filters take as their first parameter the filter label (which gets maketexted) and as the second parameter the field to which the filter is bound.
-   * full-text-filter(title:string, field1:solrField, field2:solrField, ...)
-      * This renders an input field. It filters the result set for entries which contain the input as a substring in the given fields.
-   * select-filter(title:string, field:solrField)
-      * This renders a select list with values to filter on.
+
+   <table class="foswikiTable">
+      <tr><th><br>Field</br></th><th>Definition</th><th>Description</th><th>SeachGrid</th><th>SeachGrid Code</th></tr>
+      <tr>
+         <td>Full Text</td>
+         <td>full-text-filter(title:string, field1:solrField, field2:solrField,...) </td>
+         <td>This renders an input field. It filters the result set for entries which contain the input as a substring in the given fields.</td>
+         <td width="40%">%INCLUDE{"%TOPIC%"section="FILTER::FULLTEXT"}%</td>
+         <td>%INCLUDE{"%TOPIC%" section="FILTER::FULLTEXT" CODE="1"}%</td>
+      </tr>
+      <tr>
+         <td>Select</td>
+         <td>select-filter(title:string, field:solrField)</td>
+         <td>This renders a select list with values to filter on. When you need more than the plain stored solr text, see <a href='#Solr_Proxy'>SolrProxy</a></td>
+         <td width="40%">%INCLUDE{"%TOPIC%"section="FILTER::SELECT"}%</td>
+         <td>%INCLUDE{"%TOPIC%" section="FILTER::FULLTEXT" CODE="1"}%</td>
+      </tr>
+   </table>
+
+<div style="display: none">
+%STARTSECTION{"FILTER::FULLTEXT"}%
+%IF{"$CODE='1'" then="<pre>"}%
+%%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
+   "type:topic form:*DocumentForm field_Responsible_s:*"
+   headers="Author,Responsible"
+   fields="text-field(author),text-field(field_Responsible_s_dv)"
+   filters="full-text-filter(Responsible,field_Responsible_s)"
+}%
+%IF{"$CODE='1'" then="</pre>"}%
+%ENDSECTION{"FILTER::FULLTEXT"}%
+%STARTSECTION{"FILTER::SELECT"}%
+%IF{"$CODE='1'" then="<pre>"}%
+%%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
+   "type:topic form:*DocumentForm field_Responsible_s:*"
+   headers="Topic,Responsible"
+   fields="text-field(title),text-field(field_Responsible_s_dv)"
+   filters="select-filter(Responsible,field_Responsible_s)"
+   form="Processes.DocumentForm"
+}%
+%IF{"$CODE='1'" then="</pre>"}%
+%ENDSECTION{"FILTER::SELECT"}%
+</div>
 
 ---+++ Facets
 Facets are also filters which are rendered in a widget next to the grid.
 There are three kinds of facets. Both take two parameters. The first one indicates the title of the facet (which gets maketexted), the second one indicates the field to filter on and the third one indicates how many results should be shown (default is all).
 
-   * multi-select-facet(title:string,field:solrField,limit:number)
-      * This facet shows possible filter values as checkboxes. Selected values are OR-ed together and applied to the query as a filter. If no element is selected it does not apply any filter.
-   * single-select-facet(title:string,field:solrField,limit:number)
-      * This facet shows possible filter values as radio boxes. Only one option can be selected at a time and the result set is restricted accordingly.
-   * select-2-facet(title:string,field:solrField,limit:number)
-      * This facet is similar to the multi-select-facet as it allows to select more than one value. The difference is that it can dynamically fetch further results based on a search term. This makes it well suited to create facets for fields which may have a large number of different values.
+   <table class="foswikiTable">
+      <tr><th><br>Field</br></th><th>Definition</th><th>Description</th><th>SeachGrid Code</th></tr>
+      <tr>
+         <td>Multi Select</td>
+         <td>multi-select-facet(title:string,field:solrField,limit:number)</td>
+         <td>This facet shows possible filter values as checkboxes. Selected values are OR-ed together and applied to the query as a filter. If no element is selected it does not apply any filter.</td>
+         <td>%INCLUDE{"%TOPIC%" section="FILTER::FULLTEXT" CODE="1"}%</td>
+      </tr>
+      <tr>
+         <td colspan="4">%TWISTY{showlink="Working multi select example"}%%INCLUDE{"%TOPIC%"section="FACET::SELECT::MULTI"}%%ENDTWISTY%</td>
+      </tr>
+      <tr>
+         <td>Single Select</td>
+         <td>single-select-facet(title:string,field:solrField,limit:number)</td>
+         <td>This facet shows possible filter values as radio boxes. Only one option can be selected at a time and the result set is restricted accordingly.</td>
+         <td>%INCLUDE{"%TOPIC%" section="FILTER::FULLTEXT" CODE="1"}%</td>
+      </tr>
+      <tr>
+         <td colspan="4">%TWISTY{showlink="Working Single select example"}%%INCLUDE{"%TOPIC%"section="FACET::SELECT::SINGLE"}%%ENDTWISTY%</td>
+      </tr>
+      <tr>
+         <td>Select 2</td>
+         <td>select-2-facet(title:string,field:solrField,limit:number)</td>
+         <td>This facet is similar to the multi-select-facet as it allows to select more than one value. The difference is that it can dynamically fetch further results based on a search term. This makes it well suited to create facets for fields which may have a large number of different values.</td>
+         <td>%INCLUDE{"%TOPIC%" section="FILTER::FULLTEXT" CODE="1"}%</td>
+      </tr>
+      <tr>
+         <td colspan="4">%TWISTY{showlink="Working Select2 example"}%%INCLUDE{"%TOPIC%"section="FACET::SELECT::TWO"}%%ENDTWISTY%</td>
+      </tr>
+   </table>
 
+<div style="display: none">
+%STARTSECTION{"FACET::SELECT::MULTI"}%
+%IF{"$CODE='1'" then="<pre>"}%
+%%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
+   "type:topic form:*DocumentForm field_Responsible_s:*"
+   headers="Author,Responsible"
+   fields="text-field(title)"
+   facets="multi-select-facet(Responsible,field_Responsible_s)"
+}%
+%IF{"$CODE='1'" then="</pre>"}%
+%ENDSECTION{"FACET::SELECT::MULTI"}%
+%STARTSECTION{"FACET::SELECT::SINGLE"}%
+%IF{"$CODE='1'" then="<pre>"}%
+%%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
+   "type:topic form:*DocumentForm field_Responsible_s:*"
+   headers="Topic,Responsible"
+   fields="text-field(title)"
+   facets="single-select-facet(Responsible,field_Responsible_s)"
+   form="Processes.DocumentForm"
+}%
+%IF{"$CODE='1'" then="</pre>"}%
+%ENDSECTION{"FACET::SELECT::SINGLE"}%
+%STARTSECTION{"FACET::SELECT::TWO"}%
+%IF{"$CODE='1'" then="<pre>"}%
+%%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
+   "type:topic form:*DocumentForm field_Responsible_s:*"
+   headers="Topic,Responsible"
+   fields="text-field(title)"
+   facets="select-2-facet(Responsible,field_Responsible_s)"
+   form="Processes.DocumentForm"
+}%
+%IF{"$CODE='1'" then="</pre>"}%
+%ENDSECTION{"FACET::SELECT::TWO"}%
+</div>
 %STOPINCLUDE%
