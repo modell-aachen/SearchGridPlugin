@@ -36,38 +36,151 @@ And here is the corresponding macro call:
 ---+++ Parameters
 
 | *Parameter* | *Description* | *Default* | *Example* |
-| "..." | This is the default Solr query on which the result set will be based on. | | "type:topic form:*DocumentForm" |
-| headers | Comma-separated list of headers in the grid. Automatic maketexting. |  | "Title,Author" |
-| sortFields | This list corresponds to the list of headers and defines on which data field a header should perform sorting. It needs to have as many entries as the headers list. If you do not want to enable sorting for a header, set the entry to "none". |  | "topic,none" |
-| fields | Defines which fields to render and how they should be rendered. See [[#Fields][Fields]]. |  | "url-field(title,url),text-field(author_s)" |
-| gridField | If this is set to a field component then the grid view is enabled. The specified field component is responsible for rendering a single entry in grid view. |  | "test-grid-field(title,url,createdate)" |
-| fieldRestriction | Defines which fields should be provided by the solar API in order to minimze the response size. This should be a list of all solr fields needed by the fields, filters and facets used in the grid. |  | "title,url" |
-| filter | List of filters which appear above the grid. See [[#Filters][Filters]]. |  | "full-text-filter(Title,title)" |
-| facets | List of facets which appear next to the grid. See [[#Facets][Facets]]. |  | "multi-select-facet(Webs,web),single-select-facet(Author,author)" |
+| "..." | This is the default Solr query on which the result set will be based on. | "" | "type:topic form:*DocumentForm" |
+| headers | Comma-separated list of headers in the grid. Automatic maketexting. | "" | "Title,Author" |
+| sortFields | This list corresponds to the list of headers and defines on which data field a header should perform sorting. It needs to have as many entries as the headers list. If you do not want to enable sorting for a header, set the entry to "none". | "" | "topic,none" |
+| fields | Defines which fields to render and how they should be rendered. A field is always defined in the form "name(param1,param2,...)". See [[#Fields][Fields]]. | "" | "url-field(title,url),text-field(author_s)" |
+| gridField | If this is set to a field component then the grid view is enabled. The specified field component is responsible for rendering a single entry in grid view. | "" | "test-grid-field(title,url,createdate)" |
+| fieldRestriction | Defines which fields should be provided by the solar API in order to minimze the response size. This should be a list of all solr fields needed by the fields, filters and facets used in the grid. | no restriction | "title,url" |
+| filters | List of filters which appear above the grid. See [[#Filters][Filters]]. | "" | "full-text-filter(Title,title)" |
+| facets | List of facets which appear next to the grid. See [[#Facets][Facets]]. | "" | "multi-select-facet(Webs,web),single-select-facet(Author,author)" |
 | resultsPerPage | Defines how many entries are shown per page. | 20 | "5" |
-| initialSort | Sets the initial sorting of the grid when it is first loaded. |  | "title,asc" |
-| form | The form provided by this parameter will be used to identify correct display values for data stored in form fields. E.g. if you create a facet for the user field "field_Creator_s" and you provide the form which defines the field, then the correct display value for the creators will be shown instead of their ids. |  | "Processes.DocumentForm" |
+| initialSort | Sets the initial sorting of the grid when it is first loaded. First value is the field which sorl field shuld be sorted. The second value is the direction (asc, desc) | "" | "title,asc" |
+| form | The form provided by this parameter will be used to identify correct display values for data stored in form fields. E.g. if you create a facet for the user field "field_Creator_s" and you provide the form which defines the field, then the correct display value for the creators will be shown instead of their ids. | "" | "Processes.DocumentForm" |
 
 ---+++ Fields
-Fields define which kind of data is shown in the columns of grid entries and how the data is presented.
-A field is always defined in the form "name(param1,param2,...)".
 The following fields are predefined and can be used as entries in the fields parameter of the search grid macro:
 
-   * text-field(text:solrField)
-      * Just renders the value stored in solrField as plain text.
-   * image-field(imageURL:solrField,url:solrField,cssClass:String)
-      * Renders an image based on the given imageURL. It also allows to set a link on the image via the url parameter. To provide some additional styling a css class can be set. The markup will then be =a.cssClass>img=.
-   * url-field(text:solrField,url:solrField)
-      * Renders a link. The first parameter indicates the field which holds the text and the second parameter indicates the field which holds the url.
-   * url-format-field(text:String,url:FormatString[, icon:String])
-      * Renders a advanced link. The first parameter is a text shown as display value. The second parameter indicates the url format string. $solrField would be replaced with corresponding value from the solr result. When a third parameter is given it would render the link in an icon field.
-      * Example: =url-format-field(New Template,%<nop>SCRIPTURLPATH{"edit"}%/%<nop>BASEWEB%/InternalProjectAUTOINC0000?template=InternalProjectEdit;templatetopic=$web.$topic;formtemplate=InternalProjectForm;t=%<nop>GMTIME{$epoch}%,%<nop>PUBURLPATH%/%<nop>SYSTEMWEB%/FamFamFamSilkIcons/page_copy.png)=
-   * date-field(date:solrField)
-      * Takes a date value in ISO_8601 format and displays it as a locale date string.
-   * solr-field()
-      * Takes no parameters and renders the result in a single column in solr search style.
-   * test-grid-field(field1:solrField,field2:solrField,...)
-      * This field is for testing purposes only and can be used as a field component to enable grid view. It just shows the values of all fields given as parameters in a list. In general grid view components are application specific, so applications should define and register their own grid field components to enable grid view.
+   <table class="foswikiTable">
+      <tr><th><br>Field</br></th><th>Definition</th><th>Description</th><th>SeachGrid</th><th>SeachGrid Code</th></tr>
+      <tr>
+         <td>Text</td>
+         <td>text-field(text:solrField) </td>
+         <td>Just renders the value stored in solrField as plain text. When you need more than the plain stored solr text, see <a href='#Solr_Proxy'>SolrProxy</a></td>
+         <td>%INCLUDE{"%TOPIC%"section="FIELD::TEXT"}%</td>
+         <td>%INCLUDE{"%TOPIC%" section="FIELD::TEXT" CODE="1"}%</td>
+      </tr>
+      <tr>
+         <td>Image</td>
+         <td>image-field(imageURL:solrField,url:solrField,cssClass:String)</td>
+         <td>Renders an image based on the given imageURL. It also allows to set a link on the image via the url parameter. To provide some additional styling a css class can be set. The markup will then be =a.cssClass>img=.</td>
+         <td>%INCLUDE{"%TOPIC%" section="FIELD::IMAGE"}%</td>
+         <td>%INCLUDE{"%TOPIC%" section="FIELD::IMAGE" CODE="1"}%</td>
+      </tr>
+      <tr>
+         <td>URL</td>
+         <td>url-field(text:solrField, url:solrField)</td>
+         <td>Renders a link. The first parameter indicates the field which holds the text and the second parameter indicates the field which holds the url.</td>
+         <td>%INCLUDE{"%TOPIC%" section="FIELD::URL"}%</td>
+         <td>%INCLUDE{"%TOPIC%" section="FIELD::URL" CODE="1"}%</td>
+      </tr>
+      <tr>
+         <td>URL-Format</td>
+         <td>url-format-field(imageURL:solrField,url:solrField,cssClass:String)</td>
+         <td>Renders a advanced link. The first parameter is a text shown as display value. The second parameter indicates the url format string. $solrField would be replaced with corresponding value from the solr result. When a third parameter is given it would render the link in an icon field.
+      Example from InternalProjects: =url-format-field(New Template,%<nop>SCRIPTURLPATH{"edit"}%/%<nop>BASEWEB%/InternalProjectAUTOINC0000?template=InternalProjectEdit;templatetopic=$web.$topic;formtemplate=InternalProjectForm;t=%<nop>GMTIME{$epoch}%,%<nop>PUBURLPATH%/%<nop>SYSTEMWEB%/FamFamFamSilkIcons/page_copy.png)=
+         </td>
+         <td>%INCLUDE{"%TOPIC%" section="FIELD::URL::FORMAT"}%</td>
+         <td>%INCLUDE{"%TOPIC%" section="FIELD::URL::FORMAT" CODE="1"}%</td>
+      </tr>
+      <tr>
+         <td>Date</td>
+         <td>date-field(date:solrField)</td>
+         <td>date-field(field_avatar_s, topictitle)</td>
+         <td>%INCLUDE{"%TOPIC%" section="FIELD::DATE"}%</td>
+         <td>%INCLUDE{"%TOPIC%" section="FIELD::DATE" CODE="1"}%</td>
+      </tr>
+      <tr>
+         <td>Solr (TBD)</td>
+         <td>Takes no parameters and renders the result in a single column in solr search style. This is only for demonstration and testing and *not production ready*!</td>
+         <td>solr-field()</td>
+         <td>%INCLUDE{"%TOPIC%" section="FIELD::SOLR"}%</td>
+         <td>%INCLUDE{"%TOPIC%" section="FIELD::SOLR" CODE="1"}%</td>
+      </tr>
+      <tr>
+         <td>Test</td>
+         <td>This field is for testing purposes only and can be used as a field component to enable grid view. It just shows the values of all fields given as parameters in a list. In general grid view components are application specific, so applications should define and register their own grid field components to enable grid view.</td>
+         <td>test-field(field1:solrField,field2:solrField,...)</td>
+         <td>%INCLUDE{"%TOPIC%" section="FIELD::TEST"}%</td>
+         <td>%INCLUDE{"%TOPIC%" section="FIELD::TEST" CODE="1"}%</td>
+      </tr>
+   </table>
+
+<div style="display: none">
+%STARTSECTION{"FIELD::TEXT"}%
+%IF{"$CODE='1'" then="<pre>"}%
+%%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
+   "type:topic form:*DocumentForm field_Responsible_s:*"
+   headers="Author,Responsible"
+   fields="text-field(author),text-field(field_Responsible_s_dv)"
+}%
+%IF{"$CODE='1'" then="</pre>"}%
+%ENDSECTION{"FIELD::TEXT"}%
+%STARTSECTION{"FIELD::IMAGE"}%
+%IF{"$CODE='1'" then="<pre>"}%
+%%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
+   "type:employee"
+   headers="Images"
+   fields="image-field(field_avatar_thumbnail_url_s,url,employee-thumb)"
+   fieldRestriction="field_avatar_thumbnail_url_s,url"
+   resultsPerPage="2"
+}%
+%IF{"$CODE='1'" then="</pre>"}%
+%ENDSECTION{"FIELD::IMAGE"}%
+%STARTSECTION{"FIELD::URL"}%
+%IF{"$CODE='1'" then="<pre>"}%
+%%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
+   "type:topic form:*DocumentForm"
+   headers="Link"
+   fields="url-field(title,webtopic)"
+   fieldRestriction="title,webtopic"
+   resultsPerPage="4"
+}%
+%IF{"$CODE='1'" then="</pre>"}%
+%ENDSECTION{"FIELD::URL"}%
+%STARTSECTION{"FIELD::URL::FORMAT"}%
+%IF{"$CODE='1'" then="<pre>"}%
+%%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
+   "type:topic form:*DocumentForm"
+   headers="Image-Link"
+   fields="url-format-field(%MAKETEXT{"Go to Processe"}%,%SCRIPTURLPATH{"view"}%/$web/$topic,%PUBURLPATH%/%SYSTEMWEB%/FamFamFamSilkIcons/page_copy.png)"
+   fieldRestriction="web,topic"
+   resultsPerPage="4"
+}%
+%IF{"$CODE='1'" then="</pre>"}%
+%ENDSECTION{"FIELD::URL::FORMAT"}%
+%STARTSECTION{"FIELD::DATE"}%
+%IF{"$CODE='1'" then="<pre>"}%
+%%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
+   "type:topic form:*DocumentForm"
+   headers="Date"
+   fields="date-field(createdate)"
+   fieldRestriction="createdate"
+   resultsPerPage="4"
+}%
+%IF{"$CODE='1'" then="</pre>"}%
+%ENDSECTION{"FIELD::DATE"}%
+%STARTSECTION{"FIELD::SOLR"}%
+%IF{"$CODE='1'" then="<pre>"}%
+%%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
+   "type:topic form:*DocumentForm"
+   fields="solr-field()"
+   resultsPerPage="2"
+}%
+%IF{"$CODE='1'" then="</pre>"}%
+%ENDSECTION{"FIELD::SOLR"}%
+%STARTSECTION{"FIELD::TEST"}%
+%IF{"$CODE='1'" then="<pre>"}%
+%%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
+   headers="Responsible"
+   "type:topic form:*DocumentForm"
+   fields="test-grid-field(author,createdate)"
+   fieldRestriction="author,createdate"
+   resultsPerPage="3"
+}%
+%IF{"$CODE='1'" then="</pre>"}%
+%ENDSECTION{"FIELD::TEST"}%
+</div>
 
 ---+++ Filters
 Filters are rendered above the search grid. They add extra filters to the search query and restrict the result set.
