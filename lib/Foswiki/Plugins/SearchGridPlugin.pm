@@ -101,6 +101,7 @@ sub _searchGrid {
 
     my $defaultQuery = $params->{_DEFAULT};
     my $resultsPerPage = $params->{resultsPerPage} || 20;
+    my $hasLiveFilter = $params->{hasLiveFilter};
     my $headers = $params->{headers} || '';
     my $fields = $params->{fields} || '';
     my $filters = $params->{filters} || '';
@@ -122,6 +123,7 @@ sub _searchGrid {
         language => $session->i18n->language,
         form => $form,
         fieldRestriction => $fieldRestriction,
+        hasLiveFilter => $hasLiveFilter,
     };
 
     if($initialSort){

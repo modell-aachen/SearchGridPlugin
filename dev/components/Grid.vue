@@ -9,7 +9,8 @@
                     <div>
                         <div class="expanded row align-bottom">
                             <template v-for="filter in prefs.filters">
-                                <component  v-on:keyup.enter="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
+                                <component v-if="hasLiveFilter == 'true'" v-on:keyup="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
+                                <component v-else v-on:keyup.enter="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                             </template>
                             <div class="columns">
                                 <div class="button-group">
@@ -132,6 +133,7 @@ export default {
           filters: [],
           isFilterApplied: false,
           hasGridView: false,
+          hasLiveFilter: false,
           isGridView: false
        }
     },
@@ -340,6 +342,7 @@ export default {
       this.numResults = this.prefs.result.response.numFound;
       this.results = this.prefs.result.response.docs;
       this.hasGridView = this.prefs.hasOwnProperty('gridField');
+      this.hasLiveFilter = this.prefs.hasLiveFilter;
       if(this.prefs.hasOwnProperty("initialSort")){
         this.sortField = this.prefs.initialSort.field;
         this.sort = this.prefs.initialSort.sort;
