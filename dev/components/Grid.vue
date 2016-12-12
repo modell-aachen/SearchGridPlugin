@@ -9,7 +9,7 @@
                     <div>
                         <div class="expanded row align-bottom">
                             <template v-for="filter in prefs.filters">
-                                <component v-if="hasLiveFilter == 'true'" v-on:keyup="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
+                                <component v-if="hasLiveFilter == 'true'" v-on:keyup="applyFilters | debounce 700" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                                 <component v-else v-on:keyup.enter="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                             </template>
                             <div class="columns">
