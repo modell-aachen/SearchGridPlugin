@@ -1,5 +1,5 @@
 <template>
-    <div class="flatskin-wrapped" v-bind:id="'grid-' + id">
+    <div class="flatskin-wrapped">
         <div class="expanded row">
             <!--Toplevel container -->
             <div class="columns">
@@ -137,7 +137,7 @@ export default {
           isGridView: false
        }
     },
-    props: ['instances'],
+    props: ['preferencesSelector'],
     computed: {
       pageCount: function(){
         return Math.ceil(this.numResults / this.resultsPerPage);
@@ -335,9 +335,7 @@ export default {
       }
     },
     beforeCompile: function() {
-      this.id = this.instances;
-      this.$dispatch("update-instance-counter", this.id);
-      this.prefs = JSON.parse($('.SEARCHGRIDPREF' + this.id).html());
+      this.prefs = JSON.parse($('.' + this.preferencesSelector).html());
       this.resultsPerPage = this.prefs.resultsPerPage;
       this.numResults = this.prefs.result.response.numFound;
       this.results = this.prefs.result.response.docs;

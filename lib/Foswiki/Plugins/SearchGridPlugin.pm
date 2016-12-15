@@ -16,6 +16,7 @@ use Foswiki::Plugins ();    # For the API version
 
 use JSON;
 use version; our $VERSION = version->declare("v0.1");
+use Digest::MD5 qw(md5_hex);
 
 our $RELEASE = "0.1";
 
@@ -183,21 +184,23 @@ sub _searchGrid {
 
     #First data fetch per backend.
     $prefs->{result} = _buildQuery($session, $prefs);
-    my $jPrefs = to_json($prefs);
+    my $prefId = md5_hex(rand);
+    my $prefSelector = "SEARCHGRIDPREF_$prefId";
+    my $jsonPrefs = to_json($prefs);
     #Fix: $n and $quot are automatically expanded by foswiki and destroy the json.
     #So they are replaced.
-    $jPrefs =~ s/(\$n|\$quot)//g;
+    $jsonPrefs =~ s/(\$n|\$quot)//g;
     Foswiki::Func::addToZone( 'head', 'FONTAWESOME',
         '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FontAwesomeContrib/css/font-awesome.min.css" />');
     Foswiki::Func::addToZone( 'head', 'FLATSKIN_WRAPPED',
         '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FlatSkin/css/flatskin_wrapped.min.css" />');
-    Foswiki::Func::addToZone( 'script', 'SEARCHGRIDPREF'. $searchGridCounter++,
-        "<script type='text/json'>$jPrefs</script>");
+    Foswiki::Func::addToZone( 'script', $prefSelector,
+        "<script type='text/json'>$jsonPrefs</script>");
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
         "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>","jsi18nCore"
     );
     Foswiki::Plugins::JQueryPlugin::createPlugin('jqp::moment', $session);
-    return '%JSI18N{"SearchGridPlugin" id="SearchGrid"}% <grid @update-instance-counter="updateInstanceCounter" :instances="instances"></grid>';
+    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}% <grid preferences-selector='$prefSelector'></grid>";
 }
 
 # Build query data to fetch first search result in backend.
