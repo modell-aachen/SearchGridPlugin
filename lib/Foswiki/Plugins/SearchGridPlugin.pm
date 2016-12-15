@@ -102,7 +102,7 @@ sub _searchGrid {
 
     my $defaultQuery = $params->{_DEFAULT};
     my $resultsPerPage = $params->{resultsPerPage} || 20;
-    my $hasLiveFilter = $params->{hasLiveFilter};
+    my $hasLiveFilter = $params->{hasLiveFilter} eq 'true' ? JSON::true : JSON::false;
     my $headers = $params->{headers} || '';
     my $fields = $params->{fields} || '';
     my $filters = $params->{filters} || '';
@@ -113,6 +113,7 @@ sub _searchGrid {
     my $form = $params->{form} || '';
     my $fieldRestriction = $params->{fieldRestriction} || '';
     my $gridField = $params->{gridField} || '';
+    my $addons = $params->{addons} || '';
 
     my $prefs = {
         q => $defaultQuery,
@@ -126,6 +127,9 @@ sub _searchGrid {
         fieldRestriction => $fieldRestriction,
         hasLiveFilter => $hasLiveFilter,
     };
+
+    my @addonlist = split(/,/,$addons);
+    $prefs->{addons} = \@addonlist;
 
     if($initialSort){
         my @initialSortArray = (split(/,/,$initialSort));

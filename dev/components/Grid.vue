@@ -9,7 +9,7 @@
                     <div>
                         <div class="expanded row align-bottom">
                             <template v-for="filter in prefs.filters">
-                                <component v-if="hasLiveFilter == 'true'" v-on:keyup="applyFilters | debounce 700" v-on:keyup.enter="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
+                                <component v-if="hasLiveFilter" v-on:keyup="applyFilters | debounce 700" v-on:keyup.enter="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                                 <component v-else v-on:keyup.enter="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                             </template>
                             <div class="columns">
@@ -17,6 +17,12 @@
                                     <a class="primary button" v-on:click="applyFilters">{{maketext("Apply filters")}}</a>
                                     <a class="alert button" v-show="isFilterApplied" v-on:click="clearFilters">{{maketext("Remove filters")}}</a>
                                 </div>
+                            </div>
+                            <div class="columns">
+                              <template v-for="addon in prefs.addons">
+                                <component :is="addon" :api="api">
+                                </component>
+                              </template>
                             </div>
                             <div class="shrink columns">
                                 <div class="grid-toggle button-group">
@@ -31,15 +37,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="expanded row" v-bind:class="isGridView ? ['small-up-1', 'medium-up-2', 'large-up-4'] : []">
+                <div class="expanded row" v-bind:class="isGridView ? ['small-up-1', 'large-up-2', 'xlarge-up-3', 'xxlarge-up-4'] : []">
                     <!-- Table -->
                     <div class="columns" v-show="results.length == 0"><p>{{maketext("No results")}}</p></div>
                     <div v-show="!isGridView && results.length > 0" class="columns search-grid-results">
                         <table>
-                            <thead is="grid-header" :headers="prefs.fields" :initial-sort="prefs.initialSort" @sort-changed="sortChanged"></thead>
+                            <thead is="grid-header" :headers="filteredFields" :initial-sort="prefs.initialSort" @sort-changed="sortChanged"></thead>
                             <tbody>
                                 <tr v-for="result in results">
-                                    <td v-for="field in prefs.fields" :is="field.component" :doc="result" :params="field.params">
+                                    <td v-for="field in filteredFields" :is="field.component" :doc="result" :params="field.params">
                                     </td>
                                 </tr>
                             </tbody>
@@ -134,6 +140,7 @@ export default {
           isFilterApplied: false,
           hasGridView: false,
           hasLiveFilter: false,
+          columnsToHide: [], 
           isGridView: false
        }
     },
@@ -151,8 +158,30 @@ export default {
       isLoading: function() {
         return this.request != null;
       },
+      filteredFields: function(){
+        let self = this;
+        return this.prefs.fields.filter(function(value,index){
+          return !self.columnsToHide.includes(index);
+        });
+      },
+      api: function() {
+        return {
+          isGridView: this.isGridView,
+          showColumns: this.showColumns,
+          hideColumns: this.hideColumns
+        };
+      }
     },
     methods: {
+      hideColumns: function(columns){
+        this.columnsToHide = this.columnsToHide.concat(columns);
+      },
+      showColumns: function(columns){
+        this.columnsToHide = this.columnsToHide.filter(function(value){
+          return !columns.includes(value);
+        });
+      },
+      
       pageChanged: function(){
         var self = this;
         self.$set('resultsPerPage', self.prefs.resultsPerPage);
