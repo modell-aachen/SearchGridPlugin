@@ -166,6 +166,7 @@ sub _searchGrid {
     }
     # Parse filters
     foreach my $filter (@{_parseCommands($filters)}) {
+        @{$filter->{params}}[0] = $session->i18n->maketext(@{$filter->{params}}[0]);
         my $newFilter = {
             component => $filter->{command},
             params => $filter->{params}
