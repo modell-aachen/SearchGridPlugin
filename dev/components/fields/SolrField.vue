@@ -32,7 +32,7 @@ export default {
             }
         },
         date: function(){
-            return moment(this.doc['date']).locale(this.language).format('LLLL');
+            return moment(this.doc['date']);
         }
     }
 }
