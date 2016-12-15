@@ -26,7 +26,7 @@ The REST calls can be send to:
 ---+++ Display values
 Thera a two main ways to get some display values. One for the fields and one for the facets.
 ---++++ Field display values
-A Field display value can be obtained by adding _dv to a solr field. The Searchgrid tries to get some more readable values. This is only possible when the search result contains a form field. It will try to perform a RENDERFORDISPLAY on the wanted value, when it is successful, a field with the <field>_dv will be added to the result set and can be use. To perform an that the field must be returned by Solr, so when the =fieldRestriction= parameter is used, the field value without the _dv must be given.
+A Field display value can be obtained by adding _dv to a solr field. The Searchgrid tries to get some more readable values. This is only possible when the search result contains a form field. It will try to perform a RENDERFORDISPLAY on the wanted value, when it is successful, a field with the [field]_dv will be added to the result set and can be use. To perform an that the field must be returned by Solr, so when the =fieldRestriction= parameter is used, the field value without the _dv must be given.
 <verbatim>
 Get Responsible as display value use:
    fields="text-field(field_Responsible_s_dv)"
