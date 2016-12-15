@@ -5,7 +5,15 @@ This macro is provided by the [[SearchGridPlugin]]. It can be used to render gri
 %STARTINCLUDE%
 The main macro provided is the %<nop>SEARCHGRID% macro. Here is an example:
 
-%SEARCHGRID{"type:topic"
+%INCLUDE{"%TOPIC%"section="DEFAULT::EXAMPLE"}%
+
+And here is the corresponding macro call:
+
+%INCLUDE{"%TOPIC%"section="DEFAULT::EXAMPLE" CODE="1"}%
+
+%STARTSECTION{"DEFAULT::EXAMPLE"}%
+%IF{"$CODE='1'" then="<pre>"}%
+%%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{"type:topic"
    headers="Title,Url,Date"
    fields="text-field(title),url-field(url,url),date-field(createdate)"
    sortFields="title_sort,url_sort,createdate_sort"
@@ -16,22 +24,8 @@ The main macro provided is the %<nop>SEARCHGRID% macro. Here is an example:
    fieldRestriction="title,url,author,createdate,web,type,language"
    gridField="test-grid-field(title,url,createdate)"
 }%
-
-And here is the corresponding macro call:
-
-<verbatim class="tml">
-%SEARCHGRID{"type:topic"
-   headers="Title,Url,Date"
-   fields="text-field(title),url-field(url,url),date-field(createdate)"
-   sortFields="title,url,createdate"
-   filters="full-text-filter(Title,title),select-filter(Language,language)"
-   facets="select-2-facet(Webs,web,10),single-select-facet(Author,author),multi-select-facet(Form,form)"
-   resultsPerPage="10"
-   initialSort="title,desc"
-   fieldRestriction="title,url,author,createdate,web,type,language"
-   gridField="test-grid-field(title,url,createdate)"
-}%
-</verbatim>
+%IF{"$CODE='1'" then="</pre>"}%
+%ENDSECTION{"DEFAULT::EXAMPLE"}%
 
 ---+++ Parameters
 
