@@ -42,6 +42,7 @@ And here is the corresponding macro call:
 | hasLiveFilter | If true, live filtering is enabled and grid filters straight with typing in anything. Else filtering is possible via typing enter. | false | "true" |
 | initialSort | Sets the initial sorting of the grid when it is first loaded. First value is the field which sorl field shuld be sorted. The second value is the direction (asc, desc) | "" | "title,asc" |
 | form | The form provided by this parameter will be used to identify correct display values for data stored in form fields. E.g. if you create a facet for the user field "field_Creator_s" and you provide the form which defines the field, then the correct display value for the creators will be shown instead of their ids. | "" | "Processes.DocumentForm" |
+| addons | A list of addon components to use in the grid. See the addons section for details | "" | "my-addon-component" |
 
 ---+++ Fields
 The following fields are predefined and can be used as entries in the fields parameter of the search grid macro:
