@@ -103,6 +103,7 @@ sub _searchGrid {
     my $defaultQuery = $params->{_DEFAULT};
     my $resultsPerPage = $params->{resultsPerPage} || 20;
     my $hasLiveFilter = $params->{hasLiveFilter} eq '1' ? JSON::true : JSON::false;
+    my $initialHideColumn = $params->{initialHideColumn} eq '1' ? JSON::true : JSON::false;
     my $headers = $params->{headers} || '';
     my $fields = $params->{fields} || '';
     my $filters = $params->{filters} || '';
@@ -126,6 +127,7 @@ sub _searchGrid {
         form => $form,
         fieldRestriction => $fieldRestriction,
         hasLiveFilter => $hasLiveFilter,
+        initialHideColumn => $initialHideColumn,
     };
 
     my @addonlist = split(/,/,$addons);

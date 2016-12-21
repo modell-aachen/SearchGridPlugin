@@ -140,7 +140,8 @@ export default {
           isFilterApplied: false,
           hasGridView: false,
           hasLiveFilter: false,
-          columnsToHide: [], 
+          columnsToHide: [],
+          initialHideColumn: false, 
           isGridView: false
        }
     },
@@ -168,7 +169,8 @@ export default {
         return {
           isGridView: this.isGridView,
           showColumns: this.showColumns,
-          hideColumns: this.hideColumns
+          hideColumns: this.hideColumns,
+          initialHideColumn: this.initialHideColumn
         };
       }
     },
@@ -370,6 +372,7 @@ export default {
       this.results = this.prefs.result.response.docs;
       this.hasGridView = this.prefs.hasOwnProperty('gridField');
       this.hasLiveFilter = this.prefs.hasLiveFilter;
+      this.initialHideColumn = this.prefs.initialHideColumn;
       if(this.prefs.hasOwnProperty("initialSort")){
         this.sortField = this.prefs.initialSort.field;
         this.sort = this.prefs.initialSort.sort;
