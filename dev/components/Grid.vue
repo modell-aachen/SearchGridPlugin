@@ -37,7 +37,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="expanded row" v-bind:class="isGridView ? ['small-up-1', 'large-up-2', 'xlarge-up-3', 'xxlarge-up-4'] : []">
+                <div class="expanded row" v-bind:class="isGridView ? ['medium-up-1', 'xlarge-up-2', 'xxxlarge-up-3', 'xxxxlarge-up-4'] : []">
                     <!-- Table -->
                     <div class="columns" v-show="results.length == 0"><p>{{maketext("No results")}}</p></div>
                     <div v-show="!isGridView && results.length > 0" class="columns search-grid-results">
