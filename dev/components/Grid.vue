@@ -162,7 +162,8 @@ export default {
       filteredFields: function(){
         let self = this;
         return this.prefs.fields.filter(function(value,index){
-          return !self.columnsToHide.includes(index);
+          //return !self.columnsToHide.includes(index);
+          return !self.arrayIncludesValue(self.columnsToHide,index);
         });
       },
       api: function() {
@@ -179,11 +180,19 @@ export default {
         this.columnsToHide = this.columnsToHide.concat(columns);
       },
       showColumns: function(columns){
+        let self = this;
         this.columnsToHide = this.columnsToHide.filter(function(value){
-          return !columns.includes(value);
+          //return !columns.includes(value);
+          return !self.arrayIncludesValue(columns,value);
         });
       },
-      
+      arrayIncludesValue(array,value){
+        for(var i=0;i<array.length;i++){
+          if(array[i] === value)
+            return true;
+        }
+        return false;
+      },
       pageChanged: function(){
         var self = this;
         self.$set('resultsPerPage', self.prefs.resultsPerPage);
