@@ -123,6 +123,7 @@ sub _searchGrid {
         filters => [],
         filterHeading => $session->i18n->maketext($filterHeading),
         facets => [],
+        initialFacetting => 0,
         language => $session->i18n->language,
         form => $form,
         fieldRestriction => $fieldRestriction,
@@ -182,6 +183,9 @@ sub _searchGrid {
     # Parse facets
     foreach my $facet (@{_parseCommands($facets)}) {
         @{$facet->{params}}[0] = $session->i18n->maketext(@{$facet->{params}}[0]);
+        if(@{$facet->{params}}[3]) {
+            $prefs->{initialFacetting} = 1;
+        }
         my $newFacet = {
             component => $facet->{command},
             params => $facet->{params}
@@ -225,6 +229,7 @@ sub _buildQuery {
     if($prefs->{initialSort}){
         $search{"sort"} = "".$prefs->{initialSort}->{field}." ".$prefs->{initialSort}->{sort};
     }
+
     foreach my $filter (@{$prefs->{filters}}) {
         push(@{$search{'facet.field'}}, $filter->{params}[1]) if $filter->{component} eq 'select-filter';
     }
@@ -262,6 +267,24 @@ sub _buildQuery {
         my $facetName = $facet->{params}[1];
         my @facetArray = @{$facetCountResult->{$facetName}};
         $searchProxyResult->{facetTotalCounts}->{$facetName} = scalar(@facetArray)/2;
+    }
+
+    # If initial facet values have been configured, we do an additional sort with
+    # the corresponding filter query and replace the response of the original
+    # query.
+    if($prefs->{initialFacetting}) {
+        foreach my $facet (@{$prefs->{facets}}) {
+            # Check if facet has initial configuration
+            if($facet->{params}[3]) {
+                my @initialValues = split(/;/, $facet->{params}[3]);
+                foreach my $v (@initialValues) {
+                    $v = join("\\ ", split(/\s/, $v));
+                }
+                my $filterQuery = '{!tag=field_Category_s q.op=OR}field_Category_s:' . join(" ", @initialValues);
+                push(@{$search{"fq"}}, $filterQuery);
+            }
+        }
+        $searchProxyResult->{response} = _searchProxy($session, $prefs->{q}, \%search)->{response};
     }
 
     return $searchProxyResult;
