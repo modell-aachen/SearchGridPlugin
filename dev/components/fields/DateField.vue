@@ -8,7 +8,10 @@ export default {
     props: ['doc','params'],
     computed: {
         date: function(){
-            return moment(this.doc[this.params[0]], moment.ISO_8601).toDate().toLocaleDateString();
+            let date = this.doc[this.params[0]];
+            if(typeof date === 'undefined')
+                return "";
+            return moment(date, moment.ISO_8601).toDate().toLocaleDateString();
         }
     }
 }
