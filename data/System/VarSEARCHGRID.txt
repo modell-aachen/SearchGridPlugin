@@ -227,14 +227,13 @@ All filters take as their first parameter the filter label (which gets maketexte
 
 ---+++ Facets
 Facets are also filters which are rendered in a widget next to the grid.
-There are three kinds of facets. Both take two parameters. The first one indicates the title of the facet (which gets maketexted), the second one indicates the field to filter on and the third one indicates how many results should be shown (default is all).
-
+There are three kinds of facets all of which take at least three parameters. The first one indicates the title of the facet (which gets maketexted), the second one indicates the field to filter on and the third one indicates how many results should be shown (default is all). Moreover, preselected values can be configured for the multi/single select facets using their 4th (optional) parameter (default is: no preselected values). To do so, you *must* provide a third parameter. Choose *-1* here for the default behaviour. 
    <table class="foswikiTable">
       <tr><th><br>Field</br></th><th>Definition</th><th>Description</th><th>SeachGrid Code</th></tr>
       <tr>
          <td>Multi Select</td>
-         <td>multi-select-facet(title:string,field:solrField,limit:number)</td>
-         <td>This facet shows possible filter values as checkboxes. Selected values are OR-ed together and applied to the query as a filter. If no element is selected it does not apply any filter.</td>
+         <td>multi-select-facet(title:string,field:solrField,limit:number,initalValue1;...;initialValueN:list of preselected facet values)</td>
+         <td>This facet shows possible filter values as checkboxes. Selected values are OR-ed together and applied to the query as a filter. If no element is selected it does not apply any filter. Facet values can also be preselected providing a *semicolon* seperated list as a 4th parameter.</td>
          <td>%INCLUDE{"%TOPIC%" section="FILTER::FULLTEXT" CODE="1"}%</td>
       </tr>
       <tr>
@@ -242,8 +241,8 @@ There are three kinds of facets. Both take two parameters. The first one indicat
       </tr>
       <tr>
          <td>Single Select</td>
-         <td>single-select-facet(title:string,field:solrField,limit:number)</td>
-         <td>This facet shows possible filter values as radio boxes. Only one option can be selected at a time and the result set is restricted accordingly.</td>
+         <td>single-select-facet(title:string,field:solrField,limit:number,initalValue:preselected facet value)</td>
+         <td>This facet shows possible filter values as radio boxes. Only one option can be selected at a time and the result set is restricted accordingly. A preselected value can be chosen providing it as a 4th parameter.</td>
          <td>%INCLUDE{"%TOPIC%" section="FILTER::FULLTEXT" CODE="1"}%</td>
       </tr>
       <tr>
