@@ -383,8 +383,9 @@ export default {
       this.hasLiveFilter = this.prefs.hasLiveFilter;
       this.initialHideColumn = this.prefs.initialHideColumn;
       if(this.prefs.hasOwnProperty("initialSort")){
-        this.sortField = this.prefs.initialSort.field;
-        this.sort = this.prefs.initialSort.sort;
+        var sortCrits = this.prefs.initialSort.split(",");
+        this.sortField = sortCrits[0].split(" ")[0];
+        this.sort = sortCrits[0].split(" ")[1];
       }
       this.parseAllFacetResults(this.prefs.result);
 

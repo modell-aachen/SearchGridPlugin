@@ -20,7 +20,7 @@ export default {
     mixins: [FacetMixin],
 	data: function(){
 		return {
-            selectedCheckboxes: [],
+            selectedCheckboxes: this.params.length > 3 ? this.params[3].split(";") : [],
             facetMap: {}
 		}
 	},
@@ -62,11 +62,6 @@ export default {
         this.$on('reset', function () {
             this.selectedCheckboxes = [];
         });
-        // Check if inital values for this facet have been configured
-        if(this.params.length > 3) {
-            var initialValues = this.params[3].split(";");
-            this.selectedCheckboxes = initialValues;
-        }
     }
 }
 </script>

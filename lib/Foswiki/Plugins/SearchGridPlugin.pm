@@ -135,11 +135,9 @@ sub _searchGrid {
     $prefs->{addons} = \@addonlist;
 
     if($initialSort){
-        my @initialSortArray = (split(/,/,$initialSort));
-        $prefs->{initialSort} = {
-            field => $initialSortArray[0],
-            sort => $initialSortArray[1]
-        };
+        $initialSort =~ s/,/ /g;
+        $initialSort =~ s/;/,/g;
+        $prefs->{initialSort} = $initialSort;
     }
 
     my @parsedFields = ( $fields =~ /(.*?\(.*?\)),?/g );
@@ -226,8 +224,9 @@ sub _buildQuery {
         fl => $prefs->{fieldRestriction},
         'facet.field' => []
     );
-    if($prefs->{initialSort}){
-        $search{"sort"} = "".$prefs->{initialSort}->{field}." ".$prefs->{initialSort}->{sort};
+
+    if($prefs->{initialSort}) {
+        $search{'sort'} = $prefs->{initialSort};
     }
 
     foreach my $filter (@{$prefs->{filters}}) {

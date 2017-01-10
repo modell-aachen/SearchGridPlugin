@@ -23,7 +23,7 @@ export default {
     data: function(){
         return {
             selectedFacet: [],
-            selectedRadio: ''
+            selectedRadio: this.params.length > 3 ? this.params[3] : ''
         }
     },
     methods: {
@@ -54,10 +54,6 @@ export default {
         this.$on('reset', function () {
             this.selectedRadio = '';
         });
-        // Check if an inital value for this facet has been configured
-        if(this.params.length > 3) {
-            this.selectedRadio = this.params[3];
-        }
     }
 }
 </script>
