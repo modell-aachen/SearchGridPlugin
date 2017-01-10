@@ -197,7 +197,7 @@ All filters take as their first parameter the filter label (which gets maketexte
          <td>select-filter(title:string, field:solrField)</td>
          <td>This renders a select list with values to filter on. When you need more than the plain stored solr text, see <a href='#Solr_Proxy'>SolrProxy</a></td>
          <td width="40%">%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%"section="FILTER::SELECT"}%%ENDTWISTY%</td>
-         <td>%INCLUDE{"%TOPIC%" section="FILTER::FULLTEXT" CODE="1"}%</td>
+         <td>%INCLUDE{"%TOPIC%" section="FILTER::SELECT" CODE="1"}%</td>
       </tr>
    </table>
 
