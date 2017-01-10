@@ -279,7 +279,7 @@ sub _buildQuery {
                 foreach my $v (@initialValues) {
                     $v = join("\\ ", split(/\s/, $v));
                 }
-                my $filterQuery = "{!tag=$facet->{params}[1] q.op=OR}$facet->{params}[1]:" . join(" ", @initialValues);
+                my $filterQuery = "{!tag=$facet->{params}[1] q.op=OR}$facet->{params}[1]:(" . join(" ", @initialValues) . ")";
                 push(@{$search{"fq"}}, $filterQuery);
             }
         }
