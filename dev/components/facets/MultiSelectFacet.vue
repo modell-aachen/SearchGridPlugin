@@ -26,11 +26,7 @@ export default {
 	},
     watch: {
         selectedCheckboxes() {
-            this.selectedFacet = [];
-            for(var i = 0; i < this.selectedCheckboxes.length; i++){
-                var facetKey = this.selectedCheckboxes[i];
-                this.selectedFacet.push(this.facetMap[facetKey]);
-            }
+            this.watchSelectedCheckboxes();
         },
         facetCharacteristics(){
             this.updateFacetMap();
@@ -55,12 +51,24 @@ export default {
         },
         getCheckboxId: function(field){
             return `${this.id}-${field}`;
+        },
+        watchSelectedCheckboxes() {
+            this.selectedFacet = [];
+            for(var i = 0; i < this.selectedCheckboxes.length; i++){
+                var facetKey = this.selectedCheckboxes[i];
+                this.selectedFacet.push(this.facetMap[facetKey]);
+            }
         }
     },
     beforeCompile: function () {
         this.updateFacetMap();
         this.$on('reset', function () {
             this.selectedCheckboxes = [];
+        });
+        this.selectedFacetUnwatch();
+        this.watchSelectedCheckboxes();
+        this.$watch("selectedFacet", function () {
+            this.$dispatch("facet-changed");
         });
     }
 }
