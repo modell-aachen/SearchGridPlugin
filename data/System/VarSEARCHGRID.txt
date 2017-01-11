@@ -18,7 +18,7 @@ And here is the corresponding macro call:
    headers="Title,Url,Date"
    fields="text-field(title),url-field(url,url),date-field(createdate)"
    sortFields="title_sort,url_sort,createdate_sort"
-   filters="full-text-filter(Title,title_search),select-filter(Language,language)"
+   filters="full-text-filter(Title,title_search),select-filter(Language,language,en)"
    facets="select-2-facet(Webs,web,10),single-select-facet(Author,author),multi-select-facet(Form,form)"
    resultsPerPage="10"
    initialSort="title_sort,desc"
@@ -194,8 +194,8 @@ All filters take as their first parameter the filter label (which gets maketexte
       </tr>
       <tr>
          <td>Select</td>
-         <td>select-filter(title:string, field:solrField)</td>
-         <td>This renders a select list with values to filter on. When you need more than the plain stored solr text, see <a href='#Solr_Proxy'>SolrProxy</a></td>
+         <td>select-filter(title:string, field:solrField, initialValue:value)</td>
+         <td>This renders a select list with values to filter on. When you need more than the plain stored solr text, see <a href='#Solr_Proxy'>SolrProxy</a>. An initially selected filter value can be defined, for an example see <a href='#Macro'>here</a>.</td>
          <td width="40%">%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%"section="FILTER::SELECT"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FILTER::SELECT" CODE="1"}%</td>
       </tr>
@@ -267,7 +267,7 @@ There are three kinds of facets all of which take at least three parameters. The
    headers="Web,Title,Date"
    fields="text-field(web),text-field(title),date-field(createdate)"
    sortFields="title_sort,createdate_sort"
-   facets="multi-select-facet(Webs,web,7,Nominal;Processes)"
+   facets="multi-select-facet(Webs,web,-1,Nominal;Processes)"
    resultsPerPage="8"
    initialSort="web_sort,desc;title_sort,asc"
    fieldRestriction="title,createdate,web"
