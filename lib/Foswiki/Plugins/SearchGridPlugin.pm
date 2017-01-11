@@ -124,6 +124,7 @@ sub _searchGrid {
         filterHeading => $session->i18n->maketext($filterHeading),
         facets => [],
         initialFacetting => 0,
+        initialFiltering => 0,
         language => $session->i18n->language,
         form => $form,
         fieldRestriction => $fieldRestriction,
@@ -172,6 +173,9 @@ sub _searchGrid {
     # Parse filters
     foreach my $filter (@{_parseCommands($filters)}) {
         @{$filter->{params}}[0] = $session->i18n->maketext(@{$filter->{params}}[0]);
+        if(@{$filter->{params}}[2] and $filter->{command} eq 'select-filter') {
+            $prefs->{initialFiltering} = 1;
+        }
         my $newFilter = {
             component => $filter->{command},
             params => $filter->{params}
@@ -230,8 +234,9 @@ sub _buildQuery {
     }
 
     foreach my $filter (@{$prefs->{filters}}) {
-        push(@{$search{'facet.field'}}, $filter->{params}[1]) if $filter->{component} eq 'select-filter';
+        push(@{$search{'facet.field'}}, "{!ex=$filter->{params}[1]}$filter->{params}[1]") if $filter->{component} eq 'select-filter';
     }
+
     # Here we create a copy of the search settings
     # before setting the facet limits. This will be reused
     # to query the total facet counts later.
@@ -239,7 +244,7 @@ sub _buildQuery {
 
     foreach my $facet (@{$prefs->{facets}}) {
         my $fieldName  = $facet->{params}[1];
-        push(@{$search{'facet.field'}}, $fieldName);
+        push(@{$search{'facet.field'}}, "{!ex=$fieldName}$fieldName");
         my $limit;
         if ($facet->{params}[2]){
             $limit = $facet->{params}[2];
@@ -249,6 +254,30 @@ sub _buildQuery {
         }
         $search{"f.$fieldName.facet.limit"} = $limit;
 
+    }
+
+    # If initial facet/filter values have been provided, we configure the
+    # search criteria accordingly.
+    if($prefs->{initialFacetting}) {
+        foreach my $facet (@{$prefs->{facets}}) {
+            # Check if facet has initial configuration
+            if($facet->{params}[3]) {
+                my @initialValues = split(/;/, $facet->{params}[3]);
+                foreach my $v (@initialValues) {
+                    $v = join("\\ ", split(/\s/, $v));
+                }
+                my $filterQuery = "{!tag=$facet->{params}[1]\ q.op=OR}$facet->{params}[1]:(" . join(" ", @initialValues) . ")";
+                push(@{$search{"fq"}}, $filterQuery);
+            }
+        }
+    }
+    if($prefs->{initialFiltering}) {
+        foreach my $filter (@{$prefs->{filters}}) {
+            # Check if initial filter value has been provided (select-filter only)
+            if($filter->{params}[2] and $filter->{component} eq 'select-filter') {
+                push(@{$search{"fq"}}, "{!tag=$filter->{params}[1]\ q.op=OR}$filter->{params}[1]:($filter->{params}[2])");
+            }
+        }
     }
 
     my $searchProxyResult = _searchProxy($session, $prefs->{q}, \%search);
@@ -266,24 +295,6 @@ sub _buildQuery {
         my $facetName = $facet->{params}[1];
         my @facetArray = @{$facetCountResult->{$facetName}};
         $searchProxyResult->{facetTotalCounts}->{$facetName} = scalar(@facetArray)/2;
-    }
-
-    # If initial facet values have been configured, we do an additional sort with
-    # the corresponding filter query and replace the response of the original
-    # query.
-    if($prefs->{initialFacetting}) {
-        foreach my $facet (@{$prefs->{facets}}) {
-            # Check if facet has initial configuration
-            if($facet->{params}[3]) {
-                my @initialValues = split(/;/, $facet->{params}[3]);
-                foreach my $v (@initialValues) {
-                    $v = join("\\ ", split(/\s/, $v));
-                }
-                my $filterQuery = "{!tag=$facet->{params}[1] q.op=OR}$facet->{params}[1]:(" . join(" ", @initialValues) . ")";
-                push(@{$search{"fq"}}, $filterQuery);
-            }
-        }
-        $searchProxyResult->{response} = _searchProxy($session, $prefs->{q}, \%search)->{response};
     }
 
     return $searchProxyResult;

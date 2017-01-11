@@ -15,7 +15,7 @@ export default {
     mixins: [MaketextMixin,FacetMixin],
     data:  function () {
        return {
-          selectedOption: ''
+          selectedOption: this.params.length > 2 ? this.params[2] : ''
        }
     },
     computed: {
@@ -27,10 +27,13 @@ export default {
         },
         isDefault: function(){
             return this.selectedOption === '';
+        },
+        limit: function(){
+            return -1;
         }
     },
-    watch: {
-        selectedOption(){
+    methods: {
+        watchSelectedOption() {
             this.selectedFacet = [];
             if(this.selectedOption === '')
                 return;
@@ -43,11 +46,17 @@ export default {
             }
         }
     },
+    watch: {
+        selectedOption() {
+            this.watchSelectedOption();
+        }
+    },
     beforeCompile: function(){
         this.selectedFacetUnwatch();
         this.$on('clear-filters', function () {
             this.selectedOption = '';
         });
+        this.watchSelectedOption();
     }
 }
 </script>
