@@ -387,6 +387,9 @@ export default {
         this.sortField = sortCrits[0].split(" ")[0];
         this.sort = sortCrits[0].split(" ")[1];
       }
+      if(this.prefs.initialFiltering){
+        this.isFilterApplied = true;
+      }
       this.parseAllFacetResults(this.prefs.result);
 
       NProgress.configure({
