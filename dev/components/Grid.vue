@@ -123,8 +123,7 @@ export default {
           numResults: 0,
           resultsPerPage: 0,
           currentPage: 1,
-          sortField: "",
-          sort: "",
+          sortCrits: [],
           filterQuerys: {},
           facetFields: {},
           prefs: {
@@ -251,9 +250,21 @@ export default {
         this.fetchData();
       },
       sortChanged: function(sortField, sort){
-        this.sortField = sortField;
-        this.sort = sort;
+        // overwrite complete sort crits here
+        this.sortCrits = [];
+        this.sortCrits.push({
+            field: sortField,
+            order: sort
+        });
         this.fetchData();
+      },
+      sortCritsToString: function() {
+        var result = "";
+        for(var i = 0; i < this.sortCrits.length; i++) {
+          result += this.sortCrits[i].field + " " + this.sortCrits[i].order + ",";
+        }
+        result = result.slice(0,result.length-1); // drop last comma
+        return result;
       },
       collectFilterQueries: function(){
         var filterQueries = [];
@@ -287,8 +298,8 @@ export default {
             params[`f.${this.facets[i].field}.facet.limit`] = this.facets[i].limit;
         }
 
-        if(this.sortField !== ""){
-          params["sort"] = "" + this.sortField + " " + this.sort;
+        if(this.sortCrits !== []){
+          params["sort"] = this.sortCritsToString();
         }
         $.ajaxSettings.traditional = true;
 
@@ -384,8 +395,10 @@ export default {
       this.initialHideColumn = this.prefs.initialHideColumn;
       if(this.prefs.hasOwnProperty("initialSort")){
         var sortCrits = this.prefs.initialSort.split(",");
-        this.sortField = sortCrits[0].split(" ")[0];
-        this.sort = sortCrits[0].split(" ")[1];
+        for(var i = 0; i < sortCrits.length; i++) {
+          var splitted = sortCrits[i].split(" ");
+          this.sortCrits.push({field: splitted[0], order: splitted[1]});
+        }
       }
       if(this.prefs.initialFiltering){
         this.isFilterApplied = true;
