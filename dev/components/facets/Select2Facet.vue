@@ -1,8 +1,8 @@
 <template>
 <div class="facet">
-<h2>{{title}} ({{totalCount}})</h2>
-<div class="bootstrap-container">
-<v-select multiple label="field" :placeholder="title" :debounce="500" :value.sync="selectedFacet" :options="options | orderBy 'count' -1" :on-search="onSearch" :on-change="onChange" :get-option-label="getOptionLabel" :get-selected-option-label="getSelectedOptionLabel" :prevent-search-filter="true" :on-get-more-options="onGetMoreOptions">
+<h4>{{header}}</h4>
+<div class="vue-select-wrapper">
+<v-select multiple label="field" :placeholder="maketext('Search term...')" :debounce="500" :value.sync="selectedFacet" :options="options | orderBy 'count' -1" :on-search="onSearch" :on-change="onChange" :get-option-label="getOptionLabel" :get-selected-option-label="getSelectedOptionLabel" :prevent-search-filter="true" :on-get-more-options="onGetMoreOptions">
     <template slot="more-results">{{maketext(moreResultsText)}}</template>
 </v-select>
 </div>
@@ -21,6 +21,11 @@ export default {
             options: [],
             moreResultsText: "Show more results"
         };
+    },
+    computed: {
+        header() {
+            return `${this.title} (${this.totalCount})`;
+        }
     },
     watch: {
         facetCharacteristics() {
@@ -83,8 +88,4 @@ export default {
 </script>
 
 <style lang="sass">
-.bootstrap-container {
-    $icon-font-path: "~../../../node_modules/bootstrap-sass/assets/fonts/bootstrap/";
-    @import '../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap';
-}
 </style>

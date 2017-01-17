@@ -1,9 +1,12 @@
-import Vue from 'vue/dist/vue.js'
+import Vue from 'vue'
 import Grid from './components/Grid.vue'
 
 window.Vue = Vue;
 var SearchGridPlugin = {
     registerField: function(name, component){
+        Vue.component(name, component);
+    },
+    registerComponent: function(name, component){
         Vue.component(name, component);
     }
 };

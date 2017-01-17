@@ -2,9 +2,17 @@ var path = require('path')
 var projectRoot = path.resolve(__dirname);
 var webpack = require('webpack')
 
+var includeDirs = [
+  projectRoot + '/dev',
+  projectRoot + '/node_modules/vue-select/',
+  projectRoot + '/node_modules/nprogress/',
+  projectRoot + '/node_modules/vue-simple-pagination/',
+  projectRoot + '/tests'
+];
+
 module.exports = {
   babel: {
-    presets: ['es2015','stage-2']
+    presets: ['es2015']
   },
   entry: {
     app: './dev/main.js'
@@ -17,44 +25,39 @@ module.exports = {
     loaders: [
       {
         test: /\.vue$/,
-        loader: 'vue'
+        loader: 'vue',
+        include: includeDirs
       },
       {
         test: /\.js$/,
         loader: 'babel',
-        include: [
-          projectRoot + '/dev',
-          projectRoot + '/node_modules/vue-select/'
-        ]
+        include: includeDirs
       },
       {
         test: /\.json$/,
-        loader: 'json'
+        loader: 'json',
+        include: includeDirs
       },
       {
         test: /\.html$/,
-        loader: 'vue-html'
+        loader: 'vue-html',
+        include: includeDirs
       },
       {
         test: /\.css$/,
-        loader: 'style-loader!css-loader'
+        loader: 'style-loader!css-loader',
+        include: includeDirs
       },
       {
         test: /\.less$/,
-        loader: 'style-loader!less-loader'
+        loader: 'style-loader!less-loader',
+        include: includeDirs
       },
       {
         test: /\.(woff2?|eot|ttf|otf|svg)(\?.*)?$/,
-        loader: 'url'
+        loader: 'url',
+        include: includeDirs
       }
     ]
-  },
-  vue: {
-  plugins: [
-  new webpack.optimize.UglifyJsPlugin({
-      compress: false,
-      mangle: false
-    })
-  ]
-}
+  }
 }

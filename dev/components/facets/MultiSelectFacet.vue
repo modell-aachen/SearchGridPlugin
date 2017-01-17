@@ -1,11 +1,11 @@
 <template>
 <div class="facet">
-    <h2>{{title}}</h2>
+    <h4>{{title}}</h4>
     <ul class="facet-list">
         <template v-for="value in facetCharacteristics | orderBy 'title'">
         <li v-show="value.count > 0 || isSelected(value)">
-            <input id="{{id(value.field)}}" type ="checkbox" value="{{value.field}}" v-model="selectedCheckboxes">
-            <label for="{{id(value.field)}}">
+            <input id="{{getCheckboxId(value.field)}}" type ="checkbox" value="{{value.field}}" v-model="selectedCheckboxes">
+            <label for="{{getCheckboxId(value.field)}}">
                  {{getLabel(value.title, value.count)}}
             </label>
         </li>
@@ -15,24 +15,18 @@
 </template>
 
 <script>
-var id = -1;
-
 import FacetMixin from './FacetMixin.vue'
 export default {
     mixins: [FacetMixin],
 	data: function(){
 		return {
-            selectedCheckboxes: [],
+            selectedCheckboxes: this.params.length > 3 ? this.params[3].split(";") : [],
             facetMap: {}
 		}
 	},
     watch: {
         selectedCheckboxes() {
-            this.selectedFacet = [];
-            for(var i = 0; i < this.selectedCheckboxes.length; i++){
-                var facetKey = this.selectedCheckboxes[i];
-                this.selectedFacet.push(this.facetMap[facetKey]);
-            }
+            this.watchSelectedCheckboxes();
         },
         facetCharacteristics(){
             this.updateFacetMap();
@@ -55,23 +49,26 @@ export default {
             }
             return false;
         },
-         id: function(field){
-            if(id === -1){
-                id = Math.random();
-                var retValue = this.field + "_" + field + "_facet_" + id;
-                return retValue;
-            } else {
-                var retValue = this.field + "_" + field + "_facet_" + id;
-                id = -1;
-                return retValue;
+        getCheckboxId: function(field){
+            return `${this.id}-${field}`;
+        },
+        watchSelectedCheckboxes() {
+            this.selectedFacet = [];
+            for(var i = 0; i < this.selectedCheckboxes.length; i++){
+                var facetKey = this.selectedCheckboxes[i];
+                this.selectedFacet.push(this.facetMap[facetKey]);
             }
-
         }
     },
     beforeCompile: function () {
         this.updateFacetMap();
         this.$on('reset', function () {
             this.selectedCheckboxes = [];
+        });
+        this.selectedFacetUnwatch();
+        this.watchSelectedCheckboxes();
+        this.$watch("selectedFacet", function () {
+            this.$dispatch("facet-changed");
         });
     }
 }

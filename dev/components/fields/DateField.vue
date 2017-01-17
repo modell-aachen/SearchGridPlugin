@@ -3,12 +3,15 @@
 </template>
 
 <script>
-import Moment from 'moment'
 export default {
+	/*global moment*/
     props: ['doc','params'],
     computed: {
         date: function(){
-            return Moment(this.doc[this.params[0]], Moment.ISO_8601).toDate().toLocaleDateString();
+            let date = this.doc[this.params[0]];
+            if(typeof date === 'undefined')
+                return "";
+            return moment(date, moment.ISO_8601).toDate().toLocaleDateString();
         }
     }
 }

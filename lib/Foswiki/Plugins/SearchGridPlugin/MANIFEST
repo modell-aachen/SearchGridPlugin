@@ -4,3 +4,44 @@ data/System/VarSEARCHGRID.txt 0644
 lib/Foswiki/Plugins/SearchGridPlugin.pm 0444 Plugin Perl module
 pub/System/SearchGridPlugin/searchGrid.js 0644
 pub/System/SearchGridPlugin/jsi18n.SearchGrid.de.js 0644
+pub/System/FlatSkin/css/flatskin.wrapped.min.css 0644
+pub/System/FlatSkin/fonts/opensans/Light/OpenSans-Light.eot
+pub/System/FlatSkin/fonts/opensans/Light/OpenSans-Light.woff
+pub/System/FlatSkin/fonts/opensans/Light/OpenSans-Light.ttf
+pub/System/FlatSkin/fonts/opensans/LightItalic/OpenSans-LightItalic.eot
+pub/System/FlatSkin/fonts/opensans/LightItalic/OpenSans-LightItalic.woff
+pub/System/FlatSkin/fonts/opensans/LightItalic/OpenSans-LightItalic.ttf
+pub/System/FlatSkin/fonts/opensans/LightItalic/OpenSans-LightItalic.svg
+pub/System/FlatSkin/fonts/opensans/Regular/OpenSans-Regular.eot
+pub/System/FlatSkin/fonts/opensans/Regular/OpenSans-Regular.woff
+pub/System/FlatSkin/fonts/opensans/Regular/OpenSans-Regular.ttf
+pub/System/FlatSkin/fonts/opensans/Regular/OpenSans-Regular.svg
+pub/System/FlatSkin/fonts/opensans/Italic/OpenSans-Italic.eot
+pub/System/FlatSkin/fonts/opensans/Italic/OpenSans-Italic.woff
+pub/System/FlatSkin/fonts/opensans/Italic/OpenSans-Italic.ttf
+pub/System/FlatSkin/fonts/opensans/Italic/OpenSans-Italic.svg
+pub/System/FlatSkin/fonts/opensans/Semibold/OpenSans-Semibold.eot
+pub/System/FlatSkin/fonts/opensans/Semibold/OpenSans-Semibold.woff
+pub/System/FlatSkin/fonts/opensans/Semibold/OpenSans-Semibold.ttf
+pub/System/FlatSkin/fonts/opensans/Semibold/OpenSans-Semibold.svg
+pub/System/FlatSkin/fonts/opensans/SemiboldItalic/OpenSans-SemiboldItalic.eot
+pub/System/FlatSkin/fonts/opensans/SemiboldItalic/OpenSans-SemiboldItalic.woff
+pub/System/FlatSkin/fonts/opensans/SemiboldItalic/OpenSans-SemiboldItalic.ttf
+pub/System/FlatSkin/fonts/opensans/SemiboldItalic/OpenSans-SemiboldItalic.svg
+pub/System/FlatSkin/fonts/opensans/Bold/OpenSans-Bold.eot
+pub/System/FlatSkin/fonts/opensans/Bold/OpenSans-Bold.woff
+pub/System/FlatSkin/fonts/opensans/Bold/OpenSans-Bold.ttf
+pub/System/FlatSkin/fonts/opensans/Bold/OpenSans-Bold.svg
+pub/System/FlatSkin/fonts/opensans/BoldItalic/OpenSans-BoldItalic.eot
+pub/System/FlatSkin/fonts/opensans/BoldItalic/OpenSans-BoldItalic.woff
+pub/System/FlatSkin/fonts/opensans/BoldItalic/OpenSans-BoldItalic.ttf
+pub/System/FlatSkin/fonts/opensans/BoldItalic/OpenSans-BoldItalic.svg
+pub/System/FlatSkin/fonts/opensans/ExtraBold/OpenSans-ExtraBold.eot
+pub/System/FlatSkin/fonts/opensans/ExtraBold/OpenSans-ExtraBold.woff
+pub/System/FlatSkin/fonts/opensans/ExtraBold/OpenSans-ExtraBold.ttf
+pub/System/FlatSkin/fonts/opensans/ExtraBold/OpenSans-ExtraBold.svg
+pub/System/FlatSkin/fonts/opensans/ExtraBoldItalic/OpenSans-ExtraBoldItalic.eot
+pub/System/FlatSkin/fonts/opensans/ExtraBoldItalic/OpenSans-ExtraBoldItalic.woff
+pub/System/FlatSkin/fonts/opensans/ExtraBoldItalic/OpenSans-ExtraBoldItalic.ttf
+pub/System/FlatSkin/fonts/opensans/ExtraBoldItalic/OpenSans-ExtraBoldItalic.svg
+

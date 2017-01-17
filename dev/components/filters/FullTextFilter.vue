@@ -1,9 +1,9 @@
 <template>
-    <div class="search-grid-filter columns shrink">
+    <div class="search-grid-filter fullt-text-filter small-3 columns">
     <label for="{{id}}">{{params[0]}}</label>
     <div class="input-group">
       <span class="input-group-label"><i class="fa fa-search" aria-hidden="true"></i></span>
-      <input class="input-group-field" type="text" id="{{id}}" v-model="filterText" debounce="500" >
+      <input class="input-group-field" type="text" placeholder="{{maketext('Search term...')}}" id="{{id}}" v-model="filterText">
     </div>
     </div>
 </template>
@@ -14,7 +14,8 @@ export default {
     mixins: [FacetMixin],
     data:  function () {
        return {
-          filterText: ''
+          filterText: '',
+          isFilter: true
        }
     },
     computed: {
@@ -27,12 +28,23 @@ export default {
       isDefault: function() {
         return this.filterText === '';
       },
+      limit: function() {
+        return -1;
+      },
       filterQuery: function() {
         if(this.filterText === '')
           return null;
-        var field = `{!tag=${this.field} q.op=OR}${this.field}`;
-        var queryString = `*${this.filterText}*`
-        return `${field}:${queryString}`;
+        var queries = "(";
+        for(var i = 1; i < this.params.length; i++) {
+          var currentField = this.params[i];
+          var field = `{!tag=${currentField} q.op=OR}${currentField}`;
+          var queryString = `*${this.filterText}*`
+          queries += `${field}:${queryString}`;
+          if(i != this.params.length - 1)
+            queries += " OR ";
+        }
+        queries += ')';
+        return queries;
       }
     },
     beforeCompile: function(){
