@@ -5,7 +5,7 @@ import SelectFilter from "../dev/components/filters/SelectFilter.vue"
 
 import MockupFacetValues from "./mockup_data/facet_values.json"
 
-import './mockup_functions/jsi18n.js'
+import './mockup_functions/foswiki.js'
 
 describe("The full-text-filter", () => {
 	let fullTextFilter = null;

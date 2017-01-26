@@ -16,6 +16,7 @@ use Foswiki::Plugins ();    # For the API version
 
 use JSON;
 use version; our $VERSION = version->declare("v0.1");
+use Digest::MD5 qw(md5_hex);
 
 our $RELEASE = "0.1";
 
@@ -101,6 +102,8 @@ sub _searchGrid {
 
     my $defaultQuery = $params->{_DEFAULT};
     my $resultsPerPage = $params->{resultsPerPage} || 20;
+    my $hasLiveFilter = $params->{hasLiveFilter} eq '1' ? JSON::true : JSON::false;
+    my $initialHideColumn = $params->{initialHideColumn} eq '1' ? JSON::true : JSON::false;
     my $headers = $params->{headers} || '';
     my $fields = $params->{fields} || '';
     my $filters = $params->{filters} || '';
@@ -111,6 +114,7 @@ sub _searchGrid {
     my $form = $params->{form} || '';
     my $fieldRestriction = $params->{fieldRestriction} || '';
     my $gridField = $params->{gridField} || '';
+    my $addons = $params->{addons} || '';
 
     my $prefs = {
         q => $defaultQuery,
@@ -119,24 +123,31 @@ sub _searchGrid {
         filters => [],
         filterHeading => $session->i18n->maketext($filterHeading),
         facets => [],
+        initialFacetting => 0,
+        initialFiltering => 0,
         language => $session->i18n->language,
         form => $form,
         fieldRestriction => $fieldRestriction,
+        hasLiveFilter => $hasLiveFilter,
+        initialHideColumn => $initialHideColumn,
     };
 
+    my @addonlist = split(/,/,$addons);
+    $prefs->{addons} = \@addonlist;
+
     if($initialSort){
-        my @initialSortArray = (split(/,/,$initialSort));
-        $prefs->{initialSort} = {
-            field => $initialSortArray[0],
-            sort => $initialSortArray[1]
-        };
+        $initialSort =~ s/,/ /g;
+        $initialSort =~ s/;/,/g;
+        $prefs->{initialSort} = $initialSort;
     }
 
     my @parsedFields = ( $fields =~ /(.*?\(.*?\)),?/g );
     my @parsedSortFields = (split(/,/,$sortFields));
     my $index = 0;
+
+    my $fieldConfigs = _parseCommands($fields);
     # Parse fields
-    foreach my $field ($fields =~ /(.*?\(.*?\)),?/g) {
+    foreach my $fieldConfig (@$fieldConfigs) {
         my @headers = split(/,/,$headers);
         my $field = {
             sortField => $parsedSortFields[$index]
@@ -144,72 +155,65 @@ sub _searchGrid {
         if( @headers ){
             $field->{title} = $session->i18n->maketext($headers[$index]);
         }
-        my $parsedField = $parsedFields[$index];
-        my ($component) = $parsedField =~ /(.*?)\(/;
-        $field->{component} = $component;
-        my($params) = $parsedField =~ /\((.*?)\)/;
+        $field->{component} = $fieldConfig->{command};
 
-        my @paramsArray = split(/,/, $params);
-        $field->{params} = \@paramsArray;
+        $field->{params} = $fieldConfig->{params};
         push(@{$prefs->{fields}}, $field);
 
         $index++;
     }
     # Parse grid field
     if($gridField){
-        my ($component) = $gridField =~ /(.*?)\(/;
-        my ($params) = $gridField =~ /\((.*?)\)/;
-        my @paramsArray = split(/,/, $params);
+        my $gridField = @{_parseCommands($gridField)}[0];
         $prefs->{gridField} = {
-            component => $component,
-            params => \@paramsArray
+            component => $gridField->{command},
+            params => $gridField->{params}
         }
     }
     # Parse filters
-    my @parsedFilters = ( $filters =~ /(.*?\(.*?\)),?/g );
-    foreach my $filter (@parsedFilters) {
-        my ($component) = $filter =~ /(.*?)\(/;
-        my($params) = $filter =~ /\((.*?)\)/;
-        my @paramsArray = split(/,/, $params);
-        $paramsArray[0] = $session->i18n->maketext($paramsArray[0]);
+    foreach my $filter (@{_parseCommands($filters)}) {
+        @{$filter->{params}}[0] = $session->i18n->maketext(@{$filter->{params}}[0]);
+        if(@{$filter->{params}}[2] and $filter->{command} eq 'select-filter') {
+            $prefs->{initialFiltering} = 1;
+        }
         my $newFilter = {
-            component => $component,
-            params => \@paramsArray
+            component => $filter->{command},
+            params => $filter->{params}
         };
         push(@{$prefs->{filters}}, $newFilter);
     }
     # Parse facets
-    my @parsedFacets = ( $facets =~ /(.*?\(.*?\)),?/g );
-    foreach my $facet (@parsedFacets) {
-        my ($component) = $facet =~ /(.*?)\(/;
-        my($params) = $facet =~ /\((.*?)\)/;
-        my @paramsArray = split(/,/, $params);
-        $paramsArray[0] = $session->i18n->maketext($paramsArray[0]);
+    foreach my $facet (@{_parseCommands($facets)}) {
+        @{$facet->{params}}[0] = $session->i18n->maketext(@{$facet->{params}}[0]);
+        if(@{$facet->{params}}[3]) {
+            $prefs->{initialFacetting} = 1;
+        }
         my $newFacet = {
-            component => $component,
-            params => \@paramsArray
+            component => $facet->{command},
+            params => $facet->{params}
         };
         push(@{$prefs->{facets}}, $newFacet);
     }
-    #Foswiki::Plugins::VueJSPlugin::loadDependencies();
 
     #First data fetch per backend.
     $prefs->{result} = _buildQuery($session, $prefs);
-    my $jPrefs = to_json($prefs);
+    my $prefId = md5_hex(rand);
+    my $prefSelector = "SEARCHGRIDPREF_$prefId";
+    my $jsonPrefs = to_json($prefs);
     #Fix: $n and $quot are automatically expanded by foswiki and destroy the json.
     #So they are replaced.
-    $jPrefs =~ s/(\$n|\$quot)//g;
+    $jsonPrefs =~ s/(\$n|\$quot)//g;
     Foswiki::Func::addToZone( 'head', 'FONTAWESOME',
         '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FontAwesomeContrib/css/font-awesome.min.css" />');
     Foswiki::Func::addToZone( 'head', 'FLATSKIN_WRAPPED',
         '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FlatSkin/css/flatskin_wrapped.min.css" />');
-    Foswiki::Func::addToZone( 'script', 'SEARCHGRIDPREF'. $searchGridCounter++,
-        "<script type='text/json'>$jPrefs</script>");
+    Foswiki::Func::addToZone( 'script', $prefSelector,
+        "<script type='text/json'>$jsonPrefs</script>");
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
         "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>","jsi18nCore"
     );
     Foswiki::Plugins::JQueryPlugin::createPlugin('jqp::moment', $session);
-    return '%JSI18N{"SearchGridPlugin" id="SearchGrid"}% <grid @update-instance-counter="updateInstanceCounter" :instances="instances"></grid>';
+    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}% <grid preferences-selector='$prefSelector'></grid>";
 }
 
 # Build query data to fetch first search result in backend.
@@ -224,12 +228,15 @@ sub _buildQuery {
         fl => $prefs->{fieldRestriction},
         'facet.field' => []
     );
-    if($prefs->{initialSort}){
-        $search{"sort"} = "".$prefs->{initialSort}->{field}." ".$prefs->{initialSort}->{sort};
+
+    if($prefs->{initialSort}) {
+        $search{'sort'} = $prefs->{initialSort};
     }
+
     foreach my $filter (@{$prefs->{filters}}) {
-        push(@{$search{'facet.field'}}, $filter->{params}[1]) if $filter->{component} eq 'select-filter';
+        push(@{$search{'facet.field'}}, "{!ex=$filter->{params}[1]}$filter->{params}[1]") if $filter->{component} eq 'select-filter';
     }
+
     # Here we create a copy of the search settings
     # before setting the facet limits. This will be reused
     # to query the total facet counts later.
@@ -237,7 +244,7 @@ sub _buildQuery {
 
     foreach my $facet (@{$prefs->{facets}}) {
         my $fieldName  = $facet->{params}[1];
-        push(@{$search{'facet.field'}}, $fieldName);
+        push(@{$search{'facet.field'}}, "{!ex=$fieldName}$fieldName");
         my $limit;
         if ($facet->{params}[2]){
             $limit = $facet->{params}[2];
@@ -247,6 +254,30 @@ sub _buildQuery {
         }
         $search{"f.$fieldName.facet.limit"} = $limit;
 
+    }
+
+    # If initial facet/filter values have been provided, we configure the
+    # search criteria accordingly.
+    if($prefs->{initialFacetting}) {
+        foreach my $facet (@{$prefs->{facets}}) {
+            # Check if facet has initial configuration
+            if($facet->{params}[3]) {
+                my @initialValues = split(/;/, $facet->{params}[3]);
+                foreach my $v (@initialValues) {
+                    $v = join("\\ ", split(/\s/, $v));
+                }
+                my $filterQuery = "{!tag=$facet->{params}[1]\ q.op=OR}$facet->{params}[1]:(" . join(" ", @initialValues) . ")";
+                push(@{$search{"fq"}}, $filterQuery);
+            }
+        }
+    }
+    if($prefs->{initialFiltering}) {
+        foreach my $filter (@{$prefs->{filters}}) {
+            # Check if initial filter value has been provided (select-filter only)
+            if($filter->{params}[2] and $filter->{component} eq 'select-filter') {
+                push(@{$search{"fq"}}, "{!tag=$filter->{params}[1]\ q.op=OR}$filter->{params}[1]:($filter->{params}[2])");
+            }
+        }
     }
 
     my $searchProxyResult = _searchProxy($session, $prefs->{q}, \%search);
@@ -276,6 +307,25 @@ sub _callSearchProxy {
     my $query = Foswiki::Func::getCgiQuery() || $session->{request};
     my $json = JSON->new;
     return to_json(_searchProxy($session, undef, $query->{param}));
+}
+
+# Input: 'command1(param1,param2),command2(param1,param2)'
+# Output: [{command => 'command1', params => [param1,param2]}, {command => 'command2', params => [param1,param2]}]
+sub _parseCommands {
+    my $input = shift;
+    my $result = [];
+
+    foreach my $commandString ($input =~ /\s*(.*?\(.*?\))\s*,?\s*/g) {
+        my $commandResult = {};
+        my ($command) = $commandString =~ /\s*(.*?)\s*\(/;
+        $commandResult->{command} = $command;
+        my($params) = $commandString =~ /\(\s*(.*?)\s*\)/;
+
+        my @paramsArray = split(/\s*,\s*/, $params);
+        $commandResult->{params} = \@paramsArray;
+        push(@$result, $commandResult);
+    }
+    return $result;
 }
 
 sub _searchProxy {

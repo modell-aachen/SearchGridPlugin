@@ -26,7 +26,7 @@ The REST calls can be send to:
 ---+++ Display values
 Thera a two main ways to get some display values. One for the fields and one for the facets.
 ---++++ Field display values
-A Field display value can be obtained by adding _dv to a solr field. The Searchgrid tries to get some more readable values. This is only possible when the search result contains a form field. It will try to perform a RENDERFORDISPLAY on the wanted value, when it is successful, a field with the <field>_dv will be added to the result set and can be use. To perform an that the field must be returned by Solr, so when the =fieldRestriction= parameter is used, the field value without the _dv must be given.
+A Field display value can be obtained by adding _dv to a solr field. The Searchgrid tries to get some more readable values. This is only possible when the search result contains a form field. It will try to perform a RENDERFORDISPLAY on the wanted value, when it is successful, a field with the [field]_dv will be added to the result set and can be use. To perform an that the field must be returned by Solr, so when the =fieldRestriction= parameter is used, the field value without the _dv must be given.
 <verbatim>
 Get Responsible as display value use:
    fields="text-field(field_Responsible_s_dv)"
@@ -35,13 +35,15 @@ Get Responsible as display value use:
 ---++++ Facet display values
 To get more readable values for the facets, the =form= parameter must be given. Solr does not provides no more informations for the facet fields, so the user has to specify how to render the display value. Here is no _dv value needed.
 ---++ Extension development
-Other apps can define and register custom fields for the search grid. For each new field they need to define a new VueJS component. A barebone component for a grid field and its registration would look like this:
+Other apps can define and register custom field and addon components to be used in the search grid. 
+---+++ Custom fields
+A barebone component for a grid field and its registration would look like this:
 
 <verbatim class="js">
 var CustomField = Vue.extend({
 	props: ['doc','params'],
 	template: "<td>I am the custom component. Bow before me.</td>",
-	ready: function(){
+	created: function(){
 		console.log(this.params[0]);
 		console.log(this.params[1]);
 	}
@@ -59,6 +61,33 @@ fields="custom-field(Hello,World)"
 In this case the component would just show "I am the custom component. Bow before me." in the table and write to the console "Hello" and "World" when it has beend added to the DOM.
 
 The component also has access to its corresponding document data in the grid via the doc prop.
+
+---+++ Addons
+A barebone component for an addon and its registration would look like this:
+<verbatim class="js">
+var CustomAddon = Vue.extend({
+	props: ['api'],
+	template: "<div>I am an addon. Nothing more.</div>",
+	created: function(){
+		console.log(this.api.hasGridView);
+	}
+});
+
+SearchGridPlugin.registerComponent("CustomAddon", CustomAddon);
+</verbatim>
+
+Then in the macro call it is added like this:
+<verbatim>
+...
+addons="custom-addon"
+...
+</verbatim>
+
+Currently the use of addons is very limited. All used addons are rendered in the filters pane.
+The api object provides the following attributes:
+   * isGridView: False if the SearchGrid is in standard table display mode. True if it is in grid display mode
+   * hideColumns(columns): Hides columns in the grid specified by their index (starting with 0). E.g. hideColumns([0,2]) would hide the first and the third column.
+   * showColumns(columns): Shows columns in the grid specified by their index (starting with 0). E.g. showColumns([0,2]) would show the first and the third column.
 ---++ Plugin Info
 
 |  Author: | Foswiki:Main.PluginAuthor |

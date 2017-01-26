@@ -9,6 +9,7 @@
 		"es6": true
 	},
 	rules: {
-		"linebreak-style": ["error", "unix"]
+		"linebreak-style": ["error", "unix"],
+		"no-console": "warn"
 	}
 }

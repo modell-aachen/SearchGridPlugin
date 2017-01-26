@@ -1,5 +1,5 @@
 <template>
-    <div class="flatskin-wrapped" v-bind:id="'grid-' + id">
+    <div class="flatskin-wrapped">
         <div class="expanded row">
             <!--Toplevel container -->
             <div class="columns">
@@ -9,13 +9,20 @@
                     <div>
                         <div class="expanded row align-bottom">
                             <template v-for="filter in prefs.filters">
-                                <component :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
+                                <component v-if="hasLiveFilter" v-on:keyup="applyFilters | debounce 700" v-on:keyup.enter="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
+                                <component v-else v-on:keyup.enter="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                             </template>
                             <div class="columns">
                                 <div class="button-group">
                                     <a class="primary button" v-on:click="applyFilters">{{maketext("Apply filters")}}</a>
                                     <a class="alert button" v-show="isFilterApplied" v-on:click="clearFilters">{{maketext("Remove filters")}}</a>
                                 </div>
+                            </div>
+                            <div class="columns">
+                              <template v-for="addon in prefs.addons">
+                                <component :is="addon" :api="api">
+                                </component>
+                              </template>
                             </div>
                             <div class="shrink columns">
                                 <div class="grid-toggle button-group">
@@ -30,15 +37,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="expanded row" v-bind:class="isGridView ? ['small-up-1', 'medium-up-2', 'large-up-4'] : []">
+                <div class="expanded row" v-bind:class="isGridView ? ['medium-up-1', 'xlarge-up-2', 'xxxlarge-up-3', 'xxxxlarge-up-4'] : []">
                     <!-- Table -->
                     <div class="columns" v-show="results.length == 0"><p>{{maketext("No results")}}</p></div>
                     <div v-show="!isGridView && results.length > 0" class="columns search-grid-results">
                         <table>
-                            <thead is="grid-header" :headers="prefs.fields" :initial-sort="prefs.initialSort" @sort-changed="sortChanged"></thead>
+                            <thead is="grid-header" :headers="filteredFields" :initial-sort="prefs.initialSort" @sort-changed="sortChanged"></thead>
                             <tbody>
                                 <tr v-for="result in results">
-                                    <td v-for="field in prefs.fields" :is="field.component" :doc="result" :params="field.params">
+                                    <td v-for="field in filteredFields" :is="field.component" :doc="result" :params="field.params">
                                     </td>
                                 </tr>
                             </tbody>
@@ -116,8 +123,7 @@ export default {
           numResults: 0,
           resultsPerPage: 0,
           currentPage: 1,
-          sortField: "",
-          sort: "",
+          sortCrits: [],
           filterQuerys: {},
           facetFields: {},
           prefs: {
@@ -132,10 +138,13 @@ export default {
           filters: [],
           isFilterApplied: false,
           hasGridView: false,
+          hasLiveFilter: false,
+          columnsToHide: [],
+          initialHideColumn: false, 
           isGridView: false
        }
     },
-    props: ['instances'],
+    props: ['preferencesSelector'],
     computed: {
       pageCount: function(){
         return Math.ceil(this.numResults / this.resultsPerPage);
@@ -149,8 +158,40 @@ export default {
       isLoading: function() {
         return this.request != null;
       },
+      filteredFields: function(){
+        let self = this;
+        return this.prefs.fields.filter(function(value,index){
+          //return !self.columnsToHide.includes(index);
+          return !self.arrayIncludesValue(self.columnsToHide,index);
+        });
+      },
+      api: function() {
+        return {
+          isGridView: this.isGridView,
+          showColumns: this.showColumns,
+          hideColumns: this.hideColumns,
+          initialHideColumn: this.initialHideColumn
+        };
+      }
     },
     methods: {
+      hideColumns: function(columns){
+        this.columnsToHide = this.columnsToHide.concat(columns);
+      },
+      showColumns: function(columns){
+        let self = this;
+        this.columnsToHide = this.columnsToHide.filter(function(value){
+          //return !columns.includes(value);
+          return !self.arrayIncludesValue(columns,value);
+        });
+      },
+      arrayIncludesValue(array,value){
+        for(var i=0;i<array.length;i++){
+          if(array[i] === value)
+            return true;
+        }
+        return false;
+      },
       pageChanged: function(){
         var self = this;
         self.$set('resultsPerPage', self.prefs.resultsPerPage);
@@ -209,9 +250,21 @@ export default {
         this.fetchData();
       },
       sortChanged: function(sortField, sort){
-        this.sortField = sortField;
-        this.sort = sort;
+        // overwrite complete sort crits here
+        this.sortCrits = [];
+        this.sortCrits.push({
+            field: sortField,
+            order: sort
+        });
         this.fetchData();
+      },
+      sortCritsToString: function() {
+        var result = "";
+        for(var i = 0; i < this.sortCrits.length; i++) {
+          result += this.sortCrits[i].field + " " + this.sortCrits[i].order + ",";
+        }
+        result = result.slice(0,result.length-1); // drop last comma
+        return result;
       },
       collectFilterQueries: function(){
         var filterQueries = [];
@@ -245,8 +298,8 @@ export default {
             params[`f.${this.facets[i].field}.facet.limit`] = this.facets[i].limit;
         }
 
-        if(this.sortField !== ""){
-          params["sort"] = "" + this.sortField + " " + this.sort;
+        if(this.sortCrits !== []){
+          params["sort"] = this.sortCritsToString();
         }
         $.ajaxSettings.traditional = true;
 
@@ -333,16 +386,22 @@ export default {
       }
     },
     beforeCompile: function() {
-      this.id = this.instances;
-      this.$dispatch("update-instance-counter", this.id);
-      this.prefs = JSON.parse($('.SEARCHGRIDPREF' + this.id).html());
+      this.prefs = JSON.parse($('.' + this.preferencesSelector).html());
       this.resultsPerPage = this.prefs.resultsPerPage;
       this.numResults = this.prefs.result.response.numFound;
       this.results = this.prefs.result.response.docs;
       this.hasGridView = this.prefs.hasOwnProperty('gridField');
+      this.hasLiveFilter = this.prefs.hasLiveFilter;
+      this.initialHideColumn = this.prefs.initialHideColumn;
       if(this.prefs.hasOwnProperty("initialSort")){
-        this.sortField = this.prefs.initialSort.field;
-        this.sort = this.prefs.initialSort.sort;
+        var sortCrits = this.prefs.initialSort.split(",");
+        for(var i = 0; i < sortCrits.length; i++) {
+          var splitted = sortCrits[i].split(" ");
+          this.sortCrits.push({field: splitted[0], order: splitted[1]});
+        }
+      }
+      if(this.prefs.initialFiltering){
+        this.isFilterApplied = true;
       }
       this.parseAllFacetResults(this.prefs.result);
 

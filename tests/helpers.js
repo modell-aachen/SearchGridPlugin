@@ -7,7 +7,7 @@ let createGrid = (instance) => {
   const Ctor = Vue.extend(Grid);
   let grid = new Ctor({
     el : () => {return 'body'},
-    propsData: {instances: instance},
+    propsData: {preferencesSelector: `SEARCHGRIDPREF_${instance}`},
     replace: false
   });
   return grid;
@@ -15,7 +15,7 @@ let createGrid = (instance) => {
 
 let createPref = (instance, prefJSON) => {
   let stringifiedJSON = JSON.stringify(prefJSON);
-  $(`<script class='SEARCHGRIDPREF${instance}' type='text/json'>${stringifiedJSON}</script>`).appendTo('html');
+  $(`<script class='SEARCHGRIDPREF_${instance}' type='text/json'>${stringifiedJSON}</script>`).appendTo('html');
 };
 
 export default {

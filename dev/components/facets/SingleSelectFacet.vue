@@ -23,7 +23,7 @@ export default {
     data: function(){
         return {
             selectedFacet: [],
-            selectedRadio: ''
+            selectedRadio: this.params.length > 3 ? this.params[3] : ''
         }
     },
     methods: {
@@ -34,10 +34,8 @@ export default {
         },
         getRadioId: function(field){
             return `${this.id}-${field}`;
-        }
-    },
-    watch: {
-        selectedRadio(){
+        },
+        watchSelectedRadio() {
             this.selectedFacet = [];
             if(this.selectedRadio === '')
                 return;
@@ -50,9 +48,19 @@ export default {
             }
         }
     },
+    watch: {
+        selectedRadio(){
+            this.watchSelectedRadio();
+        }
+    },
     beforeCompile: function () {
         this.$on('reset', function () {
             this.selectedRadio = '';
+        });
+        this.selectedFacetUnwatch();
+        this.watchSelectedRadio();
+        this.$watch("selectedFacet", function () {
+            this.$dispatch("facet-changed");
         });
     }
 }

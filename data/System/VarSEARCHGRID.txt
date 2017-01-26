@@ -5,34 +5,29 @@ This macro is provided by the [[SearchGridPlugin]]. It can be used to render gri
 %STARTINCLUDE%
 The main macro provided is the %<nop>SEARCHGRID% macro. Here is an example:
 
-%SEARCHGRID{"type:topic"
-   headers="Title,Url,Date"
-   fields="text-field(title),url-field(url,url),date-field(createdate)"
-   sortFields="title,url,createdate"
-   filters="full-text-filter(Title,title),select-filter(Language,language)"
-   facets="select-2-facet(Webs,web,10),single-select-facet(Author,author),multi-select-facet(Form,form)"
-   resultsPerPage="10"
-   initialSort="title,desc"
-   fieldRestriction="title,url,author,createdate,web,type,language"
-   gridField="test-grid-field(title,url,createdate)"
-}%
+%INCLUDE{"%TOPIC%"section="DEFAULT::EXAMPLE"}%
 
 And here is the corresponding macro call:
 
-<verbatim class="tml">
-%SEARCHGRID{"type:topic"
+%INCLUDE{"%TOPIC%"section="DEFAULT::EXAMPLE" CODE="1"}%
+
+<div style="display:none;">
+%STARTSECTION{"DEFAULT::EXAMPLE"}%
+%IF{"$CODE='1'" then="<pre>"}%
+%%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{"type:topic"
    headers="Title,Url,Date"
    fields="text-field(title),url-field(url,url),date-field(createdate)"
-   sortFields="title,url,createdate"
-   filters="full-text-filter(Title,title),select-filter(Language,language)"
+   sortFields="title_sort,url_sort,createdate_sort"
+   filters="full-text-filter(Title,title_search),select-filter(Language,language,en)"
    facets="select-2-facet(Webs,web,10),single-select-facet(Author,author),multi-select-facet(Form,form)"
    resultsPerPage="10"
-   initialSort="title,desc"
+   initialSort="title_sort,desc"
    fieldRestriction="title,url,author,createdate,web,type,language"
    gridField="test-grid-field(title,url,createdate)"
 }%
-</verbatim>
-
+%IF{"$CODE='1'" then="</pre>"}%
+%ENDSECTION{"DEFAULT::EXAMPLE"}%
+</div>
 ---+++ Parameters
 
 | *Parameter* | *Description* | *Default* | *Example* |
@@ -45,8 +40,10 @@ And here is the corresponding macro call:
 | filters | List of filters which appear above the grid. See [[#Filters][Filters]]. | "" | "full-text-filter(Title,title)" |
 | facets | List of facets which appear next to the grid. See [[#Facets][Facets]]. | "" | "multi-select-facet(Webs,web),single-select-facet(Author,author)" |
 | resultsPerPage | Defines how many entries are shown per page. | 20 | "5" |
-| initialSort | Sets the initial sorting of the grid when it is first loaded. First value is the field which sorl field shuld be sorted. The second value is the direction (asc, desc) | "" | "title,asc" |
+| hasLiveFilter | If true, live filtering is enabled and grid filters straight with typing in anything. Else filtering is possible via typing enter. | 0 | "1" |
+| initialSort | Semicolon-separated list of the grid's initial sorting criteria. Expects _field_, _direction_ pairs, where _field_ is a Solr field and _direction_ is either asc or desc. The first pair in the list has highest priority, the second pair has second highest and so on. | "" | "author,asc;createdate,desc" |
 | form | The form provided by this parameter will be used to identify correct display values for data stored in form fields. E.g. if you create a facet for the user field "field_Creator_s" and you provide the form which defines the field, then the correct display value for the creators will be shown instead of their ids. | "" | "Processes.DocumentForm" |
+| addons | A list of addon components to use in the grid. See the addons section for details | "" | "my-addon-component" |
 
 ---+++ Fields
 The following fields are predefined and can be used as entries in the fields parameter of the search grid macro:
@@ -57,21 +54,21 @@ The following fields are predefined and can be used as entries in the fields par
          <td>Text</td>
          <td>text-field(text:solrField) </td>
          <td>Just renders the value stored in solrField as plain text. When you need more than the plain stored solr text, see <a href='#Solr_Proxy'>SolrProxy</a></td>
-         <td>%INCLUDE{"%TOPIC%"section="FIELD::TEXT"}%</td>
+         <td width='40%'>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%"section="FIELD::TEXT"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::TEXT" CODE="1"}%</td>
       </tr>
       <tr>
          <td>Image</td>
          <td>image-field(imageURL:solrField,url:solrField,cssClass:String)</td>
          <td>Renders an image based on the given imageURL. It also allows to set a link on the image via the url parameter. To provide some additional styling a css class can be set. The markup will then be =a.cssClass>img=.</td>
-         <td>%INCLUDE{"%TOPIC%" section="FIELD::IMAGE"}%</td>
+         <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::IMAGE"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::IMAGE" CODE="1"}%</td>
       </tr>
       <tr>
          <td>URL</td>
          <td>url-field(text:solrField, url:solrField)</td>
          <td>Renders a link. The first parameter indicates the field which holds the text and the second parameter indicates the field which holds the url.</td>
-         <td>%INCLUDE{"%TOPIC%" section="FIELD::URL"}%</td>
+         <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::URL"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::URL" CODE="1"}%</td>
       </tr>
       <tr>
@@ -80,28 +77,28 @@ The following fields are predefined and can be used as entries in the fields par
          <td>Renders a advanced link. The first parameter is a text shown as display value. The second parameter indicates the url format string. $solrField would be replaced with corresponding value from the solr result. When a third parameter is given it would render the link in an icon field.
       Example from InternalProjects: =url-format-field(New Template,%<nop>SCRIPTURLPATH{"edit"}%/%<nop>BASEWEB%/InternalProjectAUTOINC0000?template=InternalProjectEdit;templatetopic=$web.$topic;formtemplate=InternalProjectForm;t=%<nop>GMTIME{$epoch}%,%<nop>PUBURLPATH%/%<nop>SYSTEMWEB%/FamFamFamSilkIcons/page_copy.png)=
          </td>
-         <td>%INCLUDE{"%TOPIC%" section="FIELD::URL::FORMAT"}%</td>
+         <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::URL::FORMAT"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::URL::FORMAT" CODE="1"}%</td>
       </tr>
       <tr>
          <td>Date</td>
          <td>date-field(date:solrField)</td>
          <td>Takes a date value in ISO_8601 format and displays it as a locale date string.</td>
-         <td>%INCLUDE{"%TOPIC%" section="FIELD::DATE"}%</td>
+         <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::DATE"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::DATE" CODE="1"}%</td>
       </tr>
       <tr>
          <td>Solr (TBD)</td>
          <td>solr-field()</td>
          <td>Takes no parameters and renders the result in a single column in solr search style. This is only for demonstration and testing and *not production ready*!</td>
-         <td>%INCLUDE{"%TOPIC%" section="FIELD::SOLR"}%</td>
+         <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::SOLR"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::SOLR" CODE="1"}%</td>
       </tr>
       <tr>
          <td>Test</td>
          <td>test-field(field1:solrField,field2:solrField,...)</td>
          <td>This field is for testing purposes only and can be used as a field component to enable grid view. It just shows the values of all fields given as parameters in a list. In general grid view components are application specific, so applications should define and register their own grid field components to enable grid view.</td>
-         <td>%INCLUDE{"%TOPIC%" section="FIELD::TEST"}%</td>
+         <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::TEST"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::TEST" CODE="1"}%</td>
       </tr>
    </table>
@@ -192,15 +189,15 @@ All filters take as their first parameter the filter label (which gets maketexte
          <td>Full Text</td>
          <td>full-text-filter(title:string, field1:solrField, field2:solrField,...) </td>
          <td>This renders an input field. It filters the result set for entries which contain the input as a substring in the given fields.</td>
-         <td width="40%">%INCLUDE{"%TOPIC%"section="FILTER::FULLTEXT"}%</td>
+         <td width="40%">%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%"section="FILTER::FULLTEXT"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FILTER::FULLTEXT" CODE="1"}%</td>
       </tr>
       <tr>
          <td>Select</td>
-         <td>select-filter(title:string, field:solrField)</td>
-         <td>This renders a select list with values to filter on. When you need more than the plain stored solr text, see <a href='#Solr_Proxy'>SolrProxy</a></td>
-         <td width="40%">%INCLUDE{"%TOPIC%"section="FILTER::SELECT"}%</td>
-         <td>%INCLUDE{"%TOPIC%" section="FILTER::FULLTEXT" CODE="1"}%</td>
+         <td>select-filter(title:string, field:solrField, initialValue:value)</td>
+         <td>This renders a select list with values to filter on. When you need more than the plain stored solr text, see <a href='#Solr_Proxy'>SolrProxy</a>. An initially selected filter value can be defined, for an example see <a href='#Macro'>here</a>.</td>
+         <td width="40%">%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%"section="FILTER::SELECT"}%%ENDTWISTY%</td>
+         <td>%INCLUDE{"%TOPIC%" section="FILTER::SELECT" CODE="1"}%</td>
       </tr>
    </table>
 
@@ -230,24 +227,23 @@ All filters take as their first parameter the filter label (which gets maketexte
 
 ---+++ Facets
 Facets are also filters which are rendered in a widget next to the grid.
-There are three kinds of facets. Both take two parameters. The first one indicates the title of the facet (which gets maketexted), the second one indicates the field to filter on and the third one indicates how many results should be shown (default is all).
-
+There are three kinds of facets all of which take at least three parameters. The first one indicates the title of the facet (which gets maketexted), the second one indicates the field to filter on and the third one indicates how many results should be shown (default is all). Moreover, preselected values can be configured for the multi/single select facets using their 4th (optional) parameter (default is: no preselected values). To do so, you *must* provide a third parameter. Choose *-1* here for the default behaviour. 
    <table class="foswikiTable">
       <tr><th><br>Field</br></th><th>Definition</th><th>Description</th><th>SeachGrid Code</th></tr>
       <tr>
          <td>Multi Select</td>
-         <td>multi-select-facet(title:string,field:solrField,limit:number)</td>
-         <td>This facet shows possible filter values as checkboxes. Selected values are OR-ed together and applied to the query as a filter. If no element is selected it does not apply any filter.</td>
-         <td>%INCLUDE{"%TOPIC%" section="FILTER::FULLTEXT" CODE="1"}%</td>
+         <td>multi-select-facet(title:string,field:solrField,limit:number,initalValue1;...;initialValueN:list of preselected facet values)</td>
+         <td>This facet shows possible filter values as checkboxes. Selected values are OR-ed together and applied to the query as a filter. If no element is selected it does not apply any filter. Facet values can also be preselected providing a *semicolon* seperated list as a 4th parameter.</td>
+         <td>%INCLUDE{"%TOPIC%" section="FACET::SELECT::MULTI" CODE="1"}%</td>
       </tr>
       <tr>
          <td colspan="4">%TWISTY{showlink="Working multi select example"}%%INCLUDE{"%TOPIC%"section="FACET::SELECT::MULTI"}%%ENDTWISTY%</td>
       </tr>
       <tr>
          <td>Single Select</td>
-         <td>single-select-facet(title:string,field:solrField,limit:number)</td>
-         <td>This facet shows possible filter values as radio boxes. Only one option can be selected at a time and the result set is restricted accordingly.</td>
-         <td>%INCLUDE{"%TOPIC%" section="FILTER::FULLTEXT" CODE="1"}%</td>
+         <td>single-select-facet(title:string,field:solrField,limit:number,initalValue:preselected facet value)</td>
+         <td>This facet shows possible filter values as radio boxes. Only one option can be selected at a time and the result set is restricted accordingly. A preselected value can be chosen providing it as a 4th parameter.</td>
+         <td>%INCLUDE{"%TOPIC%" section="FACET::SELECT::SINGLE" CODE="1"}%</td>
       </tr>
       <tr>
          <td colspan="4">%TWISTY{showlink="Working Single select example"}%%INCLUDE{"%TOPIC%"section="FACET::SELECT::SINGLE"}%%ENDTWISTY%</td>
@@ -256,7 +252,7 @@ There are three kinds of facets. Both take two parameters. The first one indicat
          <td>Select 2</td>
          <td>select-2-facet(title:string,field:solrField,limit:number)</td>
          <td>This facet is similar to the multi-select-facet as it allows to select more than one value. The difference is that it can dynamically fetch further results based on a search term. This makes it well suited to create facets for fields which may have a large number of different values.</td>
-         <td>%INCLUDE{"%TOPIC%" section="FILTER::FULLTEXT" CODE="1"}%</td>
+         <td>%INCLUDE{"%TOPIC%" section="FACET::SELECT::TWO" CODE="1"}%</td>
       </tr>
       <tr>
          <td colspan="4">%TWISTY{showlink="Working Select2 example"}%%INCLUDE{"%TOPIC%"section="FACET::SELECT::TWO"}%%ENDTWISTY%</td>
@@ -267,10 +263,14 @@ There are three kinds of facets. Both take two parameters. The first one indicat
 %STARTSECTION{"FACET::SELECT::MULTI"}%
 %IF{"$CODE='1'" then="<pre>"}%
 %%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
-   "type:topic form:*DocumentForm field_Responsible_s:*"
-   headers="Author,Responsible"
-   fields="text-field(title)"
-   facets="multi-select-facet(Responsible,field_Responsible_s)"
+   "type:topic"
+   headers="Web,Title,Date"
+   fields="text-field(web),text-field(title),date-field(createdate)"
+   sortFields="title_sort,createdate_sort"
+   facets="multi-select-facet(Webs,web,-1,Nominal;Processes)"
+   resultsPerPage="8"
+   initialSort="web_sort,desc;title_sort,asc"
+   fieldRestriction="title,createdate,web"
 }%
 %IF{"$CODE='1'" then="</pre>"}%
 %ENDSECTION{"FACET::SELECT::MULTI"}%
@@ -278,7 +278,7 @@ There are three kinds of facets. Both take two parameters. The first one indicat
 %IF{"$CODE='1'" then="<pre>"}%
 %%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
    "type:topic form:*DocumentForm field_Responsible_s:*"
-   headers="Topic,Responsible"
+   headers="Topic"
    fields="text-field(title)"
    facets="single-select-facet(Responsible,field_Responsible_s)"
    form="Processes.DocumentForm"
@@ -289,7 +289,7 @@ There are three kinds of facets. Both take two parameters. The first one indicat
 %IF{"$CODE='1'" then="<pre>"}%
 %%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
    "type:topic form:*DocumentForm field_Responsible_s:*"
-   headers="Topic,Responsible"
+   headers="Topic"
    fields="text-field(title)"
    facets="select-2-facet(Responsible,field_Responsible_s)"
    form="Processes.DocumentForm"
