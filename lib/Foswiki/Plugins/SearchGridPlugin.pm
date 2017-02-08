@@ -353,7 +353,7 @@ sub _searchProxy {
     my $wikiUser = Foswiki::Func::getWikiName();
 
     unless (Foswiki::Func::isAnAdmin($wikiUser)) { # add ACLs
-        push @{$options->{fq}}, " (access_granted:$wikiUser OR access_granted:all)"
+        push @{$opts{fq}}, " (access_granted:$wikiUser OR access_granted:all)"
     }
     #my $content = Foswiki::Plugins::SolrPlugin::getSearcher($session)->restSOLRPROXY($web, $topic);
     my $searcher = Foswiki::Plugins::SolrPlugin::getSearcher($session);
