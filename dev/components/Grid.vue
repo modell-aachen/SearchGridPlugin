@@ -280,7 +280,7 @@ export default {
         }
         var self = this;
         var params = {
-          "name": foswiki.preferences.WEB + "." + foswiki.preferences.TOPIC,
+          "topic": foswiki.preferences.WEB + "." + foswiki.preferences.TOPIC,
           "q":this.prefs.q,
           "rows":this.resultsPerPage,
           "start": (this.currentPage - 1) * this.resultsPerPage,
