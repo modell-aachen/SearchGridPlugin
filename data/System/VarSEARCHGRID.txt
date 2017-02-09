@@ -67,7 +67,7 @@ The following fields are predefined and can be used as entries in the fields par
       <tr>
          <td>URL</td>
          <td>url-field(text:solrField, url:solrField)</td>
-         <td>Renders a link. The first parameter indicates the field which holds the text and the second parameter indicates the field which holds the url.</td>
+         <td>Renders a link. The first parameter indicates the field which holds the text and the second parameter indicates the field which holds the url. If the url is a field without a starting '/', the url-field will convert it to an url by adding an '/'. In this case your url will point to /yourWiki/yourField NOT to /yourWiki/yourWeb/yourField.</td>
          <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::URL"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::URL" CODE="1"}%</td>
       </tr>
