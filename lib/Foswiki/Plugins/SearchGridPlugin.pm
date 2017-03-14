@@ -24,6 +24,7 @@ our $SHORTDESCRIPTION = 'Search Gird Plugin for create Solr overviews';
 
 our $searchGridCounter = 0;
 
+our $NO_PREFS_IN_TOPIC = 1;
 
 =begin TML
 
