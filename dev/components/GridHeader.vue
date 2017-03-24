@@ -5,23 +5,25 @@
 </template>
 
 <script>
+import GridComponentMixin from "./GridComponentMixin.vue";
 import GridHeaderField from './GridHeaderField.vue'
 export default {
+    mixins: [GridComponentMixin],
     props: ['headers', 'initialSort'],
     components: {
         GridHeaderField
     },
     methods: {
         applySorting: function(sortField, sort){
-            this.$broadcast('sort-processed');
-            this.$dispatch('sort-changed', sortField, sort);
+            //TODO this.DOLLARbroadcast('sort-processed');
+            //TODO this.DOLLARdispatch('sort-changed', sortField, sort);
         }
     },
-    ready: function() {
+    mounted: function() {
         if(typeof this.initialSort !== 'undefined') {
             var field = this.initialSort.split(',')[0].split(' ')[0];
             var sort = this.initialSort.split(',')[0].split(' ')[1];
-            this.$broadcast('set-initial-sorting', {field: field, sort: sort});
+            //TODO this.DOLLARbroadcast('set-initial-sorting', {field: field, sort: sort});
         }
     }
 }

@@ -2,7 +2,10 @@
 <div class="facet">
 <h4>{{header}}</h4>
 <div class="vue-select-wrapper">
-<v-select multiple label="field" :placeholder="maketext('Search term...')" :debounce="500" :value.sync="selectedFacet" :options="options | orderBy 'count' -1" :on-search="onSearch" :on-change="onChange" :get-option-label="getOptionLabel" :get-selected-option-label="getSelectedOptionLabel" :prevent-search-filter="true" :on-get-more-options="onGetMoreOptions">
+<!-- TODO debounce 500 -->
+<!-- TODO options order by count -1 -->
+<!-- TODO value.sync -->
+<v-select multiple label="field" :placeholder="maketext('Search term...')" v-model="selectedFacet" :options="options" :on-search="onSearch" :get-option-label="getOptionLabel" :get-selected-option-label="getSelectedOptionLabel" :prevent-search-filter="true" :on-get-more-options="onGetMoreOptions">
     <template slot="more-results">{{maketext(moreResultsText)}}</template>
 </v-select>
 </div>
@@ -17,7 +20,6 @@ export default {
     mixins: [FacetMixin],
     data: function(){
         return {
-            selectedFacet: [],
             options: [],
             moreResultsText: "Show more results"
         };
@@ -37,7 +39,7 @@ export default {
         getOptions: function(search, loading, offset){
             loading(true);
             var self = this;
-            this.$dispatch("get-facet-info", this, search, offset, function(result){
+            this.$parent.fetchFacetCharacteristics(this, search, offset, function(result){
                 if(result.length == 0 && offset > 0){
                     self.moreResultsText = "No more results available";
                 }
@@ -77,7 +79,7 @@ export default {
                 this.options = options;
         }
     },
-    beforeCompile: function () {
+    created: function () {
         this.$on('reset', function () {
             this.selectedFacet = [];
             this.search = "";

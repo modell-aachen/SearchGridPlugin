@@ -2,10 +2,11 @@
 <div class="facet">
     <h4>{{title}}</h4>
     <ul class="facet-list">
-        <template v-for="value in facetCharacteristics | orderBy 'title'">
-        <li v-show="value.count > 0 || isSelected(value)">
-            <input id="{{getCheckboxId(value.field)}}" type ="checkbox" value="{{value.field}}" v-model="selectedCheckboxes">
-            <label for="{{getCheckboxId(value.field)}}">
+        <!-- TODO: Order by title -->
+        <template v-for="value in facetCharacteristics">
+                <li v-show="value.count > 0 || isSelected(value)">
+                    <input v-bind:id="getCheckboxId(value.field)" type ="checkbox" v-bind:value="value.field" v-model="selectedCheckboxes">
+            <label v-bind:for="getCheckboxId(value.field)">
                  {{getLabel(value.title, value.count)}}
             </label>
         </li>
@@ -26,7 +27,7 @@ export default {
 	},
     watch: {
         selectedCheckboxes() {
-            this.watchSelectedCheckboxes();
+            this.updateSelectedFacets();
         },
         facetCharacteristics(){
             this.updateFacetMap();
@@ -52,24 +53,20 @@ export default {
         getCheckboxId: function(field){
             return `${this.id}-${field}`;
         },
-        watchSelectedCheckboxes() {
+        updateSelectedFacets() {
             this.selectedFacet = [];
             for(var i = 0; i < this.selectedCheckboxes.length; i++){
                 var facetKey = this.selectedCheckboxes[i];
                 this.selectedFacet.push(this.facetMap[facetKey]);
             }
+        },
+        reset() {
+            this.selectedCheckboxes = [];
         }
     },
-    beforeCompile: function () {
+    created: function () {
         this.updateFacetMap();
-        this.$on('reset', function () {
-            this.selectedCheckboxes = [];
-        });
-        this.selectedFacetUnwatch();
-        this.watchSelectedCheckboxes();
-        this.$watch("selectedFacet", function () {
-            this.$dispatch("facet-changed");
-        });
+        this.updateSelectedFacets();
     }
 }
 </script>

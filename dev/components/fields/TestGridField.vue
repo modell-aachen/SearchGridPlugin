@@ -1,7 +1,7 @@
 <template>
     <div class="test-grid-field">
     	<ul>
-    	<li v-for="param in params">{{this.doc[param]}}</li>
+    	<li v-for="param in params">{{doc[param]}}</li>
     	</ul>
     </div>
 </template>

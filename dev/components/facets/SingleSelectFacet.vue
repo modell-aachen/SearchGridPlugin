@@ -3,13 +3,14 @@
     <h4>{{title}}</h4>
     <ul class="facet-list">
         <li>
-            <input id="{{getRadioId('All')}}" type=radio value="" v-model="selectedRadio">
-            <label for="{{getRadioId('All')}}">{{maketext("All")}}</label>
+            <input v-bind:id="getRadioId('All')" type=radio value="" v-model="selectedRadio">
+            <label v-bind:for="getRadioId('All')">{{maketext("All")}}</label>
         </li>
-        <template v-for="value in facetCharacteristics | orderBy 'title'">
+        <!-- TODO facetCharacteristics orderBy title -->
+        <template v-for="value in facetCharacteristics">
         <li v-show="value.count > 0 || isSelected(value)">
-            <input id="{{getRadioId(value.field)}}" type ="radio" value="{{value.field}}" v-model="selectedRadio">
-            <label for="{{getRadioId(value.field)}}">{{getLabel(value.title, value.count)}}</label>
+            <input v-bind:id="getRadioId(value.field)" type ="radio" v-bind:value="value.field" v-model="selectedRadio">
+            <label v-bind:for="getRadioId(value.field)">{{getLabel(value.title, value.count)}}</label>
         </li>
         </template>
     </ul>
@@ -22,7 +23,6 @@ export default {
     mixins: [FacetMixin],
     data: function(){
         return {
-            selectedFacet: [],
             selectedRadio: this.params.length > 3 ? this.params[3] : ''
         }
     },
@@ -35,7 +35,7 @@ export default {
         getRadioId: function(field){
             return `${this.id}-${field}`;
         },
-        watchSelectedRadio() {
+        updateSelectedFacets() {
             this.selectedFacet = [];
             if(this.selectedRadio === '')
                 return;
@@ -46,22 +46,18 @@ export default {
                     break;
                 }
             }
+        },
+        reset() {
+            this.selectedRadio = "";
         }
     },
     watch: {
         selectedRadio(){
-            this.watchSelectedRadio();
+            this.updateSelectedFacets();
         }
     },
-    beforeCompile: function () {
-        this.$on('reset', function () {
-            this.selectedRadio = '';
-        });
-        this.selectedFacetUnwatch();
-        this.watchSelectedRadio();
-        this.$watch("selectedFacet", function () {
-            this.$dispatch("facet-changed");
-        });
+    created: function () {
+        this.updateSelectedFacets();
     }
 }
 </script>

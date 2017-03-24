@@ -9,7 +9,8 @@
                     <div>
                         <div class="expanded row align-bottom">
                             <template v-for="filter in prefs.filters">
-                                <component v-if="hasLiveFilter" v-on:keyup="applyFilters | debounce 700" v-on:keyup.enter="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
+                            <!-- TODO debounce 700 -->
+                                <component v-if="hasLiveFilter" v-on:keyup="applyFilters" v-on:keyup.enter="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                                 <component v-else v-on:keyup.enter="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                             </template>
                             <div class="columns">
@@ -42,7 +43,7 @@
                     <div class="columns" v-show="results.length == 0"><p>{{maketext("No results")}}</p></div>
                     <div v-show="!isGridView && results.length > 0" class="columns search-grid-results">
                         <table>
-                            <thead is="grid-header" :headers="filteredFields" :initial-sort="prefs.initialSort" @sort-changed="sortChanged"></thead>
+                            <thead is="grid-header" :headers="filteredFields" :initial-sort="prefs.initialSort"></thead>
                             <tbody>
                                 <tr v-for="result in results">
                                     <td v-for="field in filteredFields" :is="field.component" :doc="result" :params="field.params">
@@ -57,7 +58,8 @@
                 </div>
                 <div class="expanded row">
                     <div class="columns">
-                        <paginator class="ma-pager-new" v-if="pageCount > 1" @page-changed="pageChanged" :page-count="pageCount" :current-page.sync="currentPage"></paginator>
+                    <!-- TODO current-page.sync -->
+                        <paginator class="ma-pager-new" v-if="pageCount > 1" v-on:page-changed="pageChanged" :page-count="pageCount" :current-page="gridState.currentPage"></paginator>
                     </div>
                 </div>
             </div>
@@ -96,6 +98,7 @@ import Select2Facet from './facets/Select2Facet.vue'
 import Paginator from 'vue-simple-pagination/VueSimplePagination.vue'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+import * as mutations from "../store/mutation-types";
 
 export default {
     mixins: [MaketextMixin],
@@ -117,13 +120,9 @@ export default {
     },
     data : function () {
        return {
-          results: [],
+          gridState: null,
           facetValues: {},
           request: null,
-          numResults: 0,
-          resultsPerPage: 0,
-          currentPage: 1,
-          sortCrits: [],
           filterQuerys: {},
           facetFields: {},
           prefs: {
@@ -134,7 +133,6 @@ export default {
           id: {},
           requestFailed: false,
           errorMessage: "",
-          facets: [],
           filters: [],
           isFilterApplied: false,
           hasGridView: false,
@@ -146,6 +144,49 @@ export default {
     },
     props: ['preferencesSelector'],
     computed: {
+      currentPage: {
+        get() {
+          return this.gridState.currentPage;
+        },
+        set(value) {
+          this.$store.commit("searchGrid/" + mutations.SET_CURRENT_PAGE, {gridState: this.gridState, page: value});
+        }
+      },
+      sortCrits: {
+        get() {
+          return this.gridState.sortCrits;
+        },
+        set(value) {
+          this.$store.commit("searchGrid/" + mutations.CHANGE_SORT, {gridState: this.gridState, sortCrits: value});
+        }
+      },
+      results: {
+        get() {
+          return this.gridState.results;
+        },
+        set(value) {
+          this.$store.commit("searchGrid/" + mutations.SET_RESULTS, {gridState: this.gridState, results: value});
+        }
+      },
+      resultsPerPage: {
+        get() {
+          return this.gridState.resultsPerPage;
+        },
+        set(value) {
+          this.$store.commit("searchGrid/" + mutations.SET_RESULTS_PER_PAGE, {gridState: this.gridState, resultsPerPage: value});
+        }
+      },
+      numResults: {
+        get() {
+          return this.gridState.numResults;
+        },
+        set(value) {
+          this.$store.commit("searchGrid/" + mutations.SET_NUM_RESULTS, {gridState: this.gridState, numResults: value});
+        }
+      },
+      facets(){
+        return this.gridState.facets;
+      },
       pageCount: function(){
         return Math.ceil(this.numResults / this.resultsPerPage);
       },
@@ -192,9 +233,8 @@ export default {
         }
         return false;
       },
-      pageChanged: function(){
-        var self = this;
-        self.$set('resultsPerPage', self.prefs.resultsPerPage);
+      pageChanged: function(newPage){
+        this.currentPage = newPage;
         this.fetchData();
       },
       toggleGridView: function(changeTo) {
@@ -223,11 +263,26 @@ export default {
           this.fetchData();
       },
       clearFacets: function () {
-        this.$broadcast('reset');
+        //TODO this.DOLLARbroadcast('reset');
+        for(var i = 0; i < this.facets.length; i++){
+          //Only filters have the 'isDefault' property
+          if(!this.facets[i].isFilter){
+            this.facets[i].reset();
+          }
+        }
+        this.$nextTick(function(){
+          this.fetchData();
+        });
       },
       clearFilters: function(){
-        this.$broadcast('clear-filters');
+        //TODO this.DOLLARbroadcast('clear-filters');
         this.isFilterApplied = false;
+        for(var i = 0; i < this.facets.length; i++){
+          //Only filters have the 'isDefault' property
+          if(this.facets[i].isFilter){
+            this.facets[i].reset();
+          }
+        }
         this.$nextTick(function(){
           this.fetchData();
         });
@@ -241,22 +296,13 @@ export default {
         this.isFilterApplied = false;
         for(var i = 0; i < this.facets.length; i++){
           //Only filters have the 'isDefault' property
-          if(this.facets[i].hasOwnProperty('isDefault') &&
+          if(this.facets[i].isFilter &&
              !this.facets[i].isDefault){
             this.isFilterApplied = true;
             break;
           }
         }
         this.fetchData(true);
-      },
-      sortChanged: function(sortField, sort){
-        // overwrite complete sort crits here
-        this.sortCrits = [];
-        this.sortCrits.push({
-            field: sortField,
-            order: sort
-        });
-        this.fetchData();
       },
       sortCritsToString: function() {
         var result = "";
@@ -296,9 +342,10 @@ export default {
         params["facet.field"] = [];
         params["fq"] = this.collectFilterQueries();
         // If there are no filterquerys, the whole set is loaded and the currentpage has to be set to page 1
-        if(params["fq"].length == 0){
-          this.currentPage = 1;
-        }
+        //TODO Check if still relevant
+        // if(params["fq"].length == 0){
+        //   this.currentPage = 1;
+        // }
         for(var i = 0; i < this.facets.length; i++){
           params["facet.field"].push(this.facets[i].facetField);
           if(!this.facets[i].isFilter)
@@ -314,8 +361,8 @@ export default {
         this.request = $.get(foswiki.preferences.SCRIPTURL + "/rest/SearchGridPlugin/searchproxy", params)
         .done(function(result){
             result = JSON.parse(result);
-            self.$set('numResults', result.response.numFound);
-            self.$set('results', result.response.docs);
+            self.numResults = result.response.numFound;
+            self.results = result.response.docs;
             self.parseAllFacetResults(result);
             self.request = null;
             self.requestFailed = false;
@@ -388,11 +435,15 @@ export default {
           for (var key in facetValues) {
               parsedFacetValues[key] = this.parseFacetResult(key, facetValues[key], result.facet_dsps);
           }
-          this.$set("facetValues", parsedFacetValues);
+          this.facetValues = parsedFacetValues;
         }
       }
     },
-    beforeCompile: function() {
+    created: function() {
+      let self = this;
+      this.$store.dispatch('searchGrid/addGridState', {callback: function(gridState){
+                self.gridState = gridState;
+      }});
       this.prefs = JSON.parse($('.' + this.preferencesSelector).html());
       this.resultsPerPage = this.prefs.resultsPerPage;
       this.numResults = this.prefs.result.response.numFound;
@@ -402,10 +453,12 @@ export default {
       this.initialHideColumn = this.prefs.initialHideColumn;
       if(this.prefs.hasOwnProperty("initialSort")){
         var sortCrits = this.prefs.initialSort.split(",");
+        let initialSortCrits = [];
         for(var i = 0; i < sortCrits.length; i++) {
           var splitted = sortCrits[i].split(" ");
-          this.sortCrits.push({field: splitted[0], order: splitted[1]});
+          initialSortCrits.push({field: splitted[0], order: splitted[1]});
         }
+        this.sortCrits = initialSortCrits;
       }
       if(this.prefs.initialFiltering){
         this.isFilterApplied = true;
@@ -414,6 +467,11 @@ export default {
 
       NProgress.configure({
         showSpinner: false
+      });
+    },
+    mounted() {
+      this.$watch("sortCrits", function(){
+        this.fetchData();
       });
     }
 }

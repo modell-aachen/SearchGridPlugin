@@ -1,0 +1,8 @@
+//Grid
+export const SET_CURRENT_PAGE = 'SET_CURRENT_PAGE';
+export const CHANGE_SORT = 'CHANGE_SORT';
+export const ADD_GRID_STATE = 'ADD_GRID_STATE';
+export const SET_RESULTS = "SET_RESULTS";
+export const SET_RESULTS_PER_PAGE = "SET_RESULTS_PER_PAGE";
+export const SET_NUM_RESULTS = "SET_NUM_RESULTS";
+export const REGISTER_FACET = "REGISTER_FACET";

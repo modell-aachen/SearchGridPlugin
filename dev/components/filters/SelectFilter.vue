@@ -1,7 +1,7 @@
 <template>
     <div class="search-grid-filter small-3 columns">
-    <label for="{{id}}">{{params[0]}}</label>
-    <select id="{{id}}" v-model="selectedOption">
+    <label v-bind:for="id">{{params[0]}}</label>
+    <select v-bind:id="id" v-model="selectedOption">
         <option v-bind:value="''">{{maketext('All')}}</option>
         <option v-if="value.count != 0" v-bind:value="value.field" v-for="value in facetValues[this.params[1]]">{{ value.title }} {{'(' + value.count + ')'}}</option>
     </select>
@@ -15,13 +15,11 @@ export default {
     mixins: [MaketextMixin,FacetMixin],
     data:  function () {
        return {
-          selectedOption: this.params.length > 2 ? this.params[2] : ''
+          selectedOption: this.params.length > 2 ? this.params[2] : '',
+          isFilter: true
        }
     },
     computed: {
-        id: function(){
-            return this.params[0] + "_filter";
-        },
         totalCount: function(){
             return "";
         },
@@ -44,6 +42,9 @@ export default {
                     break;
                 }
             }
+        },
+        reset() {
+            this.selectedOption = "";
         }
     },
     watch: {
@@ -51,11 +52,8 @@ export default {
             this.watchSelectedOption();
         }
     },
-    beforeCompile: function(){
+    mounted: function(){
         this.selectedFacetUnwatch();
-        this.$on('clear-filters', function () {
-            this.selectedOption = '';
-        });
         this.watchSelectedOption();
     }
 }

@@ -1,6 +1,6 @@
 <template>
 <td>
-    <a href="{{formatLink(params[1])}}" title="{{params[0]}}">
+    <a v-bind:href="formatLink(params[1])" v-bind:title="params[0]">
         <div v-if="!params[2]">{{params[0]}}</div>
         <img v-if="params[2]" :src="params[2]" />
     </a>
