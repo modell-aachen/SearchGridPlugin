@@ -17,7 +17,7 @@ And here is the corresponding macro call:
 %%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{"type:topic"
    headers="Title,Url,Date"
    fields="text-field(title),url-field(url,url),date-field(createdate)"
-   sortFields="title_sort,url_sort,createdate_sort"
+   sortFields="title_sort,url,createdate"
    filters="full-text-filter(Title,title_search),select-filter(Language,language,en)"
    facets="select-2-facet(Webs,web,10),single-select-facet(Author,author),multi-select-facet(Form,form)"
    resultsPerPage="10"
@@ -67,7 +67,7 @@ The following fields are predefined and can be used as entries in the fields par
       <tr>
          <td>URL</td>
          <td>url-field(text:solrField, url:solrField)</td>
-         <td>Renders a link. The first parameter indicates the field which holds the text and the second parameter indicates the field which holds the url.</td>
+         <td>Renders a link. The first parameter indicates the field which holds the text and the second parameter indicates the field which holds the url. If the url is a field without a starting '/', the url-field will convert it to an url by adding an '/'. In this case your url will point to /yourWiki/yourField NOT to /yourWiki/yourWeb/yourField.</td>
          <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::URL"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::URL" CODE="1"}%</td>
       </tr>
@@ -266,7 +266,7 @@ There are three kinds of facets all of which take at least three parameters. The
    "type:topic"
    headers="Web,Title,Date"
    fields="text-field(web),text-field(title),date-field(createdate)"
-   sortFields="title_sort,createdate_sort"
+   sortFields="title_sort,createdate"
    facets="multi-select-facet(Webs,web,-1,Nominal;Processes)"
    resultsPerPage="8"
    initialSort="web_sort,desc;title_sort,asc"

@@ -247,7 +247,7 @@ export default {
             break;
           }
         }
-        this.fetchData();
+        this.fetchData(true);
       },
       sortChanged: function(sortField, sort){
         // overwrite complete sort crits here
@@ -274,15 +274,18 @@ export default {
         }
         return filterQueries;
       },
-      fetchData: function(){
+      fetchData: function(search){
+        //Search via filters or query for next page? Query over all elements : Skip results on former pages 
+        var startpoint  = search? 0 : (this.currentPage - 1) * this.resultsPerPage;
         if(this.request){
             this.request.abort();
         }
         var self = this;
         var params = {
+          "topic": foswiki.preferences.WEB + "." + foswiki.preferences.TOPIC,
           "q":this.prefs.q,
           "rows":this.resultsPerPage,
-          "start": (this.currentPage - 1) * this.resultsPerPage,
+          "start": startpoint,
           "facet": true,
           "facet.limit": 5,
           "facet.sort": "count",
@@ -292,6 +295,10 @@ export default {
 
         params["facet.field"] = [];
         params["fq"] = this.collectFilterQueries();
+        // If there are no filterquerys, the whole set is loaded and the currentpage has to be set to page 1
+        if(params["fq"].length == 0){
+          this.currentPage = 1;
+        }
         for(var i = 0; i < this.facets.length; i++){
           params["facet.field"].push(this.facets[i].facetField);
           if(!this.facets[i].isFilter)
