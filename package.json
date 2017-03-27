@@ -43,7 +43,6 @@
     "sass-loader": "^6.0.3",
     "vue-hot-reload-api": "^2.0.11",
     "vue-html-loader": "^1.0.0",
-    "vue-loader": "^11.2.0",
     "vue-style-loader": "^2.0.4",
     "webpack": "^2.3.0",
     "webpack-dev-server": "^2.4.2",
@@ -52,19 +51,17 @@
   "dependencies": {
     "babel-eslint": "^7.1.1",
     "file-loader": "^0.10.1",
-    "foundation-sites": "^6.2.3",
-    "jquery": "^3.1.1",
     "less": "^2.7.1",
     "less-loader": "^4.0.2",
     "moment": "^2.15.0",
     "nprogress": "^0.2.0",
     "randomstring": "^1.1.5",
-    "select2": "^4.0.3",
     "style-loader": "^0.16.0",
     "url-loader": "^0.5.7",
-    "vue": "2.2.5",
+    "vue": "^2.2.6",
+    "vue-loader": "^11.3.3",
     "vue-select": "github:Mortymus/vue-select#vue2",
     "vue-simple-pagination": "github:Mortymus/vue-simple-pagination#vue2",
-    "vue-template-compiler": "^2.2.4"
+    "vue-template-compiler": "^2.2.6"
   }
 }
