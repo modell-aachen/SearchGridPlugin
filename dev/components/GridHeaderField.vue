@@ -45,7 +45,7 @@ export default {
     },
     methods: {
         toggleSort: function(){
-            if(this.sortField === 'none')
+            if(!this.sortField)
                 return;
             var sort;
             switch(this.sortState){
@@ -59,20 +59,7 @@ export default {
                     sort = "desc";
                     break;
             }
-            //TODO this.DOLLARdispatch('sort-click', this.sortField, sort);
             this.$store.commit("searchGrid/" + mutations.CHANGE_SORT, {gridState: this.gridState, sortCrits: [{field: this.sortField, order: sort}]});
-        }
-    },
-    // events: {
-    //     "set-initial-sorting": function(initialSorting) {
-    //         if(initialSorting.field === this.sortField){
-    //             this.sortState = sortStates[initialSorting.sort.toUpperCase()];
-    //         }
-    //     }
-    // },
-    mounted: function() {
-        if(! this.sortField){
-            this.sortField = "none";
         }
     }
 }

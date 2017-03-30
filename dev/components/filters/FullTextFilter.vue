@@ -44,6 +44,11 @@ export default {
         return queries;
       }
     },
+    watch: {
+      filterText(){
+        this.$emit("filter-change");
+      }
+    },
     methods: {
       reset() {
         this.filterText = "";

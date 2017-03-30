@@ -2,7 +2,6 @@
 <div class="facet">
     <h4>{{title}}</h4>
     <ul class="facet-list">
-        <!-- TODO: Order by title -->
         <template v-for="value in facetCharacteristics">
                 <li v-show="value.count > 0 || isSelected(value)">
                     <input v-bind:id="getCheckboxId(value.field)" type ="checkbox" v-bind:value="value.field" v-model="selectedCheckboxes">

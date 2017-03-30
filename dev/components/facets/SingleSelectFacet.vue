@@ -6,7 +6,6 @@
             <input v-bind:id="getRadioId('All')" type=radio value="" v-model="selectedRadio">
             <label v-bind:for="getRadioId('All')">{{maketext("All")}}</label>
         </li>
-        <!-- TODO facetCharacteristics orderBy title -->
         <template v-for="value in facetCharacteristics">
         <li v-show="value.count > 0 || isSelected(value)">
             <input v-bind:id="getRadioId(value.field)" type ="radio" v-bind:value="value.field" v-model="selectedRadio">

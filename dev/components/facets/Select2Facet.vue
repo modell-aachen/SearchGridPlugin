@@ -2,10 +2,7 @@
 <div class="facet">
 <h4>{{header}}</h4>
 <div class="vue-select-wrapper">
-<!-- TODO debounce 500 -->
-<!-- TODO options order by count -1 -->
-<!-- TODO value.sync -->
-<v-select multiple label="field" :placeholder="maketext('Search term...')" v-model="selectedFacet" :options="options" :on-search="onSearch" :get-option-label="getOptionLabel" :get-selected-option-label="getSelectedOptionLabel" :prevent-search-filter="true" :on-get-more-options="onGetMoreOptions">
+<v-select multiple label="field" :placeholder="maketext('Search term...')" v-model="selectedFacet" :options="options" :on-search="onSearchDebounce" :get-option-label="getOptionLabel" :get-selected-option-label="getSelectedOptionLabel" :prevent-search-filter="true" :on-get-more-options="onGetMoreOptions">
     <template slot="more-results">{{maketext(moreResultsText)}}</template>
 </v-select>
 </div>
@@ -15,6 +12,8 @@
 <script>
 import FacetMixin from './FacetMixin.vue'
 import vSelect from "vue-select/src/index.js"
+import debounce from 'lodash/debounce';
+
 export default {
     components: {vSelect},
     mixins: [FacetMixin],
@@ -27,6 +26,9 @@ export default {
     computed: {
         header() {
             return `${this.title} (${this.totalCount})`;
+        },
+        onSearchDebounce(){
+            return debounce(this.onSearch, 300);
         }
     },
     watch: {
@@ -77,6 +79,10 @@ export default {
                 this.options = this.options.concat(options);
             else
                 this.options = options;
+
+            this.options.sort((a, b) => {
+                return b.count - a.count;
+            });
         }
     },
     created: function () {

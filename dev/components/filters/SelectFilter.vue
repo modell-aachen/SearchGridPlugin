@@ -42,6 +42,7 @@ export default {
                     break;
                 }
             }
+            this.$emit("filter-change");
         },
         reset() {
             this.selectedOption = "";

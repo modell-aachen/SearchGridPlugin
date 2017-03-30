@@ -10,7 +10,7 @@
                         <div class="expanded row align-bottom">
                             <template v-for="filter in prefs.filters">
                             <!-- TODO debounce 700 -->
-                                <component v-if="hasLiveFilter" v-on:keyup="applyFilters" v-on:keyup.enter="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
+                                <component v-if="hasLiveFilter" v-on:filter-change="applyFiltersDebounce" v-on:keyup.enter="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                                 <component v-else v-on:keyup.enter="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                             </template>
                             <div class="columns">
@@ -58,7 +58,6 @@
                 </div>
                 <div class="expanded row">
                     <div class="columns">
-                    <!-- TODO current-page.sync -->
                         <paginator class="ma-pager-new" v-if="pageCount > 1" v-on:page-changed="pageChanged" :page-count="pageCount" :current-page="gridState.currentPage"></paginator>
                     </div>
                 </div>
@@ -99,6 +98,7 @@ import Paginator from 'vue-simple-pagination/VueSimplePagination.vue'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import * as mutations from "../store/mutation-types";
+import debounce from 'lodash/debounce';
 
 export default {
     mixins: [MaketextMixin],
@@ -184,6 +184,9 @@ export default {
           this.$store.commit("searchGrid/" + mutations.SET_NUM_RESULTS, {gridState: this.gridState, numResults: value});
         }
       },
+      applyFiltersDebounce() {
+        return debounce(this.applyFilters, 700);
+      },
       facets(){
         return this.gridState.facets;
       },
@@ -263,7 +266,6 @@ export default {
           this.fetchData();
       },
       clearFacets: function () {
-        //TODO this.DOLLARbroadcast('reset');
         for(var i = 0; i < this.facets.length; i++){
           //Only filters have the 'isDefault' property
           if(!this.facets[i].isFilter){
@@ -275,7 +277,6 @@ export default {
         });
       },
       clearFilters: function(){
-        //TODO this.DOLLARbroadcast('clear-filters');
         this.isFilterApplied = false;
         for(var i = 0; i < this.facets.length; i++){
           //Only filters have the 'isDefault' property
@@ -426,6 +427,9 @@ export default {
                   'field': field
                 });
         }
+        facet.sort((a, b) => {
+          return a.title.localeCompare(b.title);
+        });
         return facet;
       },
       parseAllFacetResults: function(result){
