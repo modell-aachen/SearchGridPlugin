@@ -9,7 +9,6 @@
                     <div>
                         <div class="expanded row align-bottom">
                             <template v-for="filter in prefs.filters">
-                            <!-- TODO debounce 700 -->
                                 <component v-if="hasLiveFilter" v-on:filter-change="applyFiltersDebounce" v-on:keyup.enter="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                                 <component v-else v-on:keyup.enter="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                             </template>
@@ -138,7 +137,7 @@ export default {
           hasGridView: false,
           hasLiveFilter: false,
           columnsToHide: [],
-          initialHideColumn: false, 
+          initialHideColumn: false,
           isGridView: false
        }
     },
@@ -289,14 +288,8 @@ export default {
         });
       },
       applyFilters: function(){
-        //TODO:
-        //Currently all filters are stored in the facets array.
-        //Here we want to check whether any of them is not on the default
-        //value. It would be better if they would register in their own array
-        //in addition to the facet arrray.
         this.isFilterApplied = false;
         for(var i = 0; i < this.facets.length; i++){
-          //Only filters have the 'isDefault' property
           if(this.facets[i].isFilter &&
              !this.facets[i].isDefault){
             this.isFilterApplied = true;
@@ -322,7 +315,7 @@ export default {
         return filterQueries;
       },
       fetchData: function(search){
-        //Search via filters or query for next page? Query over all elements : Skip results on former pages 
+        //Search via filters or query for next page? Query over all elements : Skip results on former pages
         var startpoint  = search? 0 : (this.currentPage - 1) * this.resultsPerPage;
         if(this.request){
             this.request.abort();

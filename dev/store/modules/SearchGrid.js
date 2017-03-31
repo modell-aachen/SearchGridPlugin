@@ -1,7 +1,5 @@
 import * as types from '../mutation-types';
 
-/* global foswiki */
-
 //State for one grid
 function gridStateFactory(){
     return {

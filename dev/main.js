@@ -1,3 +1,5 @@
+/* global Vue window $ VueJSPlugin */
+
 import "./store/index.js";
 import Grid from './components/Grid.vue'
 
