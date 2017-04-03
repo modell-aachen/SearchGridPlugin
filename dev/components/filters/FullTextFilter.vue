@@ -3,7 +3,7 @@
     <label v-bind:for="id">{{params[0]}}</label>
     <div class="input-group">
       <span class="input-group-label"><i class="fa fa-search" aria-hidden="true"></i></span>
-      <input class="input-group-field" type="text" v-bind:placeholder="maketext('Search term...')" v-bind:id="id" v-model="filterText">
+      <input class="input-group-field" v-on:keyup.enter="onConfirm" type="text" v-bind:placeholder="maketext('Search term...')" v-bind:id="id" v-model="filterText">
     </div>
     </div>
 </template>
@@ -52,6 +52,9 @@ export default {
     methods: {
       reset() {
         this.filterText = "";
+      },
+      onConfirm() {
+        this.$emit("confirm");
       }
     }
 }
