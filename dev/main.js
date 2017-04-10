@@ -1,7 +1,8 @@
-import Vue from 'vue'
+/* global Vue window $ VueJSPlugin */
+
+import "./store/index.js";
 import Grid from './components/Grid.vue'
 
-window.Vue = Vue;
 var SearchGridPlugin = {
     registerField: function(name, component){
         Vue.component(name, component);
@@ -15,6 +16,7 @@ window.SearchGridPlugin = SearchGridPlugin;
 $( function () {
     new Vue({
         el: '.foswikiTopic',
+        store: VueJSPlugin.rootStore,
         data: {
             instances: 0
         },

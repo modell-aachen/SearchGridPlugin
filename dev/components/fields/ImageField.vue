@@ -1,6 +1,6 @@
 <template>
 <td>
-    <a href="{{url}}" v-bind:class="classObject">
+    <a v-bind:href="url" v-bind:class="classObject">
     <img :src="this.doc[params[0]]">
     </a>
 </td>
@@ -27,7 +27,7 @@ export default {
             return this.doc[this.params[1]];
         }
     },
-    ready: function(){
+    mounted: function(){
         if(this.url !== "")
             this.classObject["inactive-link"] = false;
     }

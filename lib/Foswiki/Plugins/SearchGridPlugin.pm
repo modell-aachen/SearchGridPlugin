@@ -204,6 +204,7 @@ sub _searchGrid {
     #Fix: $n and $quot are automatically expanded by foswiki and destroy the json.
     #So they are replaced.
     $jsonPrefs =~ s/(\$n|\$quot)//g;
+    Foswiki::Func::expandCommonVariables("%VUE{VERSION=\"2\"}%");
     Foswiki::Func::addToZone( 'head', 'FONTAWESOME',
         '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FontAwesomeContrib/css/font-awesome.min.css" />');
     Foswiki::Func::addToZone( 'head', 'FLATSKIN_WRAPPED',
@@ -211,7 +212,7 @@ sub _searchGrid {
     Foswiki::Func::addToZone( 'script', $prefSelector,
         "<script type='text/json'>$jsonPrefs</script>");
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
-        "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>","jsi18nCore"
+        "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>","jsi18nCore,VUEJSPLUGIN"
     );
     Foswiki::Plugins::JQueryPlugin::createPlugin('jqp::moment', $session);
     return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}% <grid preferences-selector='$prefSelector'></grid>";

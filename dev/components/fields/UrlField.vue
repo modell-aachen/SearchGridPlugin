@@ -1,6 +1,6 @@
 <template>
 <td>
-    <a href="{{parsedUrl}}">{{doc[params[0]]}}</a>
+    <a v-bind:href="parsedUrl">{{doc[params[0]]}}</a>
 </td>
 </template>
 
