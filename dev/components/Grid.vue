@@ -84,6 +84,7 @@ import GridHeader from './GridHeader.vue'
 import UrlField from './fields/UrlField.vue'
 import UrlFormatField from './fields/UrlFormatField.vue'
 import TextField from './fields/TextField.vue'
+import ListField from './fields/ListField.vue'
 import DateField from './fields/DateField.vue'
 import SolrField from './fields/SolrField.vue'
 import ImageField from './fields/ImageField.vue'
@@ -106,6 +107,7 @@ export default {
       UrlField,
       UrlFormatField,
       TextField,
+      ListField,
       DateField,
       SolrField,
       ImageField,

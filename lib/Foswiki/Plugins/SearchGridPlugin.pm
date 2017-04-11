@@ -215,7 +215,7 @@ sub _searchGrid {
         "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>","jsi18nCore,VUEJSPLUGIN"
     );
     Foswiki::Plugins::JQueryPlugin::createPlugin('jqp::moment', $session);
-    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}% <grid preferences-selector='$prefSelector'></grid>";
+    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\"><grid preferences-selector='$prefSelector'></grid></div>";
 }
 
 # Build query data to fetch first search result in backend.

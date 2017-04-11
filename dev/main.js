@@ -14,22 +14,16 @@ var SearchGridPlugin = {
 window.SearchGridPlugin = SearchGridPlugin;
 
 $( function () {
-    new Vue({
-        el: '.foswikiTopic',
-        store: VueJSPlugin.rootStore,
-        data: {
-            instances: 0
-        },
-        methods: {
-            updateInstanceCounter: function(){
-                this.instances++;
+    $('.SearchGridContainer').each(function(i,element){
+        new Vue({
+            el: element,
+            store: VueJSPlugin.rootStore,
+            components: {
+                grid: Grid
+            },
+            created: function () {
+                moment.locale($("html").attr("lang"));
             }
-        },
-        components: {
-            grid: Grid
-        },
-        created: function () {
-            moment.locale($("html").attr("lang"));
-        }
-    })
+        })
+    });
 })
