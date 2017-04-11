@@ -1,4 +1,4 @@
-/* global Vue window $ VueJSPlugin */
+/* global Vue moment window $ VueJSPlugin */
 
 import "./store/index.js";
 import Grid from './components/Grid.vue'
@@ -27,6 +27,9 @@ $( function () {
         },
         components: {
             grid: Grid
+        },
+        created: function () {
+            moment.locale($("html").attr("lang"));
         }
     })
 })
