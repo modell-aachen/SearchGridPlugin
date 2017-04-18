@@ -1,6 +1,8 @@
+/* global VueJSPlugin */
 import 'es6-promise/auto'
 
 import './mockup_functions/vuejsplugin'
+import $ from 'jquery';
 import Vue from 'vue';
 import Grid from '../dev/components/Grid.vue'
 import GridPrefs from './mockup_data/all_feature_grid_prefs.json'
