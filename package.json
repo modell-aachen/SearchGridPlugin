@@ -29,6 +29,7 @@
     "isparta-loader": "^2.0.0",
     "jasmine": "^2.5.2",
     "jasmine-ajax": "^3.2.0",
+    "jquery": "^3.2.1",
     "json-loader": "^0.5.4",
     "karma": "^1.3.0",
     "karma-chrome-launcher": "^2.0.0",
@@ -50,7 +51,9 @@
   },
   "dependencies": {
     "babel-eslint": "^7.1.1",
+    "es6-promise": "^4.1.0",
     "file-loader": "^0.10.1",
+    "karma-sourcemap-loader": "^0.3.7",
     "less": "^2.7.1",
     "less-loader": "^4.0.2",
     "moment": "^2.15.0",
@@ -62,6 +65,7 @@
     "vue-loader": "^11.3.3",
     "vue-select": "github:Mortymus/vue-select#vue2",
     "vue-simple-pagination": "github:Mortymus/vue-simple-pagination#vue2",
-    "vue-template-compiler": "^2.2.6"
+    "vue-template-compiler": "^2.2.6",
+    "vuex": "^2.2.1"
   }
 }

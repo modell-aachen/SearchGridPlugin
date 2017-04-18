@@ -3,11 +3,7 @@ var webpack = require('webpack');
 var merge = require('webpack-merge');
 
 module.exports = merge(baseConfig, {
-	vue: {
-	    loaders: {
-	      js: 'isparta'
-	    }
-	},
+	devtool: "inline-source-map",
 	plugins: [
 		new webpack.ProvidePlugin({
 			$: "jquery",

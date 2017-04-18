@@ -30,8 +30,8 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-        'tests/*_test.js': ['webpack'],
-        'tests/**/*_test.js': ['webpack']
+        'tests/*_test.js': ['webpack', 'sourcemap'],
+        'tests/**/*_test.js': ['webpack', 'sourcemap']
     },
 
     webpack: webpackConfig,
@@ -82,18 +82,6 @@ module.exports = function(config) {
             }
         }
     },
-
-    reporters: ['progress','coverage'],
-
-    coverageReporter: {
-        dir: 'tests/coverage',
-        type: 'text',
-        instrumenters: { isparta : require('isparta') },
-        instrumenter: {
-            '**/*.js': 'isparta'
-        }
-    },
-
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits

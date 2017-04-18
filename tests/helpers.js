@@ -1,14 +1,17 @@
-import Vue from 'vue'
+import 'es6-promise/auto'
+
+import './mockup_functions/vuejsplugin'
+import Vue from 'vue';
 import Grid from '../dev/components/Grid.vue'
 import GridPrefs from './mockup_data/all_feature_grid_prefs.json'
-import $ from 'jquery'
+import '../dev/store/index.js';
 
 let createGrid = (instance) => {
   const Ctor = Vue.extend(Grid);
   let grid = new Ctor({
-    el : () => {return 'body'},
+    el: '#gridContainer',
     propsData: {preferencesSelector: `SEARCHGRIDPREF_${instance}`},
-    replace: false
+    store: VueJSPlugin.rootStore
   });
   return grid;
 };

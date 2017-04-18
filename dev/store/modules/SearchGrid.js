@@ -52,7 +52,7 @@ const mutations = {
 
 export default {
     namespaced: true,
-    state: Object.assign({}, INITIAL_STATE),
+    state: INITIAL_STATE,
     actions,
     mutations
 };

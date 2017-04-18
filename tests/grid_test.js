@@ -9,13 +9,14 @@ describe("The grid component", () => {
   let [grid, mockupGridPrefs] = [];
 
   beforeEach(() => {
-    [grid, mockupGridPrefs] = Helpers.setupGrid();
     jasmine.Ajax.install();
+    $('body').append("<div id='gridContainer'></div>");
+    [grid, mockupGridPrefs] = Helpers.setupGrid();
   });
 
   afterEach(() => {
-    $('body').empty();
     jasmine.Ajax.uninstall();
+    $('body').empty();
   });
 
   describe("loads preferences on init and", () => {
