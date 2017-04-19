@@ -1,7 +1,9 @@
 /* global Vue moment window $ VueJSPlugin */
 
-import "./store/index.js";
+import SearchGridStoreModule from "./store/index.js";
 import Grid from './components/Grid.vue'
+
+VueJSPlugin.rootStore.registerModule("searchGrid", SearchGridStoreModule);
 
 var SearchGridPlugin = {
     registerField: function(name, component){
