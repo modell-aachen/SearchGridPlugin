@@ -82,10 +82,17 @@ The following fields are predefined and can be used as entries in the fields par
       </tr>
       <tr>
          <td>Date</td>
-         <td>date-field(date:solrField)</td>
-         <td>Takes a date value in ISO_8601 format and displays it as a locale date string.</td>
+         <td>date-field(date:solrField,relative:boolean)</td>
+         <td>Takes a date value in ISO_8601 format and displays it as a locale date string. When the second paramter is set, the date will be showen as a relative date string. (e.g. 4 years ago) (<a href="http://momentjs.com/docs/#/displaying/fromnow/">see Moment: Relative time</a>).</td>
          <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::DATE"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::DATE" CODE="1"}%</td>
+      </tr>
+      <tr>
+         <td>List</td>
+         <td>list-field(*_lst:solrField)</td>
+         <td>Takes an solr _lst value and renders the values as list.</td>
+         <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::LIST"}%%ENDTWISTY%</td>
+         <td>%INCLUDE{"%TOPIC%" section="FIELD::LIST" CODE="1"}%</td>
       </tr>
       <tr>
          <td>Solr (TBD)</td>
@@ -157,6 +164,17 @@ The following fields are predefined and can be used as entries in the fields par
 }%
 %IF{"$CODE='1'" then="</pre>"}%
 %ENDSECTION{"FIELD::DATE"}%
+%STARTSECTION{"FIELD::LIST"}%
+%IF{"$CODE='1'" then="<pre>"}%
+%%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
+   "type:topic form:*DocumentForm outgoingWiki_lst:*"
+   headers="Outgoing Links"
+   fields="list-field(outgoingWiki_lst)"
+   fieldRestriction="outgoingWiki_lst"
+   resultsPerPage="4"
+}%
+%IF{"$CODE='1'" then="</pre>"}%
+%ENDSECTION{"FIELD::LIST"}%
 %STARTSECTION{"FIELD::SOLR"}%
 %IF{"$CODE='1'" then="<pre>"}%
 %%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
