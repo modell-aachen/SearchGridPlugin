@@ -1,12 +1,14 @@
 <script>
+import GridComponentMixin from "../GridComponentMixin.vue";
 import MaketextMixin from "../MaketextMixin.vue"
 import RandomString from "randomstring";
+import * as mutations from "../../store/mutation-types";
 export default {
-    mixins: [MaketextMixin],
+    mixins: [GridComponentMixin,MaketextMixin],
     data: function(){
         return {
             selectedFacet: [],
-            selectedFacetUnwatch: "blub"
+            selectedFacetUnwatch: null
         }
     },
     props: ['params','facetValues','facetTotalCounts'],
@@ -62,12 +64,15 @@ export default {
             return string.replace(/\+|-|:|\(|\)|\|\||&&|\!|\"|\s/g, function(finding){
                 return `\\${finding}`;
             });
+        },
+        reset: function(){
+            this.selectedFacet = [];
         }
     },
-    beforeCompile: function () {
-        this.$dispatch("register-facet",this);
+    mounted: function () {
+        this.$store.commit("searchGrid/" + mutations.REGISTER_FACET, {gridState: this.gridState, facet: this});
         this.selectedFacetUnwatch = this.$watch("selectedFacet", function () {
-            this.$dispatch("facet-changed");
+            this.$parent.facetChanged();
         });
     }
 }

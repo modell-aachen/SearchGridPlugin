@@ -103,8 +103,8 @@ sub _searchGrid {
 
     my $defaultQuery = $params->{_DEFAULT};
     my $resultsPerPage = $params->{resultsPerPage} || 20;
-    my $hasLiveFilter = $params->{hasLiveFilter} eq '1' ? JSON::true : JSON::false;
-    my $initialHideColumn = $params->{initialHideColumn} eq '1' ? JSON::true : JSON::false;
+    my $hasLiveFilter = (defined $params->{hasLiveFilter} && $params->{hasLiveFilter} eq '1') ? JSON::true : JSON::false;
+    my $initialHideColumn = (defined $params->{initialHideColumn} && $params->{initialHideColumn} eq '1') ? JSON::true : JSON::false;
     my $headers = $params->{headers} || '';
     my $fields = $params->{fields} || '';
     my $filters = $params->{filters} || '';
@@ -204,6 +204,7 @@ sub _searchGrid {
     #Fix: $n and $quot are automatically expanded by foswiki and destroy the json.
     #So they are replaced.
     $jsonPrefs =~ s/(\$n|\$quot)//g;
+    Foswiki::Func::expandCommonVariables("%VUE{VERSION=\"2\"}%");
     Foswiki::Func::addToZone( 'head', 'FONTAWESOME',
         '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FontAwesomeContrib/css/font-awesome.min.css" />');
     Foswiki::Func::addToZone( 'head', 'FLATSKIN_WRAPPED',
@@ -211,10 +212,10 @@ sub _searchGrid {
     Foswiki::Func::addToZone( 'script', $prefSelector,
         "<script type='text/json'>$jsonPrefs</script>");
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
-        "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>","jsi18nCore"
+        "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>","jsi18nCore,VUEJSPLUGIN"
     );
     Foswiki::Plugins::JQueryPlugin::createPlugin('jqp::moment', $session);
-    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}% <grid preferences-selector='$prefSelector'></grid>";
+    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\"><grid preferences-selector='$prefSelector'></grid></div>";
 }
 
 # Build query data to fetch first search result in backend.
@@ -227,6 +228,7 @@ sub _buildQuery {
         facet => $prefs->{facets} ? 'true' : 'false',
         form => $prefs->{form},
         fl => $prefs->{fieldRestriction},
+        'facet.mincount' => 1,
         'facet.field' => []
     );
 
@@ -379,9 +381,19 @@ sub _searchProxy {
                 if ($key =~ /^field_([A-Za-z0-9]*)_/ && $key !~ /_dv$/) {
                     my $formField = $forms{$form}->getField($1);
                     next unless $formField && $formField->can('getDisplayValue');
-                    my $dsp = $formField->getDisplayValue($doc->{$key});
+
+                    my $dsp;
+                    if(ref($doc->{$key}) eq 'ARRAY'){
+                        $dsp = [];
+                        foreach my $value (@{$doc->{$key}}){
+                            push(@$dsp, $meta->expandMacros($formField->getDisplayValue($value)));
+                        }
+                    }
+                    else{
+                        $dsp = $formField->getDisplayValue($doc->{$key});
+                        $dsp = $meta->expandMacros($dsp);
+                    }
                     next unless $dsp;
-                    $dsp = $meta->expandMacros($dsp);
                     # Add display value to result set.
                     $doc->{$key.'_dv'} = $dsp;
                 }

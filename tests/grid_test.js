@@ -9,12 +9,11 @@ describe("The grid component", () => {
   let [grid, mockupGridPrefs] = [];
 
   beforeEach(() => {
-    [grid, mockupGridPrefs] = Helpers.setupGrid();
     jasmine.Ajax.install();
+    [grid, mockupGridPrefs] = Helpers.setupGrid();
   });
 
   afterEach(() => {
-    $('body').empty();
     jasmine.Ajax.uninstall();
   });
 

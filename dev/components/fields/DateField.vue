@@ -9,8 +9,11 @@ export default {
     computed: {
         date: function(){
             let date = this.doc[this.params[0]];
-            if(typeof date === 'undefined')
+            if(typeof date === 'undefined' || date === '1970-01-01T00:00:00Z')
                 return "";
+            if(this.params[1]) {
+                return moment(date, moment.ISO_8601).fromNow(true);
+            }
             return moment(date, moment.ISO_8601).toDate().toLocaleDateString();
         }
     }

@@ -1,7 +1,10 @@
-import Vue from 'vue'
+/* global Vue moment window $ VueJSPlugin */
+
+import SearchGridStoreModule from "./store/index.js";
 import Grid from './components/Grid.vue'
 
-window.Vue = Vue;
+VueJSPlugin.rootStore.registerModule("searchGrid", SearchGridStoreModule);
+
 var SearchGridPlugin = {
     registerField: function(name, component){
         Vue.component(name, component);
@@ -13,18 +16,16 @@ var SearchGridPlugin = {
 window.SearchGridPlugin = SearchGridPlugin;
 
 $( function () {
-    new Vue({
-        el: '.foswikiTopic',
-        data: {
-            instances: 0
-        },
-        methods: {
-            updateInstanceCounter: function(){
-                this.instances++;
+    $('.SearchGridContainer').each(function(i,element){
+        new Vue({
+            el: element,
+            store: VueJSPlugin.rootStore,
+            components: {
+                grid: Grid
+            },
+            created: function () {
+                moment.locale($("html").attr("lang"));
             }
-        },
-        components: {
-            grid: Grid
-        }
-    })
+        })
+    });
 })

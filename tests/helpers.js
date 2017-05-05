@@ -1,15 +1,24 @@
-import Vue from 'vue'
+import 'es6-promise/auto'
+import $ from 'jquery';
+import Vue from 'vue';
+import Vuex from 'vuex';
 import Grid from '../dev/components/Grid.vue'
 import GridPrefs from './mockup_data/all_feature_grid_prefs.json'
-import $ from 'jquery'
+import SearchGridStoreModule from "../dev/store/index.js";
+
+
+Vue.use(Vuex);
+
+let MockupStore = new Vuex.Store({});
+MockupStore.registerModule("searchGrid", SearchGridStoreModule);
 
 let createGrid = (instance) => {
   const Ctor = Vue.extend(Grid);
   let grid = new Ctor({
-    el : () => {return 'body'},
     propsData: {preferencesSelector: `SEARCHGRIDPREF_${instance}`},
-    replace: false
+    store: MockupStore
   });
+  grid.$mount();
   return grid;
 };
 

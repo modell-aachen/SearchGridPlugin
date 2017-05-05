@@ -311,10 +311,7 @@
          "sortField":"createdate"
       }
    ],
-   "initialSort":{
-      "field":"title",
-      "sort":"desc"
-   },
+   "initialSort": "title desc",
    "resultsPerPage":"10",
    "language":"de",
    "filters":[

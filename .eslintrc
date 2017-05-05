@@ -3,10 +3,11 @@
 	plugins: ["html"],
 	parser: "babel-eslint",
 	env: {
-		"browser": false,
+		"browser": true,
 		"node": true,
 		"commonjs": true,
-		"es6": true
+		"es6": true,
+		"jasmine": true
 	},
 	rules: {
 		"linebreak-style": ["error", "unix"],

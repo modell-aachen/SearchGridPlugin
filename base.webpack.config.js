@@ -10,52 +10,51 @@ var includeDirs = [
   projectRoot + '/tests'
 ];
 
+var babelLoaderOptions = {
+  presets: ['es2015','stage-2']
+}
+
 module.exports = {
-  babel: {
-    presets: ['es2015']
+  resolve: {
+    extensions: ['.vue', '.js']
   },
   entry: {
-    app: './dev/main.js'
+    app: ['./dev/main.js']
   },
   output: {
     path: path.join(__dirname, 'pub/System/SearchGridPlugin'),
     filename: 'searchGrid.js'
   },
+  devtool: "source-map",
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.vue$/,
-        loader: 'vue',
-        include: includeDirs
+        loader: 'vue-loader',
+        include: includeDirs,
+         options: {
+           loaders: {
+            js:'babel-loader?' + JSON.stringify(babelLoaderOptions)
+          },
+       }
       },
       {
         test: /\.js$/,
-        loader: 'babel',
-        include: includeDirs
-      },
-      {
-        test: /\.json$/,
-        loader: 'json',
-        include: includeDirs
-      },
-      {
-        test: /\.html$/,
-        loader: 'vue-html',
-        include: includeDirs
+        loader: 'babel-loader',
+        include: includeDirs,
+        options: babelLoaderOptions
       },
       {
         test: /\.css$/,
-        loader: 'style-loader!css-loader',
-        include: includeDirs
-      },
-      {
-        test: /\.less$/,
-        loader: 'style-loader!less-loader',
-        include: includeDirs
+        include: includeDirs,
+        use: [
+          "style-loader",
+          "css-loader"
+        ]
       },
       {
         test: /\.(woff2?|eot|ttf|otf|svg)(\?.*)?$/,
-        loader: 'url',
+        loader: 'url-loader',
         include: includeDirs
       }
     ]
