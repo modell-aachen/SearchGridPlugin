@@ -228,6 +228,7 @@ sub _buildQuery {
         facet => $prefs->{facets} ? 'true' : 'false',
         form => $prefs->{form},
         fl => $prefs->{fieldRestriction},
+        'facet.mincount' => 1,
         'facet.field' => []
     );
 
