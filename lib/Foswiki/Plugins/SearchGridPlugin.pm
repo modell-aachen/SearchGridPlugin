@@ -196,6 +196,21 @@ sub _searchGrid {
         push(@{$prefs->{facets}}, $newFacet);
     }
 
+    #Parse mappings
+    my $mappings = {};
+    grep {
+        if($_ =~ /^mappings_(.*)$/){
+            my $mappedField = $1;
+            $mappings->{$mappedField} = {};
+            foreach my $mapping (split(";", $params->{$_})){
+                $mapping =~ /(.*)=(.*)/;
+                $mappings->{$mappedField}->{$1} = Foswiki::Func::expandCommonVariables($2);
+            }
+        }
+    } keys %$params;
+
+    $prefs->{mappings} = $mappings;
+
     #First data fetch per backend.
     $prefs->{result} = _buildQuery($session, $prefs);
     my $prefId = md5_hex(rand);

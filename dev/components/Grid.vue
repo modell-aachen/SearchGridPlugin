@@ -85,6 +85,7 @@ import UrlField from './fields/UrlField.vue'
 import UrlFormatField from './fields/UrlFormatField.vue'
 import TextField from './fields/TextField.vue'
 import ListField from './fields/ListField.vue'
+import BadgesField from './fields/BadgesField.vue'
 import DateField from './fields/DateField.vue'
 import SolrField from './fields/SolrField.vue'
 import ImageField from './fields/ImageField.vue'
@@ -108,6 +109,7 @@ export default {
       UrlFormatField,
       TextField,
       ListField,
+      BadgesField,
       DateField,
       SolrField,
       ImageField,
@@ -403,11 +405,14 @@ export default {
         });
       },
       parseFacetResult: function(facetField, facetResult, facetDisplayValues) {
-            var facet = [];
-            for(var i = 0; i < facetResult.length; i+=2){
-                var field = facetResult[i];
-                var displayValue = "";
-                if(facetDisplayValues.hasOwnProperty(facetField) && facetDisplayValues[facetField].hasOwnProperty(field))
+            let facet = [];
+            for(let i = 0; i < facetResult.length; i+=2){
+                let field = facetResult[i];
+                let displayValue = "";
+                if(this.prefs.mappings.hasOwnProperty(facetField) && this.prefs.mappings[facetField].hasOwnProperty(field)){
+                  displayValue = this.prefs.mappings[facetField][field];
+                }
+                else if(facetDisplayValues.hasOwnProperty(facetField) && facetDisplayValues[facetField].hasOwnProperty(field))
                   displayValue = facetDisplayValues[facetField][field];
                 else
                   displayValue = field;
