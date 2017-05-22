@@ -44,7 +44,7 @@
                         <table>
                             <thead is="grid-header" :headers="filteredFields" :initial-sort="prefs.initialSort"></thead>
                             <tbody>
-                                <tr v-for="result in results">
+                                <tr v-for="result in results" v-on:click=wrappedEntryClickHandler(result)>
                                     <td v-for="field in filteredFields" :is="field.component" :doc="result" :params="field.params">
                                     </td>
                                 </tr>
@@ -142,7 +142,8 @@ export default {
           hasLiveFilter: false,
           columnsToHide: [],
           initialHideColumn: false,
-          isGridView: false
+          isGridView: false,
+          entryClickHandler: null
        }
     },
     props: ['preferencesSelector'],
@@ -217,11 +218,20 @@ export default {
           isGridView: this.isGridView,
           showColumns: this.showColumns,
           hideColumns: this.hideColumns,
-          initialHideColumn: this.initialHideColumn
+          initialHideColumn: this.initialHideColumn,
+          registerEntryClickHandler: this.registerEntryClickHandler
         };
       }
     },
     methods: {
+      wrappedEntryClickHandler: function(doc){
+        if(this.entryClickHandler){
+          this.entryClickHandler(doc);
+        }
+      },
+      registerEntryClickHandler(handler){
+        this.entryClickHandler = handler;
+      },
       hideColumns: function(columns){
         this.columnsToHide = this.columnsToHide.concat(columns);
       },
