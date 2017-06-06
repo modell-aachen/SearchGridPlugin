@@ -366,7 +366,12 @@ export default {
         $.ajaxSettings.traditional = true;
 
         NProgress.start();
-        this.request = $.get(foswiki.preferences.SCRIPTURL + "/rest/SearchGridPlugin/searchproxy", params)
+        this.request = $.ajax({
+          type: "POST",
+          headers: { 'X-HTTP-Method-Override': 'GET' },
+          url: foswiki.preferences.SCRIPTURL + "/rest/SearchGridPlugin/searchproxy",
+          data: params
+        })
         .done(function(result){
             result = JSON.parse(result);
             self.numResults = result.response.numFound;
@@ -407,7 +412,12 @@ export default {
 
         var self = this;
 
-        $.get(foswiki.preferences.SCRIPTURL + "/rest/SearchGridPlugin/searchproxy", params)
+        $.ajax({
+          type: "POST",
+          headers: { 'X-HTTP-Method-Override': 'GET' },
+          url: foswiki.preferences.SCRIPTURL + "/rest/SearchGridPlugin/searchproxy",
+          data: params
+        })
         .done(function(result){
           result = JSON.parse(result);
           var parsedResult = self.parseFacetResult(facet.field, result.facet_counts.facet_fields[facet.field], result.facet_dsps);
