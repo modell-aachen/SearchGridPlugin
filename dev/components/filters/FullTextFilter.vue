@@ -32,13 +32,20 @@ export default {
         if(this.filterText === '')
           return null;
         var queries = "(";
-        for(var i = 1; i < this.params.length; i++) {
-          var currentField = this.params[i];
-          var field = `{!tag=${currentField} q.op=OR}${currentField}`;
-          var queryString = `*${this.filterText}*`
-          queries += `${field}:${queryString}`;
-          if(i != this.params.length - 1)
-            queries += " OR ";
+        var words = this.filterText.trim().split(" ");
+        for(var w = 0; w < words.length; w++) {
+            queries += '(';
+            for(var i = 1; i < this.params.length; i++) {
+              var currentField = this.params[i];
+              var field = `{!tag=${currentField}}${currentField}`;
+              var queryString = `*${words[w]}*`;
+              queries += `${field}:${queryString}`;
+              if(i != this.params.length - 1)
+                queries += " OR ";
+            }
+            queries += ')';
+            if(w != words.length - 1)
+                queries += " AND ";
         }
         queries += ')';
         return queries;
