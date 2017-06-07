@@ -376,8 +376,9 @@ sub _searchProxy {
     #my $content = Foswiki::Plugins::SolrPlugin::getSearcher($session)->restSOLRPROXY($web, $topic);
     my $searcher = Foswiki::Plugins::SolrPlugin::getSearcher($session);
     my $results = $searcher->solrSearch(undef, \%opts);
-    my $content = $results->raw_response;
+    return {status => 'error', msg => 'Can\'t connect to solr.', details => $results->raw_response->{_content}} unless $results->raw_response->{_rc} =~ /200/;
 
+    my $content = $results->raw_response;
     $content = $json->decode($content->{_content});
     my %forms;
 

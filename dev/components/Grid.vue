@@ -40,6 +40,7 @@
                 <div class="expanded row" v-bind:class="isGridView ? ['medium-up-1', 'xlarge-up-2', 'xxxlarge-up-3', 'xxxxlarge-up-4'] : []">
                     <!-- Table -->
                     <div class="columns" v-show="results.length == 0"><p>{{maketext("No results")}}</p></div>
+                    <div class="columns" v-show="results.status == 'error'"><p>{{maketext(results.msg)}}</p></div>
                     <div v-show="!isGridView && results.length > 0" class="columns search-grid-results">
                         <table>
                             <thead is="grid-header" :headers="filteredFields" :initial-sort="prefs.initialSort"></thead>
@@ -469,6 +470,10 @@ export default {
                 self.gridState = gridState;
       }});
       this.prefs = JSON.parse($('.' + this.preferencesSelector).html());
+      if(this.prefs.result.status === 'error') {
+              this.results = this.prefs.result;
+              return false;
+      }
       this.resultsPerPage = this.prefs.resultsPerPage;
       this.numResults = this.prefs.result.response.numFound;
       this.results = this.prefs.result.response.docs;

@@ -10,5 +10,6 @@ jsi18n.add('SearchGrid', {
       "Search term...": "Suchbegriff...",
       "No results": "Keine Ergebnisse",
       "and": "und",
-      "[_1] more": "[_1] weitere"
+      "[_1] more": "[_1] weitere",
+      "Can't connect to solr.": "Es konnte keine Verbindung zu Solr hergestellt werden."
 });
