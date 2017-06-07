@@ -37,9 +37,8 @@ export default {
             queries += '(';
             for(var i = 1; i < this.params.length; i++) {
               var currentField = this.params[i];
-              var field = `{!tag=${currentField}}${currentField}`;
               var queryString = `*${words[w]}*`;
-              queries += `${field}:${queryString}`;
+              queries += `${currentField}:${queryString}`;
               if(i != this.params.length - 1)
                 queries += " OR ";
             }
