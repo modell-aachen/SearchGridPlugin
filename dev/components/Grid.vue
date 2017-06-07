@@ -369,7 +369,7 @@ export default {
         this.request = $.ajax({
           type: "POST",
           headers: { 'X-HTTP-Method-Override': 'GET' },
-          url: foswiki.preferences.SCRIPTURL + "/rest/SearchGridPlugin/searchproxy",
+          url: foswiki.getScriptUrl('rest', 'SearchGridPlugin', 'searchproxy'),
           data: params
         })
         .done(function(result){
@@ -415,7 +415,7 @@ export default {
         $.ajax({
           type: "POST",
           headers: { 'X-HTTP-Method-Override': 'GET' },
-          url: foswiki.preferences.SCRIPTURL + "/rest/SearchGridPlugin/searchproxy",
+          url: foswiki.getScriptUrl('rest', 'SearchGridPlugin', 'searchproxy'),
           data: params
         })
         .done(function(result){
