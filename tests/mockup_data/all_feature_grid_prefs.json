@@ -314,6 +314,7 @@
    "initialSort": "title desc",
    "resultsPerPage":"10",
    "language":"de",
+   "mappings": {},
    "filters":[
       {
          "params":[
