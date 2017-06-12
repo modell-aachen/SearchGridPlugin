@@ -52,6 +52,29 @@ FOOBARSOMETHING. This avoids namespace issues.
 
 =cut
 
+sub maintenanceHandler {
+    Foswiki::Plugins::MaintenancePlugin::registerCheck("SearchGridPlugin:Prevent glossar in the grid", {
+    name => "Prevent glossar entries in the grid",
+    description => "Disable the glossar in Search Grids.",
+    check => sub {
+      my $isGlossaryEnabled = $Foswiki::cfg{Plugins}{GlossarPlugin}{Enabled};
+      unless($isGlossaryEnabled){
+        return { result => 0 };
+      }
+      my $config = $Foswiki::cfg{Extensions}{GlossarPlugin}{ExcludeSelector} || '';
+      if($config =~ m#(?:^|,)\s*\.SearchGridContainer\s*(?:$|,)#) { # this check is best effort, but should be ok
+        return { result => 0 };
+      } else {
+        return {
+          result => 1,
+          priority => $Foswiki::Plugins::MaintenancePlugin::ERROR,
+          solution => "Please add '.SearchGridContainer' to {Extensions}{GlossarPlugin}{ExcludeSelector} in configure. Kepp in mind to separate entries by comma."
+        }
+      }
+    }
+  });
+}
+
 sub initPlugin {
     my ( $topic, $web, $user, $installWeb ) = @_;
 
