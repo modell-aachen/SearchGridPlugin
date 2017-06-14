@@ -1,7 +1,6 @@
 <script>
 import GridComponentMixin from "../GridComponentMixin.vue";
 import MaketextMixin from "../MaketextMixin.vue"
-import RandomString from "randomstring";
 import * as mutations from "../../store/mutation-types";
 export default {
     mixins: [GridComponentMixin,MaketextMixin],
@@ -14,7 +13,7 @@ export default {
     props: ['params','facetValues','facetTotalCounts'],
     computed: {
         id(){
-            return RandomString.generate();
+            return Math.random().toString(36).substring(7);
         },
         title: function(){
             return this.params[0];
