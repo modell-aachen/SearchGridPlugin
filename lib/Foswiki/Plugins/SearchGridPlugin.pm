@@ -65,10 +65,11 @@ sub maintenanceHandler {
       if($config =~ m#(?:^|,)\s*\.SearchGridContainer\s*(?:$|,)#) { # this check is best effort, but should be ok
         return { result => 0 };
       } else {
+        my $excludeSelector = $config && $config =~ m/\S/ ? "$config,.SearchGridContainer" : '.SearchGridContainer';
         return {
           result => 1,
           priority => $Foswiki::Plugins::MaintenancePlugin::ERROR,
-          solution => "Please add '.SearchGridContainer' to {Extensions}{GlossarPlugin}{ExcludeSelector} in configure. Kepp in mind to separate entries by comma."
+          solution => "Please add '.SearchGridContainer' to {Extensions}{GlossarPlugin}{ExcludeSelector} in configure.<verbatim>{Extensions}{GlossarPlugin}{ExcludeSelector} = \"$excludeSelector\"</verbatim>"
         }
       }
     }
