@@ -90,8 +90,8 @@ The following fields are predefined and can be used as entries in the fields par
       </tr>
       <tr>
          <td>List</td>
-         <td>list-field(*_lst:solrField,separateBySpace:boolean)</td>
-         <td>Takes a solr _lst value and renders the values as an entry by entry list. This may also take _lst_dv field value to show the display values of the list entries. If the second parameter is set to anything truthy (e.g. 1) then the list will be merged into a string where each entry is separated by space.</td>
+         <td>list-field(*_lst:solrField,separateBySpace:boolean, separator:string, limit:integer)</td>
+         <td>Takes a solr _lst value and renders the values as an entry by entry list. This may also take _lst_dv field value to show the display values of the list entries. If the second parameter is set to anything truthy (e.g. 1) then the list will be merged into a string where each entry is separated by space. In addition a separator charactor like =$comma= can be specified as well as an amount if items to display (=limit=).</td>
          <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::LIST"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::LIST" CODE="1"}%</td>
       </tr>

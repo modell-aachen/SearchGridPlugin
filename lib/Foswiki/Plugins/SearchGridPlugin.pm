@@ -52,6 +52,30 @@ FOOBARSOMETHING. This avoids namespace issues.
 
 =cut
 
+sub maintenanceHandler {
+    Foswiki::Plugins::MaintenancePlugin::registerCheck("SearchGridPlugin:Prevent glossar in the grid", {
+    name => "Prevent glossar entries in the grid",
+    description => "Disable the glossar in Search Grids.",
+    check => sub {
+      my $isGlossaryEnabled = $Foswiki::cfg{Plugins}{GlossarPlugin}{Enabled};
+      unless($isGlossaryEnabled){
+        return { result => 0 };
+      }
+      my $config = $Foswiki::cfg{Extensions}{GlossarPlugin}{ExcludeSelector} || '';
+      if($config =~ m#(?:^|,)\s*\.SearchGridContainer\s*(?:$|,)#) { # this check is best effort, but should be ok
+        return { result => 0 };
+      } else {
+        my $excludeSelector = $config && $config =~ m/\S/ ? "$config,.SearchGridContainer" : '.SearchGridContainer';
+        return {
+          result => 1,
+          priority => $Foswiki::Plugins::MaintenancePlugin::ERROR,
+          solution => "Please add '.SearchGridContainer' to {Extensions}{GlossarPlugin}{ExcludeSelector} in configure.<verbatim>{Extensions}{GlossarPlugin}{ExcludeSelector} = \"$excludeSelector\"</verbatim>"
+        }
+      }
+    }
+  });
+}
+
 sub initPlugin {
     my ( $topic, $web, $user, $installWeb ) = @_;
 
@@ -376,8 +400,9 @@ sub _searchProxy {
     #my $content = Foswiki::Plugins::SolrPlugin::getSearcher($session)->restSOLRPROXY($web, $topic);
     my $searcher = Foswiki::Plugins::SolrPlugin::getSearcher($session);
     my $results = $searcher->solrSearch(undef, \%opts);
-    my $content = $results->raw_response;
+    return {status => 'error', msg => 'Can\'t connect to solr.', details => $results->raw_response->{_content}} unless $results->raw_response->{_rc} =~ /200/;
 
+    my $content = $results->raw_response;
     $content = $json->decode($content->{_content});
     my %forms;
 

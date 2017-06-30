@@ -8,6 +8,7 @@ import SearchGridStoreModule from "../dev/store/index.js";
 
 
 Vue.use(Vuex);
+Vue.config.productionTip = false;
 
 let MockupStore = new Vuex.Store({});
 MockupStore.registerModule("searchGrid", SearchGridStoreModule);
