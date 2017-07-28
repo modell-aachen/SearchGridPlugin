@@ -1,16 +1,31 @@
-import Helpers from './helpers.js'
+import TestCase from 'frontend-unit-test-library'
 import $ from 'jquery'
 import 'jasmine-ajax'
+import SearchGridStoreModule from "../dev/store/index.js";
+import Grid from '../dev/components/Grid.vue'
+import GridPrefs from './mockup_data/all_feature_grid_prefs.json'
 import ResponseMockup from './mockup_data/response.json'
 
 import './mockup_functions/foswiki.js'
 
+Vue.registerStoreModule("searchGrid", SearchGridStoreModule);
 describe("The grid component", () => {
   let [grid, mockupGridPrefs] = [];
 
+  let setupGrid = function() {
+    let stringifiedJSON = JSON.stringify(GridPrefs);
+    $(`<script class='SEARCHGRIDPREF_0' type='text/json'>${stringifiedJSON}</script>`).appendTo('html');
+    let grid = TestCase.createVueComponent(Grid, {
+      propsData: {preferencesSelector: `SEARCHGRIDPREF_0`},
+      store: TestCase.vuexStore
+    });
+    grid.$mount();
+    return [grid, GridPrefs];
+  };
+
   beforeEach(() => {
     jasmine.Ajax.install();
-    [grid, mockupGridPrefs] = Helpers.setupGrid();
+    [grid, mockupGridPrefs] = setupGrid();
   });
 
   afterEach(() => {

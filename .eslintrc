@@ -9,8 +9,12 @@
 		"es6": true,
 		"jasmine": true
 	},
+	globals: {
+		"Vue": false
+	},
 	rules: {
 		"linebreak-style": ["error", "unix"],
-		"no-console": "warn"
+		"no-console": "warn",
+		"no-var": "warn"
 	}
 }

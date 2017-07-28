@@ -2,20 +2,18 @@
 <div class="facet">
 <h4>{{header}}</h4>
 <div class="vue-select-wrapper">
-<v-select multiple label="field" :placeholder="maketext('Search term...')" v-model="selectedFacet" :options="options" :on-search="onSearchDebounce" :get-option-label="getOptionLabel" :get-selected-option-label="getSelectedOptionLabel" :prevent-search-filter="true" :on-get-more-options="onGetMoreOptions">
+<vue-select multiple label="field" :placeholder="maketext('Search term...')" v-model="selectedFacet" :options="options" :on-search="onSearchDebounce" :get-option-label="getOptionLabel" :get-selected-option-label="getSelectedOptionLabel" :prevent-search-filter="true" :on-get-more-options="onGetMoreOptions">
     <template slot="more-results">{{maketext(moreResultsText)}}</template>
-</v-select>
+</vue-select>
 </div>
 </div>
 </template>
 
 <script>
 import FacetMixin from './FacetMixin.vue'
-import vSelect from "vue-select/src/index.js"
 import debounce from 'lodash/debounce';
 
 export default {
-    components: {vSelect},
     mixins: [FacetMixin],
     data: function(){
         return {
@@ -40,7 +38,7 @@ export default {
     methods: {
         getOptions: function(search, loading, offset){
             loading(true);
-            var self = this;
+            let self = this;
             this.$parent.fetchFacetCharacteristics(this, search, offset, function(result){
                 if(result.length == 0 && offset > 0){
                     self.moreResultsText = "No more results available";
@@ -65,9 +63,9 @@ export default {
             return option.title;
         },
         buildOptions: function(facets, append=false){
-            var options = [];
-            for(var i = 0; i < facets.length; i++){
-                var facet = facets[i];
+            let options = [];
+            for(let i = 0; i < facets.length; i++){
+                let facet = facets[i];
                 options.push({
                     label: this.getLabel(facet.title, facet.count),
                     title: facet.title,

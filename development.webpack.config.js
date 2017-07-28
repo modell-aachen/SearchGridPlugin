@@ -6,6 +6,7 @@ var merge = require('webpack-merge');
 
 
 module.exports = merge.smart(baseConfig, {
+	//devtool: 'source-map',
 	module: {
 		rules: [
 			{

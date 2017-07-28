@@ -66,22 +66,7 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['PhantomJSCustom'],
-
-    customLaunchers: {
-        PhantomJSCustom: {
-            base: 'PhantomJS',
-            options: {
-                onCallback: function(data){
-                    if (data.type === "render") {
-                        // this function will not have the scope of karma.conf.js so we must define any global variable inside it
-                        if (window.renderId === undefined) { window.renderId = 0; }
-                        page.render(data.fname || ("screenshot_" + (window.renderId++) + ".png"));
-                    }
-                }
-            }
-        }
-    },
+    browsers: ['PhantomJS'],
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits

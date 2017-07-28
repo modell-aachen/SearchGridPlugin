@@ -35,15 +35,15 @@ export default {
     methods: {
         updateFacetMap(){
             this.facetMap = {};
-            for(var i = 0; i < this.facetCharacteristics.length; i++){
-                var currentCharacteristic = this.facetCharacteristics[i];
+            for(let i = 0; i < this.facetCharacteristics.length; i++){
+                let currentCharacteristic = this.facetCharacteristics[i];
                 this.facetMap[currentCharacteristic.field] = currentCharacteristic;
             }
         },
         isSelected(value){
             if(this.selectedFacet.length == 0)
                 return false;
-            for(var i = 0; i < this.selectedFacet.length; i++){
+            for(let i = 0; i < this.selectedFacet.length; i++){
                 if(this.selectedFacet[i].field === value.field)
                     return true;
             }
@@ -54,8 +54,8 @@ export default {
         },
         updateSelectedFacets() {
             this.selectedFacet = [];
-            for(var i = 0; i < this.selectedCheckboxes.length; i++){
-                var facetKey = this.selectedCheckboxes[i];
+            for(let i = 0; i < this.selectedCheckboxes.length; i++){
+                let facetKey = this.selectedCheckboxes[i];
                 this.selectedFacet.push(this.facetMap[facetKey]);
             }
         },

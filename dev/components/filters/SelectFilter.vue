@@ -35,8 +35,8 @@ export default {
             this.selectedFacet = [];
             if(this.selectedOption === '')
                 return;
-            for(var i = 0; i < this.facetCharacteristics.length; i++){
-                var currentCharacteristic = this.facetCharacteristics[i];
+            for(let i = 0; i < this.facetCharacteristics.length; i++){
+                let currentCharacteristic = this.facetCharacteristics[i];
                 if(currentCharacteristic.field === this.selectedOption){
                     this.selectedFacet.push(currentCharacteristic);
                     break;

@@ -4,7 +4,6 @@
 
 <script>
 export default {
-	/*global moment*/
     props: ['doc','params'],
     computed: {
         date: function(){
@@ -12,9 +11,9 @@ export default {
             if(typeof date === 'undefined' || date === '1970-01-01T00:00:00Z')
                 return "";
             if(this.params[1]) {
-                return moment(date, moment.ISO_8601).fromNow(true);
+                return this.$moment(date, this.$moment.ISO_8601).fromNow(true);
             }
-            return moment(date, moment.ISO_8601).toDate().toLocaleDateString();
+            return this.$moment(date, this.$moment.ISO_8601).toDate().toLocaleDateString();
         }
     }
 }

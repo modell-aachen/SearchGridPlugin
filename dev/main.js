@@ -1,11 +1,9 @@
-/* global Vue moment window $ VueJSPlugin */
-
 import SearchGridStoreModule from "./store/index.js";
 import Grid from './components/Grid.vue'
 
-VueJSPlugin.rootStore.registerModule("searchGrid", SearchGridStoreModule);
+Vue.registerStoreModule("searchGrid", SearchGridStoreModule);
 
-var SearchGridPlugin = {
+let SearchGridPlugin = {
     registerField: function(name, component){
         Vue.component(name, component);
     },
@@ -15,17 +13,13 @@ var SearchGridPlugin = {
 };
 window.SearchGridPlugin = SearchGridPlugin;
 
-$( function () {
-    $('.SearchGridContainer').each(function(i,element){
-        new Vue({
-            el: element,
-            store: VueJSPlugin.rootStore,
-            components: {
-                grid: Grid
-            },
-            created: function () {
-                moment.locale($("html").attr("lang"));
-            }
-        })
+Vue.onDocumentReady( function () {
+    Vue.instantiateEach('.SearchGridContainer', {
+        components: {
+            grid: Grid
+        },
+        created: function () {
+            this.$moment.locale(this.$lang);
+        }
     });
 })

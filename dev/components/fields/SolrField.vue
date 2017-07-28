@@ -15,12 +15,11 @@
 </template>
 
 <script>
-/*global foswiki moment*/
 export default {
     props: ['doc','params','language'],
     data: function () {
         return {
-            sIn: foswiki.jsi18n.get('SearchGrid', 'in')
+            sIn: this.$foswiki.jsi18n.get('SearchGrid', 'in')
         }
     },
     computed: {
@@ -32,7 +31,7 @@ export default {
             }
         },
         date: function(){
-            return moment(this.doc['date']);
+            return this.$moment(this.doc['date']);
         }
     }
 }

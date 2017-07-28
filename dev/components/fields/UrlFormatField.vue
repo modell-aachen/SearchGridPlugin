@@ -12,7 +12,7 @@ export default {
     props: ['doc','params'],
     methods: {
       formatLink : function(linkText){
-        var self = this;
+        let self = this;
         return linkText.replace(/\$([a-z-_]+)/g, function(a,b) {
                                                     return self.doc[b];
                                                  });

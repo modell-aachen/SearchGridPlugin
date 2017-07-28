@@ -17,8 +17,8 @@ export default {
         },
         more() {
             if (this.doc[this.field] && /^\d+$/.test(this.limit)) {
-                var limit = parseInt(this.limit);
-                var length = this.doc[this.field].length;
+                let limit = parseInt(this.limit);
+                let length = this.doc[this.field].length;
 
                 if (length > limit) {
                     return length - limit;
@@ -41,7 +41,7 @@ export default {
         getList: function() {
             if (!this.doc[this.field]) return "";
 
-            var data = this.doc[this.field];
+            let data = this.doc[this.field];
             if (/^\d+$/.test(this.limit)) {
                 data = data.slice(0, parseInt(this.limit));
             }

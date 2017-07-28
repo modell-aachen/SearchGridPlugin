@@ -1,9 +1,8 @@
 <script>
-/*global foswiki*/
 export default {
     methods: {
         maketext : function(text) {
-            return foswiki.jsi18n.get('SearchGrid', text);
+            return this.$foswiki.jsi18n.get('SearchGrid', text);
         }
     }
 }

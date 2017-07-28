@@ -58,7 +58,7 @@
                 </div>
                 <div class="expanded row">
                     <div class="columns">
-                        <paginator class="ma-pager-new" v-if="pageCount > 1" v-on:page-changed="pageChanged" :page-count="pageCount" :current-page="gridState.currentPage"></paginator>
+                        <vue-pagination class="ma-pager-new" v-if="pageCount > 1" v-on:page-changed="pageChanged" :page-count="pageCount" :current-page="gridState.currentPage"></vue-pagination>
                     </div>
                 </div>
             </div>
@@ -79,7 +79,6 @@
 
 
 <script>
-/*global $ foswiki*/
 import MaketextMixin from './MaketextMixin.vue'
 import GridHeader from './GridHeader.vue'
 import UrlField from './fields/UrlField.vue'
@@ -96,7 +95,6 @@ import SelectFilter from './filters/SelectFilter.vue'
 import MultiSelectFacet from './facets/MultiSelectFacet.vue'
 import SingleSelectFacet from './facets/SingleSelectFacet.vue'
 import Select2Facet from './facets/Select2Facet.vue'
-import Paginator from 'vue-simple-pagination/VueSimplePagination.vue'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import * as mutations from "../store/mutation-types";
@@ -120,7 +118,6 @@ export default {
       MultiSelectFacet,
       SingleSelectFacet,
       Select2Facet,
-      Paginator
     },
     data : function () {
        return {
@@ -147,7 +144,7 @@ export default {
           entryClickHandler: null
        }
     },
-    props: ['preferencesSelector'],
+    props: ['preferencesSelector','pref'],
     computed: {
       currentPage: {
         get() {
@@ -244,7 +241,7 @@ export default {
         });
       },
       arrayIncludesValue(array,value){
-        for(var i=0;i<array.length;i++){
+        for(let i=0;i<array.length;i++){
           if(array[i] === value)
             return true;
         }
@@ -280,7 +277,7 @@ export default {
           this.fetchData();
       },
       clearFacets: function () {
-        for(var i = 0; i < this.facets.length; i++){
+        for(let i = 0; i < this.facets.length; i++){
           //Only filters have the 'isDefault' property
           if(!this.facets[i].isFilter){
             this.facets[i].reset();
@@ -292,7 +289,7 @@ export default {
       },
       clearFilters: function(){
         this.isFilterApplied = false;
-        for(var i = 0; i < this.facets.length; i++){
+        for(let i = 0; i < this.facets.length; i++){
           //Only filters have the 'isDefault' property
           if(this.facets[i].isFilter){
             this.facets[i].reset();
@@ -304,7 +301,7 @@ export default {
       },
       applyFilters: function(){
         this.isFilterApplied = false;
-        for(var i = 0; i < this.facets.length; i++){
+        for(let i = 0; i < this.facets.length; i++){
           if(this.facets[i].isFilter &&
              !this.facets[i].isDefault){
             this.isFilterApplied = true;
@@ -314,16 +311,16 @@ export default {
         this.fetchData(true);
       },
       sortCritsToString: function() {
-        var result = "";
-        for(var i = 0; i < this.sortCrits.length; i++) {
+        let result = "";
+        for(let i = 0; i < this.sortCrits.length; i++) {
           result += this.sortCrits[i].field + " " + this.sortCrits[i].order + ",";
         }
         result = result.slice(0,result.length-1); // drop last comma
         return result;
       },
       collectFilterQueries: function(){
-        var filterQueries = [];
-        for(var i = 0; i < this.facets.length; i++){
+        let filterQueries = [];
+        for(let i = 0; i < this.facets.length; i++){
           if(this.facets[i].filterQuery)
             filterQueries.push(this.facets[i].filterQuery);
         }
@@ -331,13 +328,13 @@ export default {
       },
       fetchData: function(search){
         //Search via filters or query for next page? Query over all elements : Skip results on former pages
-        var startpoint  = search? 0 : (this.currentPage - 1) * this.resultsPerPage;
+        let startpoint  = search? 0 : (this.currentPage - 1) * this.resultsPerPage;
         if(this.request){
             this.request.abort();
         }
-        var self = this;
-        var params = {
-          "topic": foswiki.preferences.WEB + "." + foswiki.preferences.TOPIC,
+        let self = this;
+        let params = {
+          "topic": this.$foswiki.preferences.WEB + "." + this.$foswiki.preferences.TOPIC,
           "q":this.prefs.q,
           "rows":this.resultsPerPage,
           "start": startpoint,
@@ -355,7 +352,7 @@ export default {
         // if(params["fq"].length == 0){
         //   this.currentPage = 1;
         // }
-        for(var i = 0; i < this.facets.length; i++){
+        for(let i = 0; i < this.facets.length; i++){
           params["facet.field"].push(this.facets[i].facetField);
           if(!this.facets[i].isFilter)
             params[`f.${this.facets[i].field}.facet.limit`] = this.facets[i].limit;
@@ -364,13 +361,13 @@ export default {
         if(this.sortCrits !== []){
           params["sort"] = this.sortCritsToString();
         }
-        $.ajaxSettings.traditional = true;
 
         NProgress.start();
-        this.request = $.ajax({
+        this.request = this.$ajax({
           type: "POST",
           headers: { 'X-HTTP-Method-Override': 'GET' },
-          url: foswiki.getScriptUrl('rest', 'SearchGridPlugin', 'searchproxy'),
+          url: this.$foswiki.getScriptUrl('rest', 'SearchGridPlugin', 'searchproxy'),
+          traditional: true,
           data: params
         })
         .done(function(result){
@@ -392,9 +389,9 @@ export default {
         });
       },
       fetchFacetCharacteristics: function(facet, searchTerm, offset, callback){
-        var searchTermKey = `f.${facet.field}.facet.contains`;
-        var ignoreCaseKey = `f.${facet.field}.facet.contains.ignoreCase`;
-        var params = {
+        let searchTermKey = `f.${facet.field}.facet.contains`;
+        let ignoreCaseKey = `f.${facet.field}.facet.contains.ignoreCase`;
+        let params = {
           "q":this.prefs.q,
           "rows": 0,
           "facet": true,
@@ -411,17 +408,17 @@ export default {
         }
         params["fq"] = this.collectFilterQueries();
 
-        var self = this;
+        let self = this;
 
-        $.ajax({
+        this.$ajax({
           type: "POST",
           headers: { 'X-HTTP-Method-Override': 'GET' },
-          url: foswiki.getScriptUrl('rest', 'SearchGridPlugin', 'searchproxy'),
+          url: this.$foswiki.getScriptUrl('rest', 'SearchGridPlugin', 'searchproxy'),
           data: params
         })
         .done(function(result){
           result = JSON.parse(result);
-          var parsedResult = self.parseFacetResult(facet.field, result.facet_counts.facet_fields[facet.field], result.facet_dsps);
+          let parsedResult = self.parseFacetResult(facet.field, result.facet_counts.facet_fields[facet.field], result.facet_dsps);
           callback(parsedResult);
         });
       },
@@ -455,9 +452,9 @@ export default {
       },
       parseAllFacetResults: function(result){
         if(result.facet_counts){
-          var parsedFacetValues = {};
-          var facetValues = result.facet_counts.facet_fields;
-          for (var key in facetValues) {
+          let parsedFacetValues = {};
+          let facetValues = result.facet_counts.facet_fields;
+          for (let key in facetValues) {
               parsedFacetValues[key] = this.parseFacetResult(key, facetValues[key], result.facet_dsps);
           }
           this.facetValues = parsedFacetValues;
@@ -469,7 +466,7 @@ export default {
       this.$store.dispatch('searchGrid/addGridState', {callback: function(gridState){
                 self.gridState = gridState;
       }});
-      this.prefs = JSON.parse($('.' + this.preferencesSelector).html());
+      this.prefs = Vue.getConfigById(this.preferencesSelector);
       if(this.prefs.result.status === 'error') {
               this.results = this.prefs.result;
               return false;
@@ -481,10 +478,10 @@ export default {
       this.hasLiveFilter = this.prefs.hasLiveFilter;
       this.initialHideColumn = this.prefs.initialHideColumn;
       if(this.prefs.hasOwnProperty("initialSort")){
-        var sortCrits = this.prefs.initialSort.split(",");
+        let sortCrits = this.prefs.initialSort.split(",");
         let initialSortCrits = [];
-        for(var i = 0; i < sortCrits.length; i++) {
-          var splitted = sortCrits[i].split(" ");
+        for(let i = 0; i < sortCrits.length; i++) {
+          let splitted = sortCrits[i].split(" ");
           initialSortCrits.push({field: splitted[0], order: splitted[1]});
         }
         this.sortCrits = initialSortCrits;
