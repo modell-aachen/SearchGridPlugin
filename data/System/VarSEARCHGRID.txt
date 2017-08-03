@@ -238,7 +238,6 @@ All filters take as their first parameter the filter label (which gets maketexte
    headers="Topic,Responsible"
    fields="text-field(title),text-field(field_Responsible_s_dv)"
    filters="select-filter(Responsible,field_Responsible_s)"
-   form="Processes.DocumentForm"
 }%
 %IF{"$CODE='1'" then="</pre>"}%
 %ENDSECTION{"FILTER::SELECT"}%
@@ -300,7 +299,6 @@ There are three kinds of facets all of which take at least three parameters. The
    headers="Topic"
    fields="text-field(title)"
    facets="single-select-facet(Responsible,field_Responsible_s)"
-   form="Processes.DocumentForm"
 }%
 %IF{"$CODE='1'" then="</pre>"}%
 %ENDSECTION{"FACET::SELECT::SINGLE"}%
@@ -311,7 +309,6 @@ There are three kinds of facets all of which take at least three parameters. The
    headers="Topic"
    fields="text-field(title)"
    facets="select-2-facet(Responsible,field_Responsible_s)"
-   form="Processes.DocumentForm"
 }%
 %IF{"$CODE='1'" then="</pre>"}%
 %ENDSECTION{"FACET::SELECT::TWO"}%
