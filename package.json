@@ -21,7 +21,7 @@
     "eslint": "^3.8.1",
     "eslint-loader": "^1.6.0",
     "eslint-plugin-html": "^2.0.1",
-    "frontend-unit-test-library": "git://github.com/modell-aachen/FrontendUnitTestLibrary.git",
+    "FrontendUnitTestLibrary": "git://github.com/modell-aachen/FrontendUnitTestLibrary.git",
     "jasmine": "^2.5.2",
     "jasmine-ajax": "^3.2.0",
     "jquery": "^3.2.1",
@@ -54,6 +54,7 @@
     "style-loader": "^0.16.0",
     "vue-loader": "^11.3.3",
     "webpack": "^2.3.0",
-    "webpack-merge": "^4.1.0"
+    "webpack-merge": "^4.1.0",
+    "v-tooltip": "^2.0.0-beta.12"
   }
 }

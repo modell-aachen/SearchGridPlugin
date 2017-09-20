@@ -81,6 +81,7 @@
 <script>
 import MaketextMixin from './MaketextMixin.vue'
 import GridHeader from './GridHeader.vue'
+import AmpelField from './fields/AmpelField.vue'
 import UrlField from './fields/UrlField.vue'
 import UrlFormatField from './fields/UrlFormatField.vue'
 import TextField from './fields/TextField.vue'
@@ -104,6 +105,7 @@ export default {
     mixins: [MaketextMixin],
     components : {
       GridHeader,
+      AmpelField,
       UrlField,
       UrlFormatField,
       TextField,

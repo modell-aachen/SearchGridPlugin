@@ -1,4 +1,4 @@
-import TestCase from 'frontend-unit-test-library'
+import TestCase from 'FrontendUnitTestLibrary'
 import $ from 'jquery'
 import 'jasmine-ajax'
 import SearchGridStoreModule from "../dev/store/index.js";
@@ -52,7 +52,7 @@ describe("The grid component", () => {
     it("should render the initial result set correctly", () => {
       let gridRows = $(grid.$el).find('.search-grid-results tbody').find('tr');
       expect(gridRows.length).toBe(mockupGridPrefs.result.response.docs.length);
-      for(var i = 0; i < gridRows.length; i++){
+      for(let i = 0; i < gridRows.length; i++){
         expect($(gridRows[i]).find('td').length).toBe(mockupGridPrefs.fields.length);
       }
     });
