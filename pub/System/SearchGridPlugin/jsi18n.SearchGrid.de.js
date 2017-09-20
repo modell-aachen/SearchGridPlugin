@@ -11,5 +11,10 @@ jsi18n.add('SearchGrid', {
       "No results": "Keine Ergebnisse",
       "and": "und",
       "[_1] more": "[_1] weitere",
-      "Can't connect to solr.": "Es konnte keine Verbindung zu Solr hergestellt werden."
+      "Can't connect to solr.": "Es konnte keine Verbindung zu Solr hergestellt werden.",
+      "([_1]) still [_2] days": "([_1]) Noch [_2] Tage",
+      "([_1]) still one day": "([_1]) Noch einen Tag",
+      "([_1]) today": "([_1]) Heute",
+      "([_1]) since [_2] days": "([_1]) Seit [_2] Tagen",
+      "([_1]) since one day": "([_1]) Seit einem Tag",
 });
