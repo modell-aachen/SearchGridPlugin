@@ -5,8 +5,6 @@
             <span v-if="showDate && ampel.warnStatus != 'none'">{{ampel.dueDate}}</span>
             <img v-tooltip="tooltip" :src="url">
         </div>
-        <div class='text'>
-        </div>
     </div>
 </td>
 </template>
@@ -29,7 +27,7 @@ export default {
             yellow: "ampel_o.png",
             none: "ampel.png"
         }
-        let showDate = (this.params[1])?((this.params[1]==0)?false:true):false;
+        let showDate = (this.params[1])?true:false;
         let warnTimeY = (this.params[2])?parseInt(this.params[2]):7;
         let warnTimeR = (this.params[3])?parseInt(this.params[3]):-1;
         let date = this.doc[this.params[0]];
@@ -66,10 +64,9 @@ export default {
     },
     computed: {
         url(){
-            return this.foswiki.preferences.PUBURL+'/System/AmpelPlugin/images/'+this.ampel.statusImage;
+            return this.foswiki.getPubUrl(this.foswiki.getPreference('SYSTEMWEB'), 'AmpelPlugin/images', this.ampel.statusImage);
         },
         tooltip(){
-            console.log(this.ampel.daysRemaining);
             let positivDaysRemaining = this.ampel.daysRemaining;
             if (this.ampel.warnStatus != 'none'){
                 let text ='([_1]) still [_2] days';
