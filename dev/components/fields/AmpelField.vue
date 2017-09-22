@@ -27,7 +27,7 @@ export default {
             yellow: "ampel_o.png",
             none: "ampel.png"
         }
-        let showDate = (this.params[1])?true:false;
+        let showDate = (this.params[1])?((this.params[1] == 0)?false:true):false;
         let warnTimeY = (this.params[2])?parseInt(this.params[2]):7;
         let warnTimeR = (this.params[3])?parseInt(this.params[3]):-1;
         let date = this.doc[this.params[0]];

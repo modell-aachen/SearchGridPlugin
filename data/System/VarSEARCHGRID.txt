@@ -109,6 +109,13 @@ The following fields are predefined and can be used as entries in the fields par
          <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::TEST"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::TEST" CODE="1"}%</td>
       </tr>
+      <tr>
+         <td>Ampel</td>
+         <td>ampel-field(date:solrField,showDate:boolean,warnYellow:integer,warnRed:integer)</td>
+         <td>Shows a traffic light. It shows the date next to it, if showDate is set. Configure the days when the traffic light becomes yellow with 'warnYellow' and when it becomes red with 'warnRed'.</td>
+         <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::AMPEL"}%%ENDTWISTY%</td>
+         <td>%INCLUDE{"%TOPIC%" section="FIELD::AMPEL" CODE="1"}%</td>
+      </tr>
    </table>
 
 <div style="display: none">
@@ -165,6 +172,17 @@ The following fields are predefined and can be used as entries in the fields par
 }%
 %IF{"$CODE='1'" then="</pre>"}%
 %ENDSECTION{"FIELD::DATE"}%
+%STARTSECTION{"FIELD::AMPEL"}%
+%IF{"$CODE='1'" then="<pre>"}%
+%%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
+   "type:topic form:*DocumentForm"
+   headers="Ampel"
+   fields="ampel-field(createdate)"
+   fieldRestriction="createdate"
+   resultsPerPage="4"
+}%
+%IF{"$CODE='1'" then="</pre>"}%
+%ENDSECTION{"FIELD::AMPEL"}%
 %STARTSECTION{"FIELD::LIST"}%
 %IF{"$CODE='1'" then="<pre>"}%
 %%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
