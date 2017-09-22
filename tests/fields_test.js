@@ -4,7 +4,7 @@ import moment from 'moment'
 
 import AmpelField from '../dev/components/fields/AmpelField.vue'
 
-describe("Test SearchGridFields", () => {
+describe("SearchGridFields", () => {
   let ampelFieldNow = null;
   let ampelFieldBefore1 = null;
   let ampelFieldAfter7 = null;
@@ -24,8 +24,8 @@ describe("Test SearchGridFields", () => {
   });
 
   describe('AmpelField', () => {
-    it('Check default values', () => {
-      expect(ampelFieldNow.showDate).toBe(false);
+    it('applies the default values', () => {
+      expect(ampelFieldNow.showDate).toBe(true);
       expect(ampelFieldNow.ampel.dueDate).toBe(moment().format("D.MM.YYYY"));
       expect(ampelFieldBefore1.ampel.dueDate).toBe(moment().subtract('1','d').format("D.MM.YYYY"));
       expect(ampelFieldAfter7.ampel.dueDate).toBe(moment().add('7','d').format("D.MM.YYYY"));
@@ -35,24 +35,24 @@ describe("Test SearchGridFields", () => {
       expect(ampelFieldBefore1.ampel.warnStatus).toBe('red');
     });
 
-    it('Check status images', () => {
+    it('uses an amber image for the current date, a green image for a future date, a red image for future date', () => {
       expect(ampelFieldNow.ampel.statusImage).toBe('ampel_o.png');
       expect(ampelFieldAfter7.ampel.statusImage).toBe('ampel_g.png');
       expect(ampelFieldBefore1.ampel.statusImage).toBe('ampel_r.png');
     });
 
-    it('Check days remaining', () => {
+    it('correctly sets the remaining days', () => {
       expect(ampelFieldNow.ampel.daysRemaining).toBe(0);
       expect(ampelFieldAfter7.ampel.daysRemaining).toBe(7);
       expect(ampelFieldBefore1.ampel.daysRemaining).toBe(-1);
     });
 
-    it('Check invalid date', () => {
+    it('handles an invalid date correctly', () => {
       expect(ampelFieldInvalid.ampel.warnStatus).toBe("none");
       expect(ampelFieldInvalid.ampel.statusImage).toBe("ampel.png");
     });
 
-    it('Check custom params', () => {
+    it('respects custom params', () => {
       let ampelField = createAmpel((moment().add('4','d').format("YYYY-MM-DTHH:mm:ssZ")),['field_Time_dt',1,6,3]).$mount();
       expect(ampelField.ampel.daysRemaining).toBe(4);
       expect(ampelField.ampel.warnStatus).toBe('yellow');
