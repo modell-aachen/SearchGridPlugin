@@ -118,12 +118,6 @@ sub initPlugin {
 
 sub _searchGrid {
     my($session, $params, $topic, $web, $topicObject) = @_;
-    # Params:
-    # - DEFAULT: Full text search
-    # - FACETS:  List of Facets (e.g. create_date:date,author:user,)
-    # - FILTER:  List of Filter (e.g. create_date:date,author:user,)
-    # - VIEW: defaultSolr,defaultTable,Eigenes Template
-    # - displayRows: list von anzeie mata feldern
 
     my $defaultQuery = $params->{_DEFAULT};
     my $resultsPerPage = $params->{resultsPerPage} || 20;
