@@ -5,6 +5,7 @@ lib/Foswiki/Plugins/SearchGridPlugin.pm 0444 Plugin Perl module
 test/unit/SearchGridPlugin/SearchGridPluginTests.pm 0644
 pub/System/SearchGridPlugin/searchGrid.js 0644
 pub/System/SearchGridPlugin/jsi18n.SearchGrid.de.js 0644
+pub/System/SearchGridPlugin/excel_logo.png 0644
 pub/System/FlatSkin/css/flatskin.wrapped.min.css 0644
 pub/System/FlatSkin/fonts/opensans/Light/OpenSans-Light.eot
 pub/System/FlatSkin/fonts/opensans/Light/OpenSans-Light.woff

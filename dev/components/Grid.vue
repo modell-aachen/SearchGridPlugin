@@ -24,6 +24,11 @@
                                 </component>
                               </template>
                             </div>
+                            <div v-if="prefs.enableExcelExport" class="shrink columns">
+                              <div class="button-group">
+                                <excel-export></excel-export>
+                              </div>
+                            </div>
                             <div class="shrink columns">
                                 <div class="grid-toggle button-group">
                                     <a v-if="hasGridView" v-bind:class="{disabled: isGridView, selected: !isGridView}" class="small button" @click.stop="toggleGridView('table')">
@@ -97,6 +102,7 @@ import MultiSelectFacet from './facets/MultiSelectFacet.vue'
 import SingleSelectFacet from './facets/SingleSelectFacet.vue'
 import Select2Facet from './facets/Select2Facet.vue'
 import NProgress from 'nprogress'
+import ExcelExport from './ExcelExport.vue'
 import 'nprogress/nprogress.css'
 import * as mutations from "../store/mutation-types";
 import debounce from 'lodash/debounce';
@@ -120,6 +126,7 @@ export default {
       MultiSelectFacet,
       SingleSelectFacet,
       Select2Facet,
+      ExcelExport
     },
     data : function () {
        return {
