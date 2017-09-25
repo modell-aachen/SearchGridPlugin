@@ -119,6 +119,30 @@ sub initPlugin {
 sub _searchGrid {
     my($session, $params, $topic, $web, $topicObject) = @_;
 
+    my $frontendPrefs = _getFrontendPreferences($params);
+    my $prefId = md5_hex(rand);
+    my $prefSelector = "SEARCHGRIDPREF_$prefId";
+    my $jsonPrefs = to_json($frontendPrefs);
+    #Fix: $n and $quot are automatically expanded by foswiki and destroy the json.
+    #So they are replaced.
+    $jsonPrefs =~ s/(\$n|\$quot)//g;
+    $jsonPrefs =~ s/([<>])/HTML::Entities::encode_entities($1)/ge; # no XSS
+    Foswiki::Func::expandCommonVariables("%VUE{VERSION=\"2\"}%");
+    Foswiki::Func::addToZone( 'head', 'FONTAWESOME',
+        '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FontAwesomeContrib/css/font-awesome.min.css" />');
+    Foswiki::Func::addToZone( 'head', 'FLATSKIN_WRAPPED',
+        '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FlatSkin/css/flatskin_wrapped.min.css" />');
+    Foswiki::Func::addToZone( 'script', $prefSelector,
+        "<script type='text/json'>$jsonPrefs</script>");
+    Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
+        "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>","jsi18nCore,VUEJSPLUGIN"
+    );
+    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\"><grid preferences-selector='$prefSelector'></grid></div>";
+}
+
+sub _getFrontendPreferences {
+    my $params = shift;
+    my $session = $Foswiki::Plugins::SESSION;
     my $defaultQuery = $params->{_DEFAULT};
     my $resultsPerPage = $params->{resultsPerPage} || 20;
     my $hasLiveFilter = (defined $params->{hasLiveFilter} && $params->{hasLiveFilter} eq '1') ? JSON::true : JSON::false;
@@ -134,8 +158,12 @@ sub _searchGrid {
     my $fieldRestriction = $params->{fieldRestriction} || '';
     my $gridField = $params->{gridField} || '';
     my $addons = $params->{addons} || '';
+    my $enableExcelExport = JSON::false;
+    if($fieldRestriction && $params->{enableExcelExport}){
+        $enableExcelExport = JSON::true;
+    }
 
-    my $prefs = {
+    my $frontendPrefs = {
         q => $defaultQuery,
         resultsPerPage => $resultsPerPage,
         fields => [],
@@ -149,15 +177,16 @@ sub _searchGrid {
         fieldRestriction => $fieldRestriction,
         hasLiveFilter => $hasLiveFilter,
         initialHideColumn => $initialHideColumn,
+        enableExcelExport => $enableExcelExport
     };
 
     my @addonlist = split(/,/,$addons);
-    $prefs->{addons} = \@addonlist;
+    $frontendPrefs->{addons} = \@addonlist;
 
     if($initialSort){
         $initialSort =~ s/,/ /g;
         $initialSort =~ s/;/,/g;
-        $prefs->{initialSort} = $initialSort;
+        $frontendPrefs->{initialSort} = $initialSort;
     }
 
     my @parsedFields = ( $fields =~ /(.*?\(.*?\)),?/g );
@@ -177,14 +206,14 @@ sub _searchGrid {
         $field->{component} = $fieldConfig->{command};
 
         $field->{params} = $fieldConfig->{params};
-        push(@{$prefs->{fields}}, $field);
+        push(@{$frontendPrefs->{fields}}, $field);
 
         $index++;
     }
     # Parse grid field
     if($gridField){
         my $gridField = @{_parseCommands($gridField)}[0];
-        $prefs->{gridField} = {
+        $frontendPrefs->{gridField} = {
             component => $gridField->{command},
             params => $gridField->{params}
         }
@@ -193,25 +222,25 @@ sub _searchGrid {
     foreach my $filter (@{_parseCommands($filters)}) {
         @{$filter->{params}}[0] = $session->i18n->maketext(@{$filter->{params}}[0]);
         if(@{$filter->{params}}[2] and $filter->{command} eq 'select-filter') {
-            $prefs->{initialFiltering} = 1;
+            $frontendPrefs->{initialFiltering} = 1;
         }
         my $newFilter = {
             component => $filter->{command},
             params => $filter->{params}
         };
-        push(@{$prefs->{filters}}, $newFilter);
+        push(@{$frontendPrefs->{filters}}, $newFilter);
     }
     # Parse facets
     foreach my $facet (@{_parseCommands($facets)}) {
         @{$facet->{params}}[0] = $session->i18n->maketext(@{$facet->{params}}[0]);
         if(@{$facet->{params}}[3]) {
-            $prefs->{initialFacetting} = 1;
+            $frontendPrefs->{initialFacetting} = 1;
         }
         my $newFacet = {
             component => $facet->{command},
             params => $facet->{params}
         };
-        push(@{$prefs->{facets}}, $newFacet);
+        push(@{$frontendPrefs->{facets}}, $newFacet);
     }
 
     #Parse mappings
@@ -227,28 +256,12 @@ sub _searchGrid {
         }
     } keys %$params;
 
-    $prefs->{mappings} = $mappings;
+    $frontendPrefs->{mappings} = $mappings;
 
-    #First data fetch per backend.
-    $prefs->{result} = _buildQuery($session, $prefs);
-    my $prefId = md5_hex(rand);
-    my $prefSelector = "SEARCHGRIDPREF_$prefId";
-    my $jsonPrefs = to_json($prefs);
-    #Fix: $n and $quot are automatically expanded by foswiki and destroy the json.
-    #So they are replaced.
-    $jsonPrefs =~ s/(\$n|\$quot)//g;
-    $jsonPrefs =~ s/([<>])/HTML::Entities::encode_entities($1)/ge; # no XSS
-    Foswiki::Func::expandCommonVariables("%VUE{VERSION=\"2\"}%");
-    Foswiki::Func::addToZone( 'head', 'FONTAWESOME',
-        '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FontAwesomeContrib/css/font-awesome.min.css" />');
-    Foswiki::Func::addToZone( 'head', 'FLATSKIN_WRAPPED',
-        '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FlatSkin/css/flatskin_wrapped.min.css" />');
-    Foswiki::Func::addToZone( 'script', $prefSelector,
-        "<script type='text/json'>$jsonPrefs</script>");
-    Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
-        "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>","jsi18nCore,VUEJSPLUGIN"
-    );
-    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\"><grid preferences-selector='$prefSelector'></grid></div>";
+    $frontendPrefs->{result} = _buildQuery($session, $frontendPrefs);
+
+    return $frontendPrefs;
+
 }
 
 # Build query data to fetch first search result in backend.
