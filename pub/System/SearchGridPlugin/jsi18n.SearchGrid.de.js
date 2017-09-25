@@ -17,4 +17,5 @@ jsi18n.add('SearchGrid', {
       "([_1]) today": "([_1]) Heute",
       "([_1]) since [_2] days": "([_1]) Seit [_2] Tagen",
       "([_1]) since one day": "([_1]) Seit einem Tag",
+      "Export all elements based on the current filter settings.":  "Alle Elemente gemäß aktueller Filterung exportieren"
 });
