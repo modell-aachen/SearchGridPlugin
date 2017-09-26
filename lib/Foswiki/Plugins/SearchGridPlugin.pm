@@ -243,6 +243,7 @@ sub _searchGrid {
     #Fix: $n and $quot are automatically expanded by foswiki and destroy the json.
     #So they are replaced.
     $jsonPrefs =~ s/(\$n|\$quot)//g;
+    $jsonPrefs =~ s/([<>])/HTML::Entities::encode_entities($1)/ge; # no XSS
     Foswiki::Func::expandCommonVariables("%VUE{VERSION=\"2\"}%");
     Foswiki::Func::addToZone( 'head', 'FONTAWESOME',
         '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FontAwesomeContrib/css/font-awesome.min.css" />');
