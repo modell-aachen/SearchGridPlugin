@@ -317,7 +317,8 @@ export default {
             break;
           }
         }
-        this.fetchData(true);
+        this.currentPage = 1;
+        this.fetchData();
       },
       sortCritsToString: function() {
         let result = "";
@@ -335,13 +336,12 @@ export default {
         }
         return filterQueries;
       },
-      fetchData: function(search){
-        //Search via filters or query for next page? Query over all elements : Skip results on former pages
-        let startpoint  = search? 0 : (this.currentPage - 1) * this.resultsPerPage;
+      getSearchQueryRequestParameters(){
+        let startpoint  = (this.currentPage - 1) * this.resultsPerPage;
         if(this.request){
             this.request.abort();
         }
-        let self = this;
+
         let params = {
           "topic": this.$foswiki.preferences.WEB + "." + this.$foswiki.preferences.TOPIC,
           "q":this.prefs.q,
@@ -356,11 +356,7 @@ export default {
 
         params["facet.field"] = [];
         params["fq"] = this.collectFilterQueries();
-        // If there are no filterquerys, the whole set is loaded and the currentpage has to be set to page 1
-        //TODO Check if still relevant
-        // if(params["fq"].length == 0){
-        //   this.currentPage = 1;
-        // }
+
         for(let i = 0; i < this.facets.length; i++){
           params["facet.field"].push(this.facets[i].facetField);
           if(!this.facets[i].isFilter)
@@ -371,6 +367,12 @@ export default {
           params["sort"] = this.sortCritsToString();
         }
 
+        return params;
+      },
+      fetchData: function(){
+        let params = this.getSearchQueryRequestParameters();
+
+        let self = this;
         NProgress.start();
         this.request = this.$ajax({
           type: "POST",
