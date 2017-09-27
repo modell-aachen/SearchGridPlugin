@@ -11,9 +11,9 @@ describe("SearchGridFields", () => {
   let ampelFieldInvalid = null;
 
   beforeAll(() => {
-    ampelFieldAfter7 = createAmpel((moment().add('7','d').format("YYYY-MM-DTHH:mm:ssZ")),['field_Time_dt']).$mount();
-    ampelFieldBefore1 = createAmpel((moment().add('-1','d').format("YYYY-MM-DTHH:mm:ssZ")),['field_Time_dt']).$mount();
-    ampelFieldNow = createAmpel((moment().format("YYYY-MM-DTHH:mm:ssZ")),['field_Time_dt']).$mount();
+    ampelFieldAfter7 = createAmpel((moment().add('days','7')),['field_Time_dt']).$mount();
+    ampelFieldBefore1 = createAmpel((moment().add('-1','d')),['field_Time_dt']).$mount();
+    ampelFieldNow = createAmpel((moment()),['field_Time_dt']).$mount();
     ampelFieldInvalid = createAmpel("InvalidDate",['field_Time_dt']).$mount();
   });
 
@@ -25,7 +25,7 @@ describe("SearchGridFields", () => {
 
   describe('AmpelField', () => {
     it('applies the default values', () => {
-      expect(ampelFieldNow.showDate).toBe(true);
+      expect(ampelFieldNow.ampel.showDate).toBe(false);
       expect(ampelFieldNow.ampel.dueDate).toBe(moment().format("D.MM.YYYY"));
       expect(ampelFieldBefore1.ampel.dueDate).toBe(moment().subtract('1','d').format("D.MM.YYYY"));
       expect(ampelFieldAfter7.ampel.dueDate).toBe(moment().add('7','d').format("D.MM.YYYY"));
@@ -53,7 +53,7 @@ describe("SearchGridFields", () => {
     });
 
     it('respects custom params', () => {
-      let ampelField = createAmpel((moment().add('4','d').format("YYYY-MM-DTHH:mm:ssZ")),['field_Time_dt',1,6,3]).$mount();
+      let ampelField = createAmpel((moment().add('4','d')),['field_Time_dt',1,6,3]).$mount();
       expect(ampelField.ampel.daysRemaining).toBe(4);
       expect(ampelField.ampel.warnStatus).toBe('yellow');
       expect(ampelField.ampel.statusImage).toBe('ampel_o.png');
