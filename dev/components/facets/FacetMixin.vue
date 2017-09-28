@@ -77,7 +77,7 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="scss">
 .facet {
     .facet-list {
         list-style: none !important;

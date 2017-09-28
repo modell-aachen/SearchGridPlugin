@@ -5,7 +5,6 @@ var webpack = require('webpack')
 var includeDirs = [
   projectRoot + '/dev',
   projectRoot + '/node_modules/nprogress/',
-  projectRoot + '/node_modules/frontend-unit-test-library/dist/frontend-unit-test-library.js',
   projectRoot + '/tests'
 ];
 

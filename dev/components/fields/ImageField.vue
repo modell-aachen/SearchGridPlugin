@@ -34,7 +34,7 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="scss">
 .inactive-link {
     pointer-events: none;
     cursor: default;
