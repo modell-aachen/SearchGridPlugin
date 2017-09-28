@@ -26,7 +26,7 @@
                             </div>
                             <div v-if="prefs.enableExcelExport" class="shrink columns">
                               <div class="button-group">
-                                <excel-export></excel-export>
+                                <excel-export :fields="prefs.fields" ::results="[]"></excel-export>
                               </div>
                             </div>
                             <div class="shrink columns">
@@ -102,7 +102,7 @@ import MultiSelectFacet from './facets/MultiSelectFacet.vue'
 import SingleSelectFacet from './facets/SingleSelectFacet.vue'
 import Select2Facet from './facets/Select2Facet.vue'
 import NProgress from 'nprogress'
-import ExcelExport from './ExcelExport.vue'
+import ExcelExport from './excel_export/ExcelExport.vue'
 import 'nprogress/nprogress.css'
 import * as mutations from "../store/mutation-types";
 import debounce from 'lodash/debounce';
