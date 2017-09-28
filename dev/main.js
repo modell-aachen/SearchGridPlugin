@@ -1,9 +1,7 @@
 import SearchGridStoreModule from "./store/index.js";
 import Grid from './components/Grid.vue'
-import { VTooltip } from 'v-tooltip'
 
 Vue.registerStoreModule("searchGrid", SearchGridStoreModule);
-Vue.directive('tooltip', VTooltip)
 
 let SearchGridPlugin = {
     registerField: function(name, component){
