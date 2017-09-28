@@ -177,7 +177,7 @@ The following fields are predefined and can be used as entries in the fields par
 %%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
    "type:topic form:*DocumentForm"
    headers="Ampel"
-   fields="ampel-field(createdate)"
+   fields="ampel-field(createdate,0,7,-1)"
    fieldRestriction="createdate"
    resultsPerPage="4"
 }%
