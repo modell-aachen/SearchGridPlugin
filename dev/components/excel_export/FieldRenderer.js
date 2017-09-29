@@ -4,6 +4,9 @@
 	To extend the renderer just add a new class method with the same name as the grid
 	field it should render.
 */
+
+import UrlFormatField from '../fields/UrlFormatField.vue';
+
 class FieldRenderer {
 	["text-field"](solrDocument, fieldParameters) {
 		return solrDocument[fieldParameters[0]];
@@ -16,8 +19,8 @@ class FieldRenderer {
 	}
 
 	["url-format-field"](solrDocument, fieldParameters) {
-		let text = solrDocument[fieldParameters[0]];
-		let url = `${Vue.foswiki.getScriptUrl('view')}${solrDocument[fieldParameters[1]]}`;
+		let text = fieldParameters[0];
+		let url = `${Vue.foswiki.getScriptUrl('view')}${UrlFormatField.methods.formatLink(fieldParameters[1], solrDocument)}`;
 		return `${text} (${url})`;
 	}
 
@@ -47,4 +50,4 @@ class FieldRenderer {
 }
 
 let fieldRenderer = new FieldRenderer();
-module.exports = fieldRenderer;
+export default fieldRenderer;

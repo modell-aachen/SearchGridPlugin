@@ -1,6 +1,7 @@
 import TestCase from 'FrontendUnitTestLibrary'
 
 import ExcelFieldRenderer from '../dev/components/excel_export/FieldRenderer.js'
+import UrlFormatField from '../dev/components/fields/UrlFormatField.vue';
 
 describe("The FieldRenderer", () => {
 
@@ -62,6 +63,23 @@ describe("The FieldRenderer", () => {
 
     const expectedValue = `${testTitle} (http://wiki.de/view/${testUrl})`;
     expect(ExcelFieldRenderer.renderFieldForDocument(solrDocument, field)).toBe(expectedValue);
+  });
+
+  it('renders url-format-fields as TEXT (URL)', () => {
+    const testUrlText = "Text";
+    const testUrlFormat = "testUrl";
+    const solrDocument = {};
+    const field = {
+      component: "url-format-field",
+      params: [testUrlText, testUrlFormat]
+    };
+
+    spyOn(Vue.foswiki, "getScriptUrl").and.returnValue("http://wiki.de/view/");
+    spyOn(UrlFormatField.methods, 'formatLink').and.returnValue("formatedLink");
+
+    const expectedValue = `${testUrlText} (http://wiki.de/view/formatedLink)`;
+    expect(ExcelFieldRenderer.renderFieldForDocument(solrDocument, field)).toBe(expectedValue);
+    expect(UrlFormatField.methods.formatLink).toHaveBeenCalledWith(testUrlFormat, solrDocument);
   });
 
   it('renders date-fields as locale date string', () => {
