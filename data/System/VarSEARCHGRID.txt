@@ -45,15 +45,17 @@ And here is the corresponding macro call:
 | form | The form provided by this parameter will be used to identify correct display values for data stored in form fields. E.g. if you create a facet for the user field "field_Creator_s" and you provide the form which defines the field, then the correct display value for the creators will be shown instead of their ids. | "" | "Processes.DocumentForm" |
 | mappings_{fieldName} | In addition to providing a form it is also possible to provide direct custom mappings for fields. E.g. if you have a field status_s which has values of 0 and 1 then you may want to provide "mappings_status_s="1=Valid;0=Invalid". This will then be used as display values in facets. This can also be used to override mappings that are provided by the form. | "" | "mappings_status_s="1=Valid;0=Invalid" |
 | addons | A list of addon components to use in the grid. See the addons section for details | "" | "my-addon-component" |
+| enableExcelExport | Set this to 1 to enable excel export for the grid. For performance reasons this setting only takes effect if the setting for field restrictions is also set. The export will disregard the current paging and export all entries that match the applied filter settings. It will only export the configured fields that are currently supported. See the individual field descriptions below for further info on supported fields.| "0" | "1" |
 
 ---+++ Fields
 The following fields are predefined and can be used as entries in the fields parameter of the search grid macro:
 
    <table class="foswikiTable">
-      <tr><th><br>Field</br></th><th>Definition</th><th>Description</th><th>SeachGrid</th><th>SeachGrid Code</th></tr>
+      <tr><th><br>Field</br></th><th>Definition</th><th>Excel export</th><th>Description</th><th>SeachGrid</th><th>SeachGrid Code</th></tr>
       <tr>
          <td>Text</td>
          <td>text-field(text:solrField) </td>
+         <td>Yes</td>
          <td>Just renders the value stored in solrField as plain text. When you need more than the plain stored solr text, see <a href='#Solr_Proxy'>SolrProxy</a></td>
          <td width='40%'>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%"section="FIELD::TEXT"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::TEXT" CODE="1"}%</td>
@@ -61,6 +63,7 @@ The following fields are predefined and can be used as entries in the fields par
       <tr>
          <td>Image</td>
          <td>image-field(imageURL:solrField,url:solrField,cssClass:String)</td>
+         <td>No</td>
          <td>Renders an image based on the given imageURL. It also allows to set a link on the image via the url parameter. To provide some additional styling a css class can be set. The markup will then be =a.cssClass>img=.</td>
          <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::IMAGE"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::IMAGE" CODE="1"}%</td>
@@ -68,6 +71,7 @@ The following fields are predefined and can be used as entries in the fields par
       <tr>
          <td>URL</td>
          <td>url-field(text:solrField, url:solrField)</td>
+         <td>Yes</td>
          <td>Renders a link. The first parameter indicates the field which holds the text and the second parameter indicates the field which holds the url. If the url is a field without a starting '/', the url-field will convert it to an url by adding an '/'. In this case your url will point to /yourWiki/yourField NOT to /yourWiki/yourWeb/yourField.</td>
          <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::URL"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::URL" CODE="1"}%</td>
@@ -75,6 +79,7 @@ The following fields are predefined and can be used as entries in the fields par
       <tr>
          <td>URL-Format</td>
          <td>url-format-field(imageURL:solrField,url:solrField,cssClass:String)</td>
+         <td>Yes</td>
          <td>Renders a advanced link. The first parameter is a text shown as display value. The second parameter indicates the url format string. $solrField would be replaced with corresponding value from the solr result. When a third parameter is given it would render the link in an icon field.
       Example from InternalProjects: =url-format-field(New Template,%<nop>SCRIPTURLPATH{"edit"}%/%<nop>BASEWEB%/InternalProjectAUTOINC0000?template=InternalProjectEdit;templatetopic=$web.$topic;formtemplate=InternalProjectForm;t=%<nop>GMTIME{$epoch}%,%<nop>PUBURLPATH%/%<nop>SYSTEMWEB%/FamFamFamSilkIcons/page_copy.png)=
          </td>
@@ -84,6 +89,7 @@ The following fields are predefined and can be used as entries in the fields par
       <tr>
          <td>Date</td>
          <td>date-field(date:solrField,relative:boolean)</td>
+         <td>Yes</td>
          <td>Takes a date value in ISO_8601 format and displays it as a locale date string. When the second paramter is set, the date will be showen as a relative date string. (e.g. 4 years ago) (<a href="http://momentjs.com/docs/#/displaying/fromnow/">see Moment: Relative time</a>).</td>
          <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::DATE"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::DATE" CODE="1"}%</td>
@@ -91,6 +97,7 @@ The following fields are predefined and can be used as entries in the fields par
       <tr>
          <td>List</td>
          <td>list-field(*_lst:solrField,separateBySpace:boolean, separator:string, limit:integer)</td>
+         <td>Yes</td>
          <td>Takes a solr _lst value and renders the values as an entry by entry list. This may also take _lst_dv field value to show the display values of the list entries. If the second parameter is set to anything truthy (e.g. 1) then the list will be merged into a string where each entry is separated by space. In addition a separator charactor like =$comma= can be specified as well as an amount if items to display (=limit=).</td>
          <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::LIST"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::LIST" CODE="1"}%</td>
@@ -98,6 +105,7 @@ The following fields are predefined and can be used as entries in the fields par
       <tr>
          <td>Solr (TBD)</td>
          <td>solr-field()</td>
+         <td>No</td>
          <td>Takes no parameters and renders the result in a single column in solr search style. This is only for demonstration and testing and *not production ready*!</td>
          <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::SOLR"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::SOLR" CODE="1"}%</td>
@@ -105,6 +113,7 @@ The following fields are predefined and can be used as entries in the fields par
       <tr>
          <td>Test</td>
          <td>test-field(field1:solrField,field2:solrField,...)</td>
+         <td>No</td>
          <td>This field is for testing purposes only and can be used as a field component to enable grid view. It just shows the values of all fields given as parameters in a list. In general grid view components are application specific, so applications should define and register their own grid field components to enable grid view.</td>
          <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::TEST"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::TEST" CODE="1"}%</td>
@@ -112,6 +121,7 @@ The following fields are predefined and can be used as entries in the fields par
       <tr>
          <td>Ampel</td>
          <td>ampel-field(date:solrField,showDate:boolean,warnYellow:integer,warnRed:integer)</td>
+         <td>No</td>
          <td>Shows a traffic light. It shows the date next to it, if showDate is set. Configure the days when the traffic light becomes yellow with 'warnYellow' and when it becomes red with 'warnRed'.</td>
          <td>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%" section="FIELD::AMPEL"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::AMPEL" CODE="1"}%</td>
