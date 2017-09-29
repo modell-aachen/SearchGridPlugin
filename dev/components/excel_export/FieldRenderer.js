@@ -26,7 +26,7 @@ class FieldRenderer {
 		if(!date || Vue.moment(date).unix() == 0){
 			return "";
 		}
-		return Vue.moment(date, Vue.moment.ISO_8601).toDate().toLocaleDateString()
+		return Vue.moment(date, Vue.moment.ISO_8601).toDate().toLocaleDateString();
 	}
 
 	["list-field"](solrDocument, fieldParameters) {
@@ -34,7 +34,7 @@ class FieldRenderer {
 		if(!list){
 			return "";
 		}
-		return solrDocument[fieldParameters[0]].join('\n');
+		return solrDocument[fieldParameters[0]].join(',');
 	}
 
 	renderFieldForDocument(solrDocument, field) {
