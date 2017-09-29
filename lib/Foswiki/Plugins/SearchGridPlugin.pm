@@ -145,7 +145,7 @@ sub _getFrontendPreferences {
     my $session = $Foswiki::Plugins::SESSION;
     my $defaultQuery = $params->{_DEFAULT};
     my $resultsPerPage = $params->{resultsPerPage} || 20;
-    my $hasLiveFilter = (defined $params->{hasLiveFilter} && $params->{hasLiveFilter} eq '1') ? JSON::true : JSON::false;
+    my $hasLiveFilter = (defined $params->{hasLiveFilter} && $params->{hasLiveFilter} eq '0') ? JSON::false : JSON::true;
     my $initialHideColumn = (defined $params->{initialHideColumn} && $params->{initialHideColumn} eq '1') ? JSON::true : JSON::false;
     my $headers = $params->{headers} || '';
     my $fields = $params->{fields} || '';
