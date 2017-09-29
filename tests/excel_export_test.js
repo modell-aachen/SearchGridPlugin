@@ -66,6 +66,7 @@ describe("The FieldRenderer", () => {
 
   it('renders date-fields as locale date string', () => {
     const testDate = "2017-09-22T12:49:46Z";
+    const testDateEpoch = 1506084586000;
     const solrDocument = {
       date: testDate
     };
@@ -74,15 +75,22 @@ describe("The FieldRenderer", () => {
       params: ["date"]
     };
 
+
     spyOn(Date.prototype, "toLocaleDateString").and.callFake(function() {
-      return this;
+      /*
+        Why this spy?
+        To keep unit tests independent from the language of the browser
+        in which they are executed we
+        have to mock toLocaleDateString. The best locale independent thing
+        we can return is the epoch time.
+      */
+      return this.getTime();
     });
 
     const date = ExcelFieldRenderer.renderFieldForDocument(solrDocument, field);
 
     expect(Date.prototype.toLocaleDateString).toHaveBeenCalled();
-    expect(date).toEqual(jasmine.any(Date));
-    expect(date.getTime()).toBe(1506084586000);
+    expect(date).toBe(testDateEpoch);
   });
 
   it('renders list-fields as a comma separated string', () => {
