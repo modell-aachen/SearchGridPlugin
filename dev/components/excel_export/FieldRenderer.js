@@ -14,13 +14,16 @@ class FieldRenderer {
 
     ["url-field"](solrDocument, fieldParameters) {
         let text = solrDocument[fieldParameters[0]];
-        let url = `${Vue.foswiki.getScriptUrl('view')}${solrDocument[fieldParameters[1]]}`;
+        let url = solrDocument[fieldParameters[1]];
+        url = Vue.makeAbsoluteUrl(url);
         return `${text} (${url})`;
     }
 
     ["url-format-field"](solrDocument, fieldParameters) {
         let text = fieldParameters[0];
-        let url = `${Vue.foswiki.getScriptUrl('view')}${UrlFormatField.methods.formatLink(fieldParameters[1], solrDocument)}`;
+        let url = fieldParameters[1];
+        url = UrlFormatField.methods.formatLink(url, solrDocument);
+        url = Vue.makeAbsoluteUrl(url);
         return `${text} (${url})`;
     }
 

@@ -1,19 +1,9 @@
-import TestCase from 'FrontendUnitTestLibrary'
+import TestCase from 'FrontendUnitTestLibrary';
 
-import ExcelFieldRenderer from '../dev/components/excel_export/FieldRenderer.js'
+import ExcelFieldRenderer from '../dev/components/excel_export/FieldRenderer.js';
 import UrlFormatField from '../dev/components/fields/UrlFormatField.vue';
 
-describe("The FieldRenderer", () => {
-
-  beforeAll(() => {
-  });
-
-  beforeEach(() => {
-  });
-
-  afterEach(() => {
-  });
-
+describe("The ExcelFieldRenderer", () => {
   it('supports the rendering of text-fields', () => {
     expect(ExcelFieldRenderer.supportsFieldRendering("text-field")).toBe(true);
   });
@@ -59,10 +49,13 @@ describe("The FieldRenderer", () => {
       params: ["title", "url"]
     };
 
-    spyOn(Vue.foswiki, "getScriptUrl").and.returnValue("http://wiki.de/view/");
+    spyOn(Vue, "makeAbsoluteUrl").and.callFake((url) => {
+      return `http://wiki.de/${url}`;
+    });
 
-    const expectedValue = `${testTitle} (http://wiki.de/view/${testUrl})`;
+    const expectedValue = `${testTitle} (http://wiki.de/${testUrl})`;
     expect(ExcelFieldRenderer.renderFieldForDocument(solrDocument, field)).toBe(expectedValue);
+    expect(Vue.makeAbsoluteUrl).toHaveBeenCalledWith(testUrl);
   });
 
   it('renders url-format-fields as TEXT (URL)', () => {
@@ -74,13 +67,17 @@ describe("The FieldRenderer", () => {
       params: [testUrlText, testUrlFormat]
     };
 
-    spyOn(Vue.foswiki, "getScriptUrl").and.returnValue("http://wiki.de/view/");
     spyOn(UrlFormatField.methods, 'formatLink').and.returnValue("formatedLink");
+    spyOn(Vue, "makeAbsoluteUrl").and.callFake((url) => {
+      return `http://wiki.de/${url}`;
+    });
 
-    const expectedValue = `${testUrlText} (http://wiki.de/view/formatedLink)`;
+    const expectedValue = `${testUrlText} (http://wiki.de/formatedLink)`;
     expect(ExcelFieldRenderer.renderFieldForDocument(solrDocument, field)).toBe(expectedValue);
     expect(UrlFormatField.methods.formatLink).toHaveBeenCalledWith(testUrlFormat, solrDocument);
+    expect(Vue.makeAbsoluteUrl).toHaveBeenCalledWith("formatedLink");
   });
+
 
   it('renders date-fields as locale date string', () => {
     const testDate = "2017-09-22T12:49:46Z";
