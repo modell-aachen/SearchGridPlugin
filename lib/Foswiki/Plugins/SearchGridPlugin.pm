@@ -128,14 +128,14 @@ sub _searchGrid {
     $jsonPrefs =~ s/(\$n|\$quot)//g;
     $jsonPrefs =~ s/([<>])/HTML::Entities::encode_entities($1)/ge; # no XSS
     Foswiki::Func::expandCommonVariables("%VUE{VERSION=\"2\"}%");
-    Foswiki::Func::addToZone( 'head', 'FONTAWESOME',
-        '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FontAwesomeContrib/css/font-awesome.min.css" />');
-    Foswiki::Func::addToZone( 'head', 'FLATSKIN_WRAPPED',
-        '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FlatSkin/css/flatskin_wrapped.min.css" />');
+    # Foswiki::Func::addToZone( 'head', 'FONTAWESOME',
+    #     '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FontAwesomeContrib/css/font-awesome.min.css" />');
+    # Foswiki::Func::addToZone( 'head', 'FLATSKIN_WRAPPED',
+    #     '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FlatSkin/css/flatskin_wrapped.min.css" />');
     Foswiki::Func::addToZone( 'script', $prefSelector,
         "<script type='text/json'>$jsonPrefs</script>");
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
-        "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>","jsi18nCore,VUEJSPLUGIN"
+        "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js?v=$RELEASE''></script>","jsi18nCore,VUEJSPLUGIN"
     );
     return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\"><grid preferences-selector='$prefSelector'></grid></div>";
 }
