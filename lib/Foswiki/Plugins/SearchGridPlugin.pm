@@ -119,28 +119,21 @@ sub initPlugin {
 sub _searchGrid {
     my($session, $params, $topic, $web, $topicObject) = @_;
 
-    my $frontendPrefs = _getFrontendPreferences($params);
+    my $frontendPrefs = _generateFrontendData($params);
     my $prefId = md5_hex(rand);
     my $prefSelector = "SEARCHGRIDPREF_$prefId";
     my $jsonPrefs = to_json($frontendPrefs);
-    #Fix: $n and $quot are automatically expanded by foswiki and destroy the json.
-    #So they are replaced.
-    $jsonPrefs =~ s/(\$n|\$quot)//g;
-    $jsonPrefs =~ s/([<>])/HTML::Entities::encode_entities($1)/ge; # no XSS
+    $jsonPrefs = HTML::Entities::encode_entities($jsonPrefs, '<>&$\'"');
     Foswiki::Func::expandCommonVariables("%VUE{VERSION=\"2\"}%");
-    # Foswiki::Func::addToZone( 'head', 'FONTAWESOME',
-    #     '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FontAwesomeContrib/css/font-awesome.min.css" />');
-    # Foswiki::Func::addToZone( 'head', 'FLATSKIN_WRAPPED',
-    #     '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FlatSkin/css/flatskin_wrapped.min.css" />');
     Foswiki::Func::addToZone( 'script', $prefSelector,
         "<script type='text/json'>$jsonPrefs</script>");
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
-        "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js?v=$RELEASE''></script>","jsi18nCore,VUEJSPLUGIN"
+        "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js?v=$RELEASE'></script>","jsi18nCore,VUEJSPLUGIN"
     );
     return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\"><grid preferences-selector='$prefSelector'></grid></div>";
 }
 
-sub _getFrontendPreferences {
+sub _generateFrontendData {
     my $params = shift;
     my $session = $Foswiki::Plugins::SESSION;
     my $defaultQuery = $params->{_DEFAULT};
@@ -258,14 +251,13 @@ sub _getFrontendPreferences {
 
     $frontendPrefs->{mappings} = $mappings;
 
-    $frontendPrefs->{result} = _buildQuery($session, $frontendPrefs);
+    $frontendPrefs->{result} = _getInitialResultSet($session, $frontendPrefs);
 
     return $frontendPrefs;
 
 }
 
-# Build query data to fetch first search result in backend.
-sub _buildQuery {
+sub _getInitialResultSet {
     my ($session, $prefs) = @_;
     my %search = (
         q => $prefs->{q},

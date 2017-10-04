@@ -11,7 +11,7 @@
 import MaketextMixin from "../MaketextMixin.vue";
 import FieldRenderer from "./FieldRenderer.js"
 
-const SOLR_ROWS_LIMIT = 2147483647 //2^31 - 1;
+const SOLR_ROWS_LIMIT = 2 ** 31 - 1;
 
 export default {
     mixins: [MaketextMixin],
@@ -46,10 +46,10 @@ export default {
                   headers: { 'X-HTTP-Method-Override': 'GET' },
                   url: this.$foswiki.getScriptUrl('rest', 'SearchGridPlugin', 'searchproxy'),
                   traditional: true,
-                  data: params
+                  data: params,
+                  dataType: 'json'
                 })
                 .done((result) => {
-                    result = JSON.parse(result);
                     return resolve(result.response.docs);
                 })
                 .fail((reason) => {

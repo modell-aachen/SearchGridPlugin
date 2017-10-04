@@ -40,11 +40,11 @@ sub tear_down {
 sub test_excelExportIsDisableIfRestrictedFieldsAreNotConfigured {
     my ( $this ) = @_;
 
-    my $frontendPreferences = Foswiki::Plugins::SearchGridPlugin::_getFrontendPreferences({
+    my $frontendData = Foswiki::Plugins::SearchGridPlugin::_generateFrontendData({
         enableExcelExport => 1
     });
 
-    $this->assert($frontendPreferences->{enableExcelExport} eq JSON::false, "Excel export is enabled although field restrictions are not set");
+    $this->assert($frontendData->{enableExcelExport} eq JSON::false, "Excel export is enabled although field restrictions are not set");
 
     return;
 }
