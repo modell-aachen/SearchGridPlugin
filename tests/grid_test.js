@@ -59,7 +59,7 @@ describe("The grid component", () => {
   });
   describe("initializes filters and", () => {
     it("should render all defined filters", () => {
-      let gridFilters = $(grid.$el).find('.search-grid-filters .search-grid-filter');
+      let gridFilters = $(grid.$el).find('.search-grid-top-bar .search-grid-filter');
       expect(gridFilters.length).toBe(mockupGridPrefs.filters.length);
     });
   });

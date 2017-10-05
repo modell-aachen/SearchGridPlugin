@@ -4,7 +4,7 @@
             <!--Toplevel container -->
             <div class="columns">
                 <!-- Filters and table -->
-                <div v-if="showFilters" class="expanded row wrapper search-grid-filters">
+                <div v-if="showTopActionBar" class="expanded row wrapper search-grid-top-bar">
                     <!-- Filters -->
                     <div>
                         <div class="expanded row align-bottom">
@@ -12,29 +12,35 @@
                                 <component v-if="hasLiveFilter" v-on:filter-change="applyFiltersDebounce" v-on:confirm="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                                 <component v-else v-on:confirm="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                             </template>
-                            <div class="columns">
+                            <div v-if="hasFilters" class="columns">
                                 <div class="button-group">
                                     <a class="primary button" v-on:click="applyFilters">{{maketext("Apply filters")}}</a>
                                     <a class="alert button" v-show="isFilterApplied" v-on:click="clearFilters">{{maketext("Remove filters")}}</a>
                                 </div>
                             </div>
                             <div class="columns">
+                              <!--
+                                  Separator which forces the following
+                                  shrinked columns to align to the right
+                               -->
+                            </div>
+                            <div v-if="hasAddons" class="shrink columns">
                               <template v-for="addon in prefs.addons">
                                 <component :is="addon" :api="api">
                                 </component>
                               </template>
                             </div>
-                            <div v-if="prefs.enableExcelExport" class="shrink columns">
+                            <div v-if="hasExcelExport" class="shrink columns">
                               <div class="button-group">
-                                <excel-export :fields="prefs.fields" ::results="[]"></excel-export>
+                                <excel-export :fields="prefs.fields"></excel-export>
                               </div>
                             </div>
-                            <div class="shrink columns">
+                            <div v-if="hasGridView" class="shrink columns">
                                 <div class="grid-toggle button-group">
-                                    <a v-if="hasGridView" v-bind:class="{disabled: isGridView, selected: !isGridView}" class="small button" @click.stop="toggleGridView('table')">
+                                    <a v-bind:class="{disabled: isGridView, selected: !isGridView}" class="small button" @click.stop="toggleGridView('table')">
                                         <i class="fa fa-bars" aria-hidden="true"></i>
                                     </a>
-                                    <a v-if="hasGridView" v-bind:class="{disabled: !isGridView, selected: isGridView}" class="small button" @click.stop="toggleGridView('grid')">
+                                    <a v-bind:class="{disabled: !isGridView, selected: isGridView}" class="small button" @click.stop="toggleGridView('grid')">
                                         <i class="fa fa-th-large" aria-hidden="true"></i>
                                     </a>
                                 </div>
@@ -204,8 +210,20 @@ export default {
       pageCount: function(){
         return Math.ceil(this.numResults / this.resultsPerPage);
       },
-      showFilters: function( ){
+      hasFilters(){
         return this.prefs.filters.length > 0;
+      },
+      hasExcelExport(){
+        return this.prefs.enableExcelExport;
+      },
+      hasAddons(){
+        return (this.prefs.addons &&
+                this.prefs.addons.length > 0);
+      },
+      showTopActionBar: function( ){
+        return (this.hasFilters ||
+                this.hasExcelExport ||
+                this.hasAddons);
       },
       showFacets: function(){
         return this.prefs.facets.length > 0;
@@ -533,7 +551,7 @@ h1.facets-header {
   }
 }
 
-.search-grid-filters {
+.search-grid-top-bar {
   margin-bottom: 10px;
   .input-group,
   .button-group,
