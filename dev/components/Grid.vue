@@ -367,6 +367,7 @@ export default {
           "start": startpoint,
           "facet": true,
           "facet.limit": 5,
+          "facet.missing": 'on',
           "facet.sort": "count",
           "fl" : this.prefs.fieldRestriction,
           form: this.prefs.form
@@ -427,6 +428,7 @@ export default {
           "facet.field": facet.facetField,
           "facet.offset": offset,
           "facet.limit": facet.limit,
+          "facet.missing": 'on',
           "facet.sort": "count",
           form: this.prefs.form
         };
@@ -464,6 +466,12 @@ export default {
                 else
                   displayValue = field;
 
+                //'__none__ ' is used for empty fields
+                if(!field){
+                  field = '__none__';
+                  displayValue = this.$foswiki.jsi18n.get('SearchGrid', 'None');
+                }
+
                 //Remove empty/whitespace entries to not feel broken
                 if(field.match(/^\s*$/))
                   continue;
@@ -493,12 +501,12 @@ export default {
     created: function() {
       let self = this;
       this.$store.dispatch('searchGrid/addGridState', {callback: function(gridState){
-                self.gridState = gridState;
+        self.gridState = gridState;
       }});
       this.prefs = Vue.getConfigById(this.preferencesSelector);
       if(this.prefs.result.status === 'error') {
-              this.results = this.prefs.result;
-              return false;
+        this.results = this.prefs.result;
+        return false;
       }
       this.resultsPerPage = this.prefs.resultsPerPage;
       this.numResults = this.prefs.result.response.numFound;

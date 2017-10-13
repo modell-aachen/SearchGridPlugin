@@ -44,7 +44,13 @@ export default {
                     if(i != this.selectedFacet.length - 1)
                         queryString += " ";
                 }
-                queryString = "(" + queryString + ")";
+
+                //'__none__ ' is used for empty fields
+                if(queryString == '__none__'){
+                    queryString = `(-${this.field}:["" TO *])`;
+                }else{
+                    queryString = "(" + queryString + ")";
+                }
 
             }
             else

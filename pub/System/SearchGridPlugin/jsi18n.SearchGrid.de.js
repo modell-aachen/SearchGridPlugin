@@ -1,6 +1,7 @@
 jsi18n.add('SearchGrid', {
       "in": "in1",
       "All": "Alle",
+      "None": "Nicht vergeben",
       "Facets": "Facetten",
       "Reset all": "Alle zurücksetzen",
       "Show more results": "Zeige mehr Ergebnisse",

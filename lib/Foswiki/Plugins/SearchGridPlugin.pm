@@ -267,7 +267,8 @@ sub _getInitialResultSet {
         form => $prefs->{form},
         fl => $prefs->{fieldRestriction},
         'facet.mincount' => 1,
-        'facet.field' => []
+        'facet.field' => [],
+        'facet.missing' => 'on'
     );
 
     if($prefs->{initialSort}) {
@@ -329,6 +330,7 @@ sub _getInitialResultSet {
     $searchCopy{"rows"} = 0;
     $searchCopy{"form"} = '';
     $searchCopy{"facet.limit"} = -1;
+    $searchCopy{"facet.missing"} = 'on';
 
     my $facetCountResult = _searchProxy($session, $prefs->{q}, \%searchCopy);
     $facetCountResult = $facetCountResult->{facet_counts}->{facet_fields};
