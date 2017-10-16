@@ -474,6 +474,7 @@ sub _searchProxy {
             my $mapping = {};
             $facetDsps->{$key} = $mapping;
             for(my $index = 0; $index < $length; $index += 2){
+                next unless defined $array[$index]; # set to empty
                 my $dsp = $formField->getDisplayValue($array[$index]);
                 $mapping->{$array[$index]} = $dsp;
             }
