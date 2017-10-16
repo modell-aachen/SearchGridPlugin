@@ -465,6 +465,7 @@ sub _searchProxy {
         my $facetDsps = {};
         while(my ($key, $value) = each(%{$content->{facet_counts}->{facet_fields}})) {
             $key =~ /^field_([A-Za-z0-9]*)_/;
+            next unless defined $1;
             my $formField = $form->getField($1);
             next unless $formField;
             next unless $formField->can('getDisplayValue');
