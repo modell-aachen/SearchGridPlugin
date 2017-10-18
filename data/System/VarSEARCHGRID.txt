@@ -104,6 +104,14 @@ The following fields are predefined and can be used as entries in the fields par
          <td>%INCLUDE{"%TOPIC%" section="FIELD::LIST" CODE="1"}%</td>
       </tr>
       <tr>
+         <td>User</td>
+         <td>user-field(user:solrField(display), user:solrField(cuid)) </td>
+         <td>Yes</td>
+         <td>Just renders the value stored in solrField as plain text. When the EmployeesAppPlugin is enabled, an icon with user information from the EmployeesApp will be shown.</td>
+         <td width='40%'>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%"section="FIELD::USER"}%%ENDTWISTY%</td>
+         <td>%INCLUDE{"%TOPIC%" section="FIELD::USER" CODE="1"}%</td>
+      </tr>
+      <tr>
          <td>Solr (TBD)</td>
          <td>solr-field()</td>
          <td>No</td>
@@ -205,6 +213,17 @@ The following fields are predefined and can be used as entries in the fields par
 }%
 %IF{"$CODE='1'" then="</pre>"}%
 %ENDSECTION{"FIELD::LIST"}%
+%STARTSECTION{"FIELD::USER"}%
+%IF{"$CODE='1'" then="<pre>"}%
+%%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{
+   "type:topic field_Responsible_s:*"
+   headers="%MAKETEXT{Responsible}%"
+   fields="user-field(field_Responsible_s_dv, field_Responsible_s)"
+   fieldRestriction="field_Responsible_s,form,web,topic"
+   resultsPerPage="4"
+}%
+%IF{"$CODE='1'" then="</pre>"}%
+%ENDSECTION{"FIELD::USER"}%
 %STARTSECTION{"FIELD::SOLR"}%
 %IF{"$CODE='1'" then="<pre>"}%
 %%IF{"'%CODE%'='1'" then="<nop>"}%SEARCHGRID{

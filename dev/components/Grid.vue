@@ -96,6 +96,7 @@ import AmpelField from './fields/AmpelField.vue'
 import UrlField from './fields/UrlField.vue'
 import UrlFormatField from './fields/UrlFormatField.vue'
 import TextField from './fields/TextField.vue'
+import UserField from './fields/UserField.vue'
 import ListField from './fields/ListField.vue'
 import BadgesField from './fields/BadgesField.vue'
 import DateField from './fields/DateField.vue'
@@ -121,6 +122,7 @@ export default {
       UrlField,
       UrlFormatField,
       TextField,
+      UserField,
       ListField,
       BadgesField,
       DateField,
