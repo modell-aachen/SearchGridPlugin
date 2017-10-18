@@ -48,7 +48,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="expanded row" v-bind:class="isGridView ? ['medium-up-1', 'xlarge-up-2', 'xxxlarge-up-3', 'xxxxlarge-up-4'] : []">
+                <div class="expanded row" v-bind:class="isGridView ? ['medium-up-1', 'xlarge-up-2', 'xxxlarge-up-3', 'xxxxlarge-up-3'] : []">
                     <!-- Table -->
                     <div class="columns" v-show="results.length == 0"><p>{{maketext("No results")}}</p></div>
                     <div class="columns" v-show="results.status == 'error'"><p>{{maketext(results.msg)}}</p></div>
