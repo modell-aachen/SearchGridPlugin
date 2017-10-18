@@ -460,16 +460,16 @@ export default {
                 let displayValue = "";
                 if(this.prefs.mappings.hasOwnProperty(facetField) && this.prefs.mappings[facetField].hasOwnProperty(field)){
                   displayValue = this.prefs.mappings[facetField][field];
-                }
-                else if(facetDisplayValues.hasOwnProperty(facetField) && facetDisplayValues[facetField].hasOwnProperty(field))
+                } else if(facetDisplayValues.hasOwnProperty(facetField) && facetDisplayValues[facetField].hasOwnProperty(field)) {
                   displayValue = facetDisplayValues[facetField][field];
-                else
+                } else {
                   displayValue = field;
+                }
 
                 //'__none__ ' is used for empty fields
                 if(!field){
                   field = '__none__';
-                  displayValue = this.$foswiki.jsi18n.get('SearchGrid', 'None');
+                  displayValue = this.maketext('None');
                 }
 
                 //Remove empty/whitespace entries to not feel broken
