@@ -116,6 +116,18 @@ sub initPlugin {
     return 1;
 }
 
+sub _filterWikiTags {
+  my($text) = @_;
+  Foswiki::Func::writeWarning($text);
+  my @tags = ("noautolink","verbatim","literal");
+  foreach (@tags) {
+    Foswiki::Func::writeWarning($_);
+    $text =~ s/<\/?$_>//g
+  }
+  Foswiki::Func::writeWarning($text);
+  return $text;
+}
+
 sub _searchGrid {
     my($session, $params, $topic, $web, $topicObject) = @_;
     # Params:
@@ -129,6 +141,7 @@ sub _searchGrid {
     my $prefId = md5_hex(rand);
     my $prefSelector = "SEARCHGRIDPREF_$prefId";
     my $jsonPrefs = to_json($frontendPrefs);
+    $jsonPrefs = _filterWikiTags($jsonPrefs);
     $jsonPrefs = HTML::Entities::encode_entities($jsonPrefs, '<>&$\'"');
     Foswiki::Func::expandCommonVariables("%VUE{VERSION=\"2\"}%");
     Foswiki::Func::addToZone( 'script', $prefSelector,
