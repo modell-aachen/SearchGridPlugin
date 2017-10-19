@@ -1,6 +1,8 @@
 <template>
   <td v-if="isEmployeeEnabled">
-    {{doc[params[0]]}} <vue-user-card :id="doc[params[1]]"></vue-user-card>
+    <template v-for="(userName, index) in userNames">
+      {{userName}} <vue-user-card :id="userIds[index]"></vue-user-card>
+    </template>
   </td>
   <td v-else>{{doc[params[0]]}}</td>
 </template>
@@ -11,6 +13,12 @@ export default {
     computed: {
       isEmployeeEnabled: function() {
         return 'vue-user-card' in Vue.options.components;
+      },
+      userNames: function(){
+        return this.doc[this.params[0]].split(", ");
+      },
+      userIds: function(){
+        return this.doc[this.params[1]].split(", ");
       }
     }
 }
