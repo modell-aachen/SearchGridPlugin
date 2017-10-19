@@ -66,12 +66,22 @@ export default {
             let options = [];
             for(let i = 0; i < facets.length; i++){
                 let facet = facets[i];
-                options.push({
-                    label: this.getLabel(facet.title, facet.count),
-                    title: facet.title,
-                    field: facet.field,
-                    count: facet.count
-                });
+                // sort facet option 'None' from bottom to top
+                if(facet.field == '__none__'){
+                    options.unshift({
+                        label: this.getLabel(facet.title, facet.count),
+                        title: facet.title,
+                        field: facet.field,
+                        count: facet.count
+                    });
+                }else{
+                    options.push({
+                        label: this.getLabel(facet.title, facet.count),
+                        title: facet.title,
+                        field: facet.field,
+                        count: facet.count
+                    });
+                }
             }
             if(append)
                 this.options = this.options.concat(options);

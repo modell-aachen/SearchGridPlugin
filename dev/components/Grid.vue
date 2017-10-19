@@ -469,7 +469,7 @@ export default {
                 }
 
                 //'__none__ ' is used for empty fields
-                if(!field){
+                if(!field && facetField){
                   field = '__none__';
                   displayValue = this.maketext('None');
                 }
@@ -484,7 +484,14 @@ export default {
                   'field': field
                 });
         }
+        // sort facet-options; 'None' should be the last element
         facet.sort((a, b) => {
+          if(a.field == '__none__'){
+            return 1;
+          }
+          if(b.field == '__none__'){
+            return -1;
+          }
           return a.title.localeCompare(b.title);
         });
         return facet;
