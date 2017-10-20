@@ -1,5 +1,5 @@
 <template>
-  <td v-if="isEmployeeEnabled">
+  <td v-if="shuldRenderUserIcon">
     <template v-for="(userName, index) in userNames">
       {{userName}} <vue-user-card :id="userIds[index]"></vue-user-card>
     </template>
@@ -14,11 +14,16 @@ export default {
       isEmployeeEnabled: function() {
         return 'vue-user-card' in Vue.options.components;
       },
+      shuldRenderUserIcon: function() {
+        return this.isEmployeeEnabled && parseInt(this.$foswiki.getPreference('EMPLOYEESAPP_USERICON'));
+      },
       userNames: function(){
-        return this.doc[this.params[0]].split(", ");
+        let userNames = this.doc[this.params[0]] || "";
+        return userNames.split(", ");
       },
       userIds: function(){
-        return this.doc[this.params[1]].split(", ");
+        let userIds = this.doc[this.params[1]] || "";
+        return userIds.split(", ");
       }
     }
 }
