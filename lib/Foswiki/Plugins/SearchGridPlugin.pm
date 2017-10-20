@@ -118,13 +118,10 @@ sub initPlugin {
 
 sub _filterWikiTags {
   my($text) = @_;
-  Foswiki::Func::writeWarning($text);
   my @tags = ("noautolink","verbatim","literal");
   foreach (@tags) {
-    Foswiki::Func::writeWarning($_);
     $text =~ s/<\/?$_>//g
   }
-  Foswiki::Func::writeWarning($text);
   return $text;
 }
 
