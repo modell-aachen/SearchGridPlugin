@@ -430,7 +430,6 @@ export default {
           "facet.field": facet.facetField,
           "facet.offset": offset,
           "facet.limit": facet.limit,
-          "facet.missing": 'on',
           "facet.sort": "count",
           form: this.prefs.form
         };
@@ -438,6 +437,8 @@ export default {
         if(searchTerm !== ""){
           params[searchTermKey] = searchTerm;
           params[ignoreCaseKey] = true;
+        }else{
+          params['facet.missing'] = 'on';
         }
         params["fq"] = this.collectFilterQueries();
 
