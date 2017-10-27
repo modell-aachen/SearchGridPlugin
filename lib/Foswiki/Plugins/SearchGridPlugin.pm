@@ -139,7 +139,7 @@ sub _searchGrid {
     my $prefSelector = "SEARCHGRIDPREF_$prefId";
     my $jsonPrefs = to_json($frontendPrefs);
     $jsonPrefs = _filterWikiTags($jsonPrefs);
-    $jsonPrefs = HTML::Entities::encode_entities($jsonPrefs, '<>&$\'"');
+    $jsonPrefs = MIME::Base64::encode_base64(Encode::encode_utf8($jsonPrefs));
     Foswiki::Func::expandCommonVariables("%VUE{VERSION=\"2\"}%");
     Foswiki::Func::addToZone( 'script', $prefSelector,
         "<script type='text/json'>$jsonPrefs</script>");

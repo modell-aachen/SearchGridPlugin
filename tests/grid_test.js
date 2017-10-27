@@ -5,6 +5,7 @@ import SearchGridStoreModule from "../dev/store/index.js";
 import Grid from '../dev/components/Grid.vue'
 import GridPrefs from './mockup_data/all_feature_grid_prefs.json'
 import ResponseMockup from './mockup_data/response.json'
+import Base64 from 'js-base64'
 
 import './mockup_functions/foswiki.js'
 
@@ -14,6 +15,7 @@ describe("The grid component", () => {
 
   let setupGrid = function() {
     let stringifiedJSON = JSON.stringify(GridPrefs);
+    stringifiedJSON = Base64.Base64.encode(stringifiedJSON);
     $(`<script class='SEARCHGRIDPREF_0' type='text/json'>${stringifiedJSON}</script>`).appendTo('html');
     let grid = TestCase.createVueComponent(Grid, {
       propsData: {preferencesSelector: `SEARCHGRIDPREF_0`},
