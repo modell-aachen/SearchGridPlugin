@@ -288,7 +288,8 @@ sub _getInitialResultSet {
         fl => $prefs->{fieldRestriction},
         'facet.mincount' => 1,
         'facet.field' => [],
-        'facet.missing' => 'on'
+        'facet.missing' => 'on',
+        'facet.sort' => 'count',
     );
 
     if($prefs->{initialSort}) {
@@ -351,13 +352,20 @@ sub _getInitialResultSet {
     $searchCopy{"form"} = '';
     $searchCopy{"facet.limit"} = -1;
     $searchCopy{"facet.missing"} = 'on';
+    $searchCopy{"facet.sort"} = 'index'; # put 'undef' (__none__) on bottom
 
     my $facetCountResult = _searchProxy($session, $prefs->{q}, \%searchCopy);
     $facetCountResult = $facetCountResult->{facet_counts}->{facet_fields};
     foreach my $facet (@{$prefs->{facets}}){
         my $facetName = $facet->{params}[1];
-        my @facetArray = @{$facetCountResult->{$facetName}};
-        $searchProxyResult->{facetTotalCounts}->{$facetName} = scalar(@facetArray)/2;
+        my $facetArray = $facetCountResult->{$facetName};
+        $searchProxyResult->{facetTotalCounts}->{$facetName} = scalar(@$facetArray)/2;
+
+        # see if the unassigned key has a count and remove otherwise
+        if((!defined $facetArray->[scalar @$facetArray - 2]) && !$facetArray->[scalar @$facetArray - 1]) {
+            $searchProxyResult->{facetTotalCounts}->{$facetName}--;
+        }
+
     }
 
     return $searchProxyResult;
@@ -418,6 +426,9 @@ sub _searchProxy {
     unless (Foswiki::Func::isAnAdmin($wikiUser)) { # add ACLs
         push @{$opts{fq}}, " (access_granted:$wikiUser OR access_granted:all)"
     }
+
+    $opts{'facet.mincount'} = 1 unless $opts{'facet.mincount'} && $opts{'facet.mincount'} > 0;
+
     #my $content = Foswiki::Plugins::SolrPlugin::getSearcher($session)->restSOLRPROXY($web, $topic);
     my $searcher = Foswiki::Plugins::SolrPlugin::getSearcher($session);
     my $results = $searcher->solrSearch(undef, \%opts);
