@@ -96,11 +96,11 @@ export default {
                 this.options = options;
 
             this.options.sort((a, b) => { // this SHOULD be a noop
-                if(a.field === 'none') {
-                    return 1;
-                }
-                if(b.field === 'none') {
+                if(a.field === '__none__') {
                     return -1;
+                }
+                if(b.field === '__none__') {
+                    return 1;
                 }
 
                 return b.count - a.count;
