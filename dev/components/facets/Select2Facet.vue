@@ -2,25 +2,26 @@
 <div class="facet">
 <h4>{{header}}</h4>
 <div class="vue-select-wrapper">
-<v-select multiple label="field" :placeholder="maketext('Search term...')" v-model="selectedFacet" :options="options" :on-search="onSearchDebounce" :get-option-label="getOptionLabel" :get-selected-option-label="getSelectedOptionLabel" :prevent-search-filter="true" :on-get-more-options="onGetMoreOptions">
+<vue-select multiple label="field" :placeholder="maketext('Search term...')" v-model="selectedFacet" :options="options" :on-search="onSearchDebounce" :get-option-label="getOptionLabel" :get-selected-option-label="getSelectedOptionLabel" :prevent-search-filter="true" :on-get-more-options="onGetMoreOptions">
     <template slot="more-results">{{maketext(moreResultsText)}}</template>
-</v-select>
+</vue-select>
 </div>
 </div>
 </template>
 
 <script>
 import FacetMixin from './FacetMixin.vue'
-import vSelect from "vue-select/src/index.js"
 import debounce from 'lodash/debounce';
 
+const ShowMoreResultsString = "Show more results";
+const NoMoreResultsString = "No more results available";
+
 export default {
-    components: {vSelect},
     mixins: [FacetMixin],
     data: function(){
         return {
             options: [],
-            moreResultsText: "Show more results"
+            moreResultsText: ShowMoreResultsString,
         };
     },
     computed: {
@@ -33,22 +34,16 @@ export default {
     },
     watch: {
         facetCharacteristics() {
-            this.moreResultsText = "Show more results";
+            this.moreResultsText = ShowMoreResultsString;
             this.buildOptions(this.facetCharacteristics);
         }
     },
     methods: {
         getOptions: function(search, loading, offset){
             loading(true);
-            var self = this;
+            let self = this;
             this.$parent.fetchFacetCharacteristics(this, search, offset, function(result){
-                if(result.length == 0 && offset > 0){
-                    self.moreResultsText = "No more results available";
-                }
-                else{
-                    self.moreResultsText = "Show more results";
-                    self.buildOptions(result, offset != 0);
-                }
+                self.buildOptions(result, offset != 0);
                 loading(false);
             });
         },
@@ -56,7 +51,11 @@ export default {
             this.getOptions(search, loading, 0);
         },
         onGetMoreOptions: function(search, loading){
-            this.getOptions(search, loading, this.options.length);
+            let offset = this.options.length;
+            if(offset && this.options[0].field == '__none__') { // XXX guesswork
+                offset--;
+            }
+            this.getOptions(search, loading, offset);
         },
         getOptionLabel: function(option){
             return option.label;
@@ -65,24 +64,53 @@ export default {
             return option.title;
         },
         buildOptions: function(facets, append=false){
-            var options = [];
-            for(var i = 0; i < facets.length; i++){
-                var facet = facets[i];
-                options.push({
-                    label: this.getLabel(facet.title, facet.count),
-                    title: facet.title,
-                    field: facet.field,
-                    count: facet.count
-                });
+            let options = [];
+            for(let i = 0; i < facets.length; i++){
+                let facet = facets[i];
+                if(facet.field == '__none__'){
+                    if(append && this.options && this.options[0] && this.options[0].field === '__none__') {
+                        // there already is a 'None' option
+                    } else {
+                        // sort facet option 'None' to top
+                        if(facet.count) {
+                            options.unshift({
+                                label: this.getLabel(facet.title, facet.count),
+                                title: facet.title,
+                                field: facet.field,
+                                count: facet.count
+                            });
+                        }
+                    }
+                }else{
+                    options.push({
+                        label: this.getLabel(facet.title, facet.count),
+                        title: facet.title,
+                        field: facet.field,
+                        count: facet.count
+                    });
+                }
             }
             if(append)
                 this.options = this.options.concat(options);
             else
                 this.options = options;
 
-            this.options.sort((a, b) => {
+            this.options.sort((a, b) => { // this SHOULD be a noop
+                if(a.field === '__none__') {
+                    return -1;
+                }
+                if(b.field === '__none__') {
+                    return 1;
+                }
+
                 return b.count - a.count;
             });
+
+            if(options.length) { // XXX this requires a request that returns no results (use numTerms)
+                this.moreResultsText = ShowMoreResultsString;
+            } else {
+                this.moreResultsText = NoMoreResultsString;
+            }
         }
     },
     created: function () {
@@ -95,5 +123,5 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="scss">
 </style>

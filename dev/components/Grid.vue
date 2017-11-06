@@ -4,7 +4,7 @@
             <!--Toplevel container -->
             <div class="columns">
                 <!-- Filters and table -->
-                <div v-if="showFilters" class="expanded row wrapper search-grid-filters">
+                <div v-if="showTopActionBar" class="expanded row wrapper search-grid-top-bar">
                     <!-- Filters -->
                     <div>
                         <div class="expanded row align-bottom">
@@ -12,24 +12,35 @@
                                 <component v-if="hasLiveFilter" v-on:filter-change="applyFiltersDebounce" v-on:confirm="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                                 <component v-else v-on:confirm="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                             </template>
-                            <div class="columns">
+                            <div v-if="hasFilters" class="columns">
                                 <div class="button-group">
                                     <a class="primary button" v-on:click="applyFilters">{{maketext("Apply filters")}}</a>
                                     <a class="alert button" v-show="isFilterApplied" v-on:click="clearFilters">{{maketext("Remove filters")}}</a>
                                 </div>
                             </div>
                             <div class="columns">
+                              <!--
+                                  Separator which forces the following
+                                  shrinked columns to align to the right
+                               -->
+                            </div>
+                            <div v-if="hasAddons" class="shrink columns">
                               <template v-for="addon in prefs.addons">
                                 <component :is="addon" :api="api">
                                 </component>
                               </template>
                             </div>
-                            <div class="shrink columns">
+                            <div v-if="hasExcelExport" class="shrink columns">
+                              <div class="button-group">
+                                <excel-export :fields="prefs.fields"></excel-export>
+                              </div>
+                            </div>
+                            <div v-if="hasGridView" class="shrink columns">
                                 <div class="grid-toggle button-group">
-                                    <a v-if="hasGridView" v-bind:class="{disabled: isGridView, selected: !isGridView}" class="small button" @click.stop="toggleGridView('table')">
+                                    <a v-bind:class="{disabled: isGridView, selected: !isGridView}" class="small button" @click.stop="toggleGridView('table')">
                                         <i class="fa fa-bars" aria-hidden="true"></i>
                                     </a>
-                                    <a v-if="hasGridView" v-bind:class="{disabled: !isGridView, selected: isGridView}" class="small button" @click.stop="toggleGridView('grid')">
+                                    <a v-bind:class="{disabled: !isGridView, selected: isGridView}" class="small button" @click.stop="toggleGridView('grid')">
                                         <i class="fa fa-th-large" aria-hidden="true"></i>
                                     </a>
                                 </div>
@@ -37,7 +48,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="expanded row" v-bind:class="isGridView ? ['medium-up-1', 'xlarge-up-2', 'xxxlarge-up-3', 'xxxxlarge-up-4'] : []">
+                <div class="expanded row" v-bind:class="isGridView ? ['medium-up-1', 'xlarge-up-2', 'xxxlarge-up-3', 'xxxxlarge-up-3'] : []">
                     <!-- Table -->
                     <div class="columns" v-show="results.length == 0"><p>{{maketext("No results")}}</p></div>
                     <div class="columns" v-show="results.status == 'error'"><p>{{maketext(results.msg)}}</p></div>
@@ -58,7 +69,7 @@
                 </div>
                 <div class="expanded row">
                     <div class="columns">
-                        <paginator class="ma-pager-new" v-if="pageCount > 1" v-on:page-changed="pageChanged" :page-count="pageCount" :current-page="gridState.currentPage"></paginator>
+                        <vue-pagination class="ma-pager-new" v-if="pageCount > 1" v-on:page-changed="pageChanged" :page-count="pageCount" :current-page="gridState.currentPage"></vue-pagination>
                     </div>
                 </div>
             </div>
@@ -79,12 +90,13 @@
 
 
 <script>
-/*global $ foswiki*/
 import MaketextMixin from './MaketextMixin.vue'
 import GridHeader from './GridHeader.vue'
+import AmpelField from './fields/AmpelField.vue'
 import UrlField from './fields/UrlField.vue'
 import UrlFormatField from './fields/UrlFormatField.vue'
 import TextField from './fields/TextField.vue'
+import UserField from './fields/UserField.vue'
 import ListField from './fields/ListField.vue'
 import BadgesField from './fields/BadgesField.vue'
 import DateField from './fields/DateField.vue'
@@ -96,8 +108,8 @@ import SelectFilter from './filters/SelectFilter.vue'
 import MultiSelectFacet from './facets/MultiSelectFacet.vue'
 import SingleSelectFacet from './facets/SingleSelectFacet.vue'
 import Select2Facet from './facets/Select2Facet.vue'
-import Paginator from 'vue-simple-pagination/VueSimplePagination.vue'
 import NProgress from 'nprogress'
+import ExcelExport from './excel_export/ExcelExport.vue'
 import 'nprogress/nprogress.css'
 import * as mutations from "../store/mutation-types";
 import debounce from 'lodash/debounce';
@@ -106,9 +118,11 @@ export default {
     mixins: [MaketextMixin],
     components : {
       GridHeader,
+      AmpelField,
       UrlField,
       UrlFormatField,
       TextField,
+      UserField,
       ListField,
       BadgesField,
       DateField,
@@ -120,7 +134,7 @@ export default {
       MultiSelectFacet,
       SingleSelectFacet,
       Select2Facet,
-      Paginator
+      ExcelExport
     },
     data : function () {
        return {
@@ -147,7 +161,7 @@ export default {
           entryClickHandler: null
        }
     },
-    props: ['preferencesSelector'],
+    props: ['preferencesSelector','pref'],
     computed: {
       currentPage: {
         get() {
@@ -198,8 +212,20 @@ export default {
       pageCount: function(){
         return Math.ceil(this.numResults / this.resultsPerPage);
       },
-      showFilters: function( ){
+      hasFilters(){
         return this.prefs.filters.length > 0;
+      },
+      hasExcelExport(){
+        return this.prefs.enableExcelExport;
+      },
+      hasAddons(){
+        return (this.prefs.addons &&
+                this.prefs.addons.length > 0);
+      },
+      showTopActionBar: function( ){
+        return (this.hasFilters ||
+                this.hasExcelExport ||
+                this.hasAddons);
       },
       showFacets: function(){
         return this.prefs.facets.length > 0;
@@ -244,7 +270,7 @@ export default {
         });
       },
       arrayIncludesValue(array,value){
-        for(var i=0;i<array.length;i++){
+        for(let i=0;i<array.length;i++){
           if(array[i] === value)
             return true;
         }
@@ -280,7 +306,7 @@ export default {
           this.fetchData();
       },
       clearFacets: function () {
-        for(var i = 0; i < this.facets.length; i++){
+        for(let i = 0; i < this.facets.length; i++){
           //Only filters have the 'isDefault' property
           if(!this.facets[i].isFilter){
             this.facets[i].reset();
@@ -292,7 +318,7 @@ export default {
       },
       clearFilters: function(){
         this.isFilterApplied = false;
-        for(var i = 0; i < this.facets.length; i++){
+        for(let i = 0; i < this.facets.length; i++){
           //Only filters have the 'isDefault' property
           if(this.facets[i].isFilter){
             this.facets[i].reset();
@@ -304,45 +330,46 @@ export default {
       },
       applyFilters: function(){
         this.isFilterApplied = false;
-        for(var i = 0; i < this.facets.length; i++){
+        for(let i = 0; i < this.facets.length; i++){
           if(this.facets[i].isFilter &&
              !this.facets[i].isDefault){
             this.isFilterApplied = true;
             break;
           }
         }
-        this.fetchData(true);
+        this.currentPage = 1;
+        this.fetchData();
       },
       sortCritsToString: function() {
-        var result = "";
-        for(var i = 0; i < this.sortCrits.length; i++) {
+        let result = "";
+        for(let i = 0; i < this.sortCrits.length; i++) {
           result += this.sortCrits[i].field + " " + this.sortCrits[i].order + ",";
         }
         result = result.slice(0,result.length-1); // drop last comma
         return result;
       },
       collectFilterQueries: function(){
-        var filterQueries = [];
-        for(var i = 0; i < this.facets.length; i++){
+        let filterQueries = [];
+        for(let i = 0; i < this.facets.length; i++){
           if(this.facets[i].filterQuery)
             filterQueries.push(this.facets[i].filterQuery);
         }
         return filterQueries;
       },
-      fetchData: function(search){
-        //Search via filters or query for next page? Query over all elements : Skip results on former pages
-        var startpoint  = search? 0 : (this.currentPage - 1) * this.resultsPerPage;
+      getSearchQueryRequestParameters(){
+        let startpoint  = (this.currentPage - 1) * this.resultsPerPage;
         if(this.request){
             this.request.abort();
         }
-        var self = this;
-        var params = {
-          "topic": foswiki.preferences.WEB + "." + foswiki.preferences.TOPIC,
+
+        let params = {
+          "topic": this.$foswiki.preferences.WEB + "." + this.$foswiki.preferences.TOPIC,
           "q":this.prefs.q,
           "rows":this.resultsPerPage,
           "start": startpoint,
           "facet": true,
           "facet.limit": 5,
+          "facet.missing": 'on',
           "facet.sort": "count",
           "fl" : this.prefs.fieldRestriction,
           form: this.prefs.form
@@ -350,12 +377,8 @@ export default {
 
         params["facet.field"] = [];
         params["fq"] = this.collectFilterQueries();
-        // If there are no filterquerys, the whole set is loaded and the currentpage has to be set to page 1
-        //TODO Check if still relevant
-        // if(params["fq"].length == 0){
-        //   this.currentPage = 1;
-        // }
-        for(var i = 0; i < this.facets.length; i++){
+
+        for(let i = 0; i < this.facets.length; i++){
           params["facet.field"].push(this.facets[i].facetField);
           if(!this.facets[i].isFilter)
             params[`f.${this.facets[i].field}.facet.limit`] = this.facets[i].limit;
@@ -364,13 +387,19 @@ export default {
         if(this.sortCrits !== []){
           params["sort"] = this.sortCritsToString();
         }
-        $.ajaxSettings.traditional = true;
 
+        return params;
+      },
+      fetchData: function(){
+        let params = this.getSearchQueryRequestParameters();
+
+        let self = this;
         NProgress.start();
-        this.request = $.ajax({
+        this.request = this.$ajax({
           type: "POST",
           headers: { 'X-HTTP-Method-Override': 'GET' },
-          url: foswiki.getScriptUrl('rest', 'SearchGridPlugin', 'searchproxy'),
+          url: this.$foswiki.getScriptUrl('rest', 'SearchGridPlugin', 'searchproxy'),
+          traditional: true,
           data: params
         })
         .done(function(result){
@@ -392,9 +421,9 @@ export default {
         });
       },
       fetchFacetCharacteristics: function(facet, searchTerm, offset, callback){
-        var searchTermKey = `f.${facet.field}.facet.contains`;
-        var ignoreCaseKey = `f.${facet.field}.facet.contains.ignoreCase`;
-        var params = {
+        let searchTermKey = `f.${facet.field}.facet.contains`;
+        let ignoreCaseKey = `f.${facet.field}.facet.contains.ignoreCase`;
+        let params = {
           "q":this.prefs.q,
           "rows": 0,
           "facet": true,
@@ -408,20 +437,23 @@ export default {
         if(searchTerm !== ""){
           params[searchTermKey] = searchTerm;
           params[ignoreCaseKey] = true;
+        }else{
+          params['facet.missing'] = 'on';
         }
         params["fq"] = this.collectFilterQueries();
 
-        var self = this;
+        let self = this;
 
-        $.ajax({
+        this.$ajax({
           type: "POST",
           headers: { 'X-HTTP-Method-Override': 'GET' },
-          url: foswiki.getScriptUrl('rest', 'SearchGridPlugin', 'searchproxy'),
-          data: params
+          url: this.$foswiki.getScriptUrl('rest', 'SearchGridPlugin', 'searchproxy'),
+          data: params,
+          traditional: true,
         })
         .done(function(result){
           result = JSON.parse(result);
-          var parsedResult = self.parseFacetResult(facet.field, result.facet_counts.facet_fields[facet.field], result.facet_dsps);
+          let parsedResult = self.parseFacetResult(facet.field, result.facet_counts.facet_fields[facet.field], result.facet_dsps);
           callback(parsedResult);
         });
       },
@@ -432,11 +464,17 @@ export default {
                 let displayValue = "";
                 if(this.prefs.mappings.hasOwnProperty(facetField) && this.prefs.mappings[facetField].hasOwnProperty(field)){
                   displayValue = this.prefs.mappings[facetField][field];
-                }
-                else if(facetDisplayValues.hasOwnProperty(facetField) && facetDisplayValues[facetField].hasOwnProperty(field))
+                } else if(facetDisplayValues.hasOwnProperty(facetField) && facetDisplayValues[facetField].hasOwnProperty(field)) {
                   displayValue = facetDisplayValues[facetField][field];
-                else
+                } else {
                   displayValue = field;
+                }
+
+                //'__none__ ' is used for empty fields
+                if(!field && facetField){
+                  field = '__none__';
+                  displayValue = this.maketext('None');
+                }
 
                 //Remove empty/whitespace entries to not feel broken
                 if(field.match(/^\s*$/))
@@ -448,16 +486,23 @@ export default {
                   'field': field
                 });
         }
+        // sort facet-options; 'None' should be the last element
         facet.sort((a, b) => {
+          if(a.field == '__none__'){
+            return 1;
+          }
+          if(b.field == '__none__'){
+            return -1;
+          }
           return a.title.localeCompare(b.title);
         });
         return facet;
       },
       parseAllFacetResults: function(result){
         if(result.facet_counts){
-          var parsedFacetValues = {};
-          var facetValues = result.facet_counts.facet_fields;
-          for (var key in facetValues) {
+          let parsedFacetValues = {};
+          let facetValues = result.facet_counts.facet_fields;
+          for (let key in facetValues) {
               parsedFacetValues[key] = this.parseFacetResult(key, facetValues[key], result.facet_dsps);
           }
           this.facetValues = parsedFacetValues;
@@ -467,12 +512,12 @@ export default {
     created: function() {
       let self = this;
       this.$store.dispatch('searchGrid/addGridState', {callback: function(gridState){
-                self.gridState = gridState;
+        self.gridState = gridState;
       }});
-      this.prefs = JSON.parse($('.' + this.preferencesSelector).html());
+      this.prefs = Vue.getConfigById(this.preferencesSelector);
       if(this.prefs.result.status === 'error') {
-              this.results = this.prefs.result;
-              return false;
+        this.results = this.prefs.result;
+        return false;
       }
       this.resultsPerPage = this.prefs.resultsPerPage;
       this.numResults = this.prefs.result.response.numFound;
@@ -481,10 +526,10 @@ export default {
       this.hasLiveFilter = this.prefs.hasLiveFilter;
       this.initialHideColumn = this.prefs.initialHideColumn;
       if(this.prefs.hasOwnProperty("initialSort")){
-        var sortCrits = this.prefs.initialSort.split(",");
+        let sortCrits = this.prefs.initialSort.split(",");
         let initialSortCrits = [];
-        for(var i = 0; i < sortCrits.length; i++) {
-          var splitted = sortCrits[i].split(" ");
+        for(let i = 0; i < sortCrits.length; i++) {
+          let splitted = sortCrits[i].split(" ");
           initialSortCrits.push({field: splitted[0], order: splitted[1]});
         }
         this.sortCrits = initialSortCrits;
@@ -506,7 +551,7 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="scss">
 .searchGridWrapper {
   overflow: auto;
 }
@@ -525,7 +570,7 @@ h1.facets-header {
   }
 }
 
-.search-grid-filters {
+.search-grid-top-bar {
   margin-bottom: 10px;
   .input-group,
   .button-group,

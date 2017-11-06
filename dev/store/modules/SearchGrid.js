@@ -18,7 +18,7 @@ const INITIAL_STATE = {
 };
 
 const actions = {
-    addGridState ({commit, state}, {callback}){
+    addGridState ({commit}, {callback}){
         let newGridState = gridStateFactory();
         commit(types.ADD_GRID_STATE, {newGridState});
         callback(newGridState);

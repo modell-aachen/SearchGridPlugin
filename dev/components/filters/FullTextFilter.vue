@@ -31,13 +31,13 @@ export default {
       filterQuery: function() {
         if(this.filterText === '')
           return null;
-        var queries = "(";
-        var words = this.filterText.trim().split(" ");
-        for(var w = 0; w < words.length; w++) {
+        let queries = "(";
+        let words = this.filterText.trim().split(" ");
+        for(let w = 0; w < words.length; w++) {
             queries += '(';
-            for(var i = 1; i < this.params.length; i++) {
-              var currentField = this.params[i];
-              var queryString = `*${words[w]}*`;
+            for(let i = 1; i < this.params.length; i++) {
+              let currentField = this.params[i];
+              let queryString = `*${words[w]}*`;
               queries += `${currentField}:${queryString}`;
               if(i != this.params.length - 1)
                 queries += " OR ";

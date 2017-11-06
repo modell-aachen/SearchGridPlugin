@@ -12,7 +12,7 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="scss">
 .test-grid-field {
 	margin: 5px;
 	border: solid 1px black;

@@ -116,6 +116,15 @@ sub initPlugin {
     return 1;
 }
 
+sub _filterWikiTags {
+  my($text) = @_;
+  my @tags = ("noautolink","verbatim","literal");
+  foreach (@tags) {
+    $text =~ s/<\/?$_>//g
+  }
+  return $text;
+}
+
 sub _searchGrid {
     my($session, $params, $topic, $web, $topicObject) = @_;
     # Params:
@@ -125,9 +134,31 @@ sub _searchGrid {
     # - VIEW: defaultSolr,defaultTable,Eigenes Template
     # - displayRows: list von anzeie mata feldern
 
+    my $frontendPrefs = _generateFrontendData($params);
+    my $prefId = md5_hex(rand);
+    my $prefSelector = "SEARCHGRIDPREF_$prefId";
+    my $jsonPrefs = to_json($frontendPrefs);
+    $jsonPrefs = _filterWikiTags($jsonPrefs);
+    $jsonPrefs = MIME::Base64::encode_base64(Encode::encode_utf8($jsonPrefs));
+    Foswiki::Func::expandCommonVariables("%VUE{VERSION=\"2\"}%");
+    Foswiki::Func::addToZone( 'script', $prefSelector,
+        "<script type='text/json'>$jsonPrefs</script>");
+    Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
+        "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js?v=$RELEASE'></script>","jsi18nCore,VUEJSPLUGIN"
+    );
+    if($Foswiki::cfg{Plugins}{EmployeesAppPlugin}{Enabled}){
+        my $employeesJS = "<script type='text/javascript' src='%PUBURLPATH%/%SYSTEMWEB%/EmployeesAppPlugin/EmployeesAppPlugin.js?v=%QUERYVERSION{\"EmployeesAppPlugin\"}%'></script>";
+        Foswiki::Func::addToZone( 'script', 'EMPLOYEES::VUE::COMPONENTS', $employeesJS, "JQUERYPLUGIN::FOSWIKI::PREFERENCES,VUEJSPLUGIN");
+    }
+    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\"><grid preferences-selector='$prefSelector'></grid></div>";
+}
+
+sub _generateFrontendData {
+    my $params = shift;
+    my $session = $Foswiki::Plugins::SESSION;
     my $defaultQuery = $params->{_DEFAULT};
     my $resultsPerPage = $params->{resultsPerPage} || 20;
-    my $hasLiveFilter = (defined $params->{hasLiveFilter} && $params->{hasLiveFilter} eq '1') ? JSON::true : JSON::false;
+    my $hasLiveFilter = (defined $params->{hasLiveFilter} && $params->{hasLiveFilter} eq '0') ? JSON::false : JSON::true;
     my $initialHideColumn = (defined $params->{initialHideColumn} && $params->{initialHideColumn} eq '1') ? JSON::true : JSON::false;
     my $headers = $params->{headers} || '';
     my $fields = $params->{fields} || '';
@@ -140,8 +171,12 @@ sub _searchGrid {
     my $fieldRestriction = $params->{fieldRestriction} || '';
     my $gridField = $params->{gridField} || '';
     my $addons = $params->{addons} || '';
+    my $enableExcelExport = JSON::false;
+    if($fieldRestriction && $params->{enableExcelExport}){
+        $enableExcelExport = JSON::true;
+    }
 
-    my $prefs = {
+    my $frontendPrefs = {
         q => $defaultQuery,
         resultsPerPage => $resultsPerPage,
         fields => [],
@@ -155,15 +190,16 @@ sub _searchGrid {
         fieldRestriction => $fieldRestriction,
         hasLiveFilter => $hasLiveFilter,
         initialHideColumn => $initialHideColumn,
+        enableExcelExport => $enableExcelExport
     };
 
     my @addonlist = split(/,/,$addons);
-    $prefs->{addons} = \@addonlist;
+    $frontendPrefs->{addons} = \@addonlist;
 
     if($initialSort){
         $initialSort =~ s/,/ /g;
         $initialSort =~ s/;/,/g;
-        $prefs->{initialSort} = $initialSort;
+        $frontendPrefs->{initialSort} = $initialSort;
     }
 
     my @parsedFields = ( $fields =~ /(.*?\(.*?\)),?/g );
@@ -183,14 +219,14 @@ sub _searchGrid {
         $field->{component} = $fieldConfig->{command};
 
         $field->{params} = $fieldConfig->{params};
-        push(@{$prefs->{fields}}, $field);
+        push(@{$frontendPrefs->{fields}}, $field);
 
         $index++;
     }
     # Parse grid field
     if($gridField){
         my $gridField = @{_parseCommands($gridField)}[0];
-        $prefs->{gridField} = {
+        $frontendPrefs->{gridField} = {
             component => $gridField->{command},
             params => $gridField->{params}
         }
@@ -199,25 +235,25 @@ sub _searchGrid {
     foreach my $filter (@{_parseCommands($filters)}) {
         @{$filter->{params}}[0] = $session->i18n->maketext(@{$filter->{params}}[0]);
         if(@{$filter->{params}}[2] and $filter->{command} eq 'select-filter') {
-            $prefs->{initialFiltering} = 1;
+            $frontendPrefs->{initialFiltering} = 1;
         }
         my $newFilter = {
             component => $filter->{command},
             params => $filter->{params}
         };
-        push(@{$prefs->{filters}}, $newFilter);
+        push(@{$frontendPrefs->{filters}}, $newFilter);
     }
     # Parse facets
     foreach my $facet (@{_parseCommands($facets)}) {
         @{$facet->{params}}[0] = $session->i18n->maketext(@{$facet->{params}}[0]);
         if(@{$facet->{params}}[3]) {
-            $prefs->{initialFacetting} = 1;
+            $frontendPrefs->{initialFacetting} = 1;
         }
         my $newFacet = {
             component => $facet->{command},
             params => $facet->{params}
         };
-        push(@{$prefs->{facets}}, $newFacet);
+        push(@{$frontendPrefs->{facets}}, $newFacet);
     }
 
     #Parse mappings
@@ -233,32 +269,15 @@ sub _searchGrid {
         }
     } keys %$params;
 
-    $prefs->{mappings} = $mappings;
+    $frontendPrefs->{mappings} = $mappings;
 
-    #First data fetch per backend.
-    $prefs->{result} = _buildQuery($session, $prefs);
-    my $prefId = md5_hex(rand);
-    my $prefSelector = "SEARCHGRIDPREF_$prefId";
-    my $jsonPrefs = to_json($prefs);
-    #Fix: $n and $quot are automatically expanded by foswiki and destroy the json.
-    #So they are replaced.
-    $jsonPrefs =~ s/(\$n|\$quot)//g;
-    Foswiki::Func::expandCommonVariables("%VUE{VERSION=\"2\"}%");
-    Foswiki::Func::addToZone( 'head', 'FONTAWESOME',
-        '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FontAwesomeContrib/css/font-awesome.min.css" />');
-    Foswiki::Func::addToZone( 'head', 'FLATSKIN_WRAPPED',
-        '<link rel="stylesheet" type="text/css" media="all" href="%PUBURLPATH%/%SYSTEMWEB%/FlatSkin/css/flatskin_wrapped.min.css" />');
-    Foswiki::Func::addToZone( 'script', $prefSelector,
-        "<script type='text/json'>$jsonPrefs</script>");
-    Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
-        "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js'></script>","jsi18nCore,VUEJSPLUGIN"
-    );
-    Foswiki::Plugins::JQueryPlugin::createPlugin('jqp::moment', $session);
-    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\"><grid preferences-selector='$prefSelector'></grid></div>";
+    $frontendPrefs->{result} = _getInitialResultSet($session, $frontendPrefs);
+
+    return $frontendPrefs;
+
 }
 
-# Build query data to fetch first search result in backend.
-sub _buildQuery {
+sub _getInitialResultSet {
     my ($session, $prefs) = @_;
     my %search = (
         q => $prefs->{q},
@@ -268,7 +287,9 @@ sub _buildQuery {
         form => $prefs->{form},
         fl => $prefs->{fieldRestriction},
         'facet.mincount' => 1,
-        'facet.field' => []
+        'facet.field' => [],
+        'facet.missing' => 'on',
+        'facet.sort' => 'count',
     );
 
     if($prefs->{initialSort}) {
@@ -330,13 +351,21 @@ sub _buildQuery {
     $searchCopy{"rows"} = 0;
     $searchCopy{"form"} = '';
     $searchCopy{"facet.limit"} = -1;
+    $searchCopy{"facet.missing"} = 'on';
+    $searchCopy{"facet.sort"} = 'index'; # put 'undef' (aka. __none__) at the bottom
 
     my $facetCountResult = _searchProxy($session, $prefs->{q}, \%searchCopy);
     $facetCountResult = $facetCountResult->{facet_counts}->{facet_fields};
     foreach my $facet (@{$prefs->{facets}}){
         my $facetName = $facet->{params}[1];
-        my @facetArray = @{$facetCountResult->{$facetName}};
-        $searchProxyResult->{facetTotalCounts}->{$facetName} = scalar(@facetArray)/2;
+        my $facetArray = $facetCountResult->{$facetName};
+        $searchProxyResult->{facetTotalCounts}->{$facetName} = scalar(@$facetArray)/2;
+
+        # see if the unassigned key has a count and remove otherwise
+        if((!defined $facetArray->[scalar @$facetArray - 2]) && !$facetArray->[scalar @$facetArray - 1]) {
+            $searchProxyResult->{facetTotalCounts}->{$facetName}--;
+        }
+
     }
 
     return $searchProxyResult;
@@ -397,6 +426,9 @@ sub _searchProxy {
     unless (Foswiki::Func::isAnAdmin($wikiUser)) { # add ACLs
         push @{$opts{fq}}, " (access_granted:$wikiUser OR access_granted:all)"
     }
+
+    $opts{'facet.mincount'} = 1 unless $opts{'facet.mincount'} && $opts{'facet.mincount'} > 0;
+
     #my $content = Foswiki::Plugins::SolrPlugin::getSearcher($session)->restSOLRPROXY($web, $topic);
     my $searcher = Foswiki::Plugins::SolrPlugin::getSearcher($session);
     my $results = $searcher->solrSearch(undef, \%opts);
@@ -458,6 +490,7 @@ sub _searchProxy {
         my $facetDsps = {};
         while(my ($key, $value) = each(%{$content->{facet_counts}->{facet_fields}})) {
             $key =~ /^field_([A-Za-z0-9]*)_/;
+            next unless defined $1;
             my $formField = $form->getField($1);
             next unless $formField;
             next unless $formField->can('getDisplayValue');
@@ -466,6 +499,7 @@ sub _searchProxy {
             my $mapping = {};
             $facetDsps->{$key} = $mapping;
             for(my $index = 0; $index < $length; $index += 2){
+                next unless defined $array[$index]; # set to empty
                 my $dsp = $formField->getDisplayValue($array[$index]);
                 $mapping->{$array[$index]} = $dsp;
             }

@@ -36,15 +36,21 @@ export default {
             return this.facetTotalCounts[this.field];
         },
         filterQuery: function(){
-            var field = `{!tag=${this.field} q.op=OR}${this.field}`;
-            var queryString = "";
+            let field = `{!tag=${this.field} q.op=OR}${this.field}`;
+            let queryString = "";
             if(this.selectedFacet.length > 0){
-                for(var i=0; i < this.selectedFacet.length; i++){
+                for(let i=0; i < this.selectedFacet.length; i++){
                     queryString += this.escapeSolrQuery(this.selectedFacet[i].field);
                     if(i != this.selectedFacet.length - 1)
                         queryString += " ";
                 }
-                queryString = "(" + queryString + ")";
+
+                //'__none__ ' is used for empty fields
+                if(queryString == '__none__'){
+                    queryString = `(-${this.field}:["" TO *])`;
+                }else{
+                    queryString = "(" + queryString + ")";
+                }
 
             }
             else
@@ -60,7 +66,7 @@ export default {
             return value + " (" + count + ")";
         },
         escapeSolrQuery: function(string){
-            return string.replace(/\+|-|:|\(|\)|\|\||&&|\!|\"|\s/g, function(finding){
+            return string.replace(/\+|-|:|\(|\)|\|\||&&|!|"|\s/g, function(finding){
                 return `\\${finding}`;
             });
         },
@@ -77,7 +83,7 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="scss">
 .facet {
     .facet-list {
         list-style: none !important;

@@ -1,3 +1,3 @@
 import './grid_test.js';
-import './facets_test.js';
-import './filters_test.js';
+import './fields_test.js';
+import './excel_export_test.js';

@@ -10,7 +10,7 @@
 <script>
 import GridComponentMixin from "./GridComponentMixin.vue";
 import * as mutations from "../store/mutation-types";
-var sortStates = {
+let sortStates = {
     NONE: 0,
     ASC: 1,
     DESC: 2
@@ -47,7 +47,7 @@ export default {
         toggleSort: function(){
             if(!this.sortField)
                 return;
-            var sort;
+            let sort;
             switch(this.sortState){
                 case sortStates["NONE"]:
                     sort = "asc";
@@ -65,7 +65,7 @@ export default {
 }
 </script>
 
-<style lang="sass">
+<style lang="scss">
 .sortable {
     cursor: pointer;
 }

@@ -4,14 +4,12 @@ var webpack = require('webpack')
 
 var includeDirs = [
   projectRoot + '/dev',
-  projectRoot + '/node_modules/vue-select/',
   projectRoot + '/node_modules/nprogress/',
-  projectRoot + '/node_modules/vue-simple-pagination/',
   projectRoot + '/tests'
 ];
 
 var babelLoaderOptions = {
-  presets: ['es2015','stage-2']
+  presets: [['env', {"modules": false}]]
 }
 
 module.exports = {
@@ -51,11 +49,6 @@ module.exports = {
           "style-loader",
           "css-loader"
         ]
-      },
-      {
-        test: /\.(woff2?|eot|ttf|otf|svg)(\?.*)?$/,
-        loader: 'url-loader',
-        include: includeDirs
       }
     ]
   }
