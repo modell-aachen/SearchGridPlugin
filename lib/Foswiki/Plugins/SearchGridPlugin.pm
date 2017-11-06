@@ -352,7 +352,7 @@ sub _getInitialResultSet {
     $searchCopy{"form"} = '';
     $searchCopy{"facet.limit"} = -1;
     $searchCopy{"facet.missing"} = 'on';
-    $searchCopy{"facet.sort"} = 'index'; # put 'undef' (__none__) on bottom
+    $searchCopy{"facet.sort"} = 'index'; # put 'undef' (aka. __none__) at the bottom
 
     my $facetCountResult = _searchProxy($session, $prefs->{q}, \%searchCopy);
     $facetCountResult = $facetCountResult->{facet_counts}->{facet_fields};
