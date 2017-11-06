@@ -448,7 +448,8 @@ export default {
           type: "POST",
           headers: { 'X-HTTP-Method-Override': 'GET' },
           url: this.$foswiki.getScriptUrl('rest', 'SearchGridPlugin', 'searchproxy'),
-          data: params
+          data: params,
+          traditional: true,
         })
         .done(function(result){
           result = JSON.parse(result);
