@@ -334,7 +334,7 @@ sub _getInitialResultSet {
             }
         }
     }
-    if($prefs->{initialFiltering}) {
+    if($prefs->{initialFiltering} && $prefs->{filters}) {
         foreach my $filter (@{$prefs->{filters}}) {
             # Check if initial filter value has been provided (select-filter only)
             if($filter->{params}[2] and $filter->{component} eq 'select-filter') {
