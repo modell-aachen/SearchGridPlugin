@@ -147,8 +147,7 @@ sub _searchGrid {
         "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js?v=$RELEASE'></script>","jsi18nCore,VUEJSPLUGIN"
     );
     if($Foswiki::cfg{Plugins}{EmployeesAppPlugin}{Enabled}){
-        my $employeesJS = "<script type='text/javascript' src='%PUBURLPATH%/%SYSTEMWEB%/EmployeesAppPlugin/EmployeesAppPlugin.js?v=%QUERYVERSION{\"EmployeesAppPlugin\"}%'></script>";
-        Foswiki::Func::addToZone( 'script', 'EMPLOYEES::VUE::COMPONENTS', $employeesJS, "JQUERYPLUGIN::FOSWIKI::PREFERENCES,VUEJSPLUGIN");
+        Foswiki::Plugins::EmployeesAppPlugin::loadJavaScripts($session);
     }
     return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\"><grid preferences-selector='$prefSelector'></grid></div>";
 }
