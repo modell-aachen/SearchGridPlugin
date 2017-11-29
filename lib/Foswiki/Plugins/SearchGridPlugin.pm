@@ -171,7 +171,8 @@ sub _generateFrontendData {
     my $fieldRestriction = $params->{fieldRestriction} || '';
     my $gridField = $params->{gridField} || '';
     my $addons = $params->{addons} || '';
-    my $wizard = $params->{wizard} || '';
+    my $wizardNoResults = $params->{wizardNoResults} || '';
+    my $wizardNoEntries = $params->{wizardNoEntries} || '';
     my $enableExcelExport = JSON::false;
     if($fieldRestriction && $params->{enableExcelExport}){
         $enableExcelExport = JSON::true;
@@ -195,10 +196,15 @@ sub _generateFrontendData {
         wizardConfig => {}
     };
 
-    my $wizardConfig = _parseCommands($wizard)->[0];
-    $frontendPrefs->{wizardConfig} = {
-        component => $wizardConfig->{command},
-        params => $wizardConfig->{params}
+    my $wizardNoEntriesConfig = _parseCommands($wizardNoEntries)->[0];
+    $frontendPrefs->{wizardNoEntriesConfig} = {
+        component => $wizardNoEntriesConfig->{command},
+        params => $wizardNoEntriesConfig->{params}
+    };
+    my $wizardNoResultsConfig = _parseCommands($wizardNoResults)->[0];
+    $frontendPrefs->{wizardNoResultsConfig} = {
+        component => $wizardNoResultsConfig->{command},
+        params => $wizardNoResultsConfig->{params}
     };
 
 

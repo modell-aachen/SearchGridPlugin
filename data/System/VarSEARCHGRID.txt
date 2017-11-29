@@ -25,7 +25,8 @@ And here is the corresponding macro call:
    fieldRestriction="title,url,author,createdate,web,type,language"
    gridField="test-grid-field(title,url,createdate)"
    enableExcelExport="1",
-   wizard="vue-wizard(Überschrift,fa-magic,Text,ButtonText,ButtonHref,)"
+   wizardNoEntries="vue-wizard(Nothing here,fa-magic,Unfortunately we could not find anything,Create some Topic,ButtonHref,)",
+   wizardNoResults="vue-wizard(Nothing here,fa-magic,Unfortunately, we could not find anything for these filters,,,)"
 }%
 %IF{"$CODE='1'" then="</pre>"}%
 %ENDSECTION{"DEFAULT::EXAMPLE"}%
@@ -48,7 +49,8 @@ And here is the corresponding macro call:
 | mappings_{fieldName} | In addition to providing a form it is also possible to provide direct custom mappings for fields. E.g. if you have a field status_s which has values of 0 and 1 then you may want to provide "mappings_status_s="1=Valid;0=Invalid". This will then be used as display values in facets. This can also be used to override mappings that are provided by the form. | "" | "mappings_status_s="1=Valid;0=Invalid" |
 | addons | A list of addon components to use in the grid. See the addons section for details | "" | "my-addon-component" |
 | enableExcelExport | Set this to 1 to enable excel export for the grid. For performance reasons this setting only takes effect if the setting for field restrictions is also set. The export will disregard the current paging and export all entries that match the applied filter settings. It will only export the configured fields that are currently supported. See the individual field descriptions below for further info on supported fields.| "0" | "1" |
-| wizard | Add a wizard for empty results. You could set heading, icon, text and a button (buttonText, buttonHref, buttonCallback). | "" | "vue-wizard(Überschrift,fa-magic,Text,ButtonText,ButtonHref,)" |
+| wizardNoEntries | Add a wizard if now entry exists. You could set heading, icon, text and a button (buttonText, buttonHref, buttonCallback). | "" | "vue-wizard(Nothing here,fa-magic,Unfortunately we could not find anything,Create some Topic,ButtonHref,)" |
+| wizardNoResults | Add a wizard for empty resultset You could set heading, icon, text and a button (buttonText, buttonHref, buttonCallback). | "" | "vue-wizard(Nothing here,fa-magic,Unfortunately, we could not find anything for these filters,,,)" |
 
 ---+++ Fields
 The following fields are predefined and can be used as entries in the fields parameter of the search grid macro:

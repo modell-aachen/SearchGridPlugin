@@ -527,8 +527,8 @@ export default {
       this.hasGridView = this.prefs.hasOwnProperty('gridField');
       this.hasLiveFilter = this.prefs.hasLiveFilter;
       this.initialHideColumn = this.prefs.initialHideColumn;
-      this.wizardConfig = this.prefs.wizardConfig;
-      this.wizardConfig
+      this.wizardConfig = this.prefs.wizardNoResultsConfig;
+
       if(this.prefs.hasOwnProperty("initialSort")){
         let sortCrits = this.prefs.initialSort.split(",");
         let initialSortCrits = [];
@@ -543,6 +543,9 @@ export default {
       }
       this.parseAllFacetResults(this.prefs.result);
 
+      if(this.sortCrits || this.isFilterApplied ){
+        this.wizardConfig = this.prefs.wizardNoEntriesConfig;
+      }
       NProgress.configure({
         showSpinner: false
       });
