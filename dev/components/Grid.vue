@@ -50,7 +50,10 @@
                 </div>
                 <div class="expanded row" v-bind:class="isGridView ? ['medium-up-1', 'xlarge-up-2', 'xxxlarge-up-3', 'xxxxlarge-up-3'] : []">
                     <!-- Table -->
-                    <div class="columns" v-show="results.length == 0"><p>{{maketext("No results")}}</p></div>
+                    <div class="columns" v-show="!wizardConfig.component && results.length == 0"><p>{{maketext("No results")}}</p></div>
+                    <div class="columns widgetBoxWrapper ma-bg-beige-color" v-show="wizardConfig.component && results.length == 0">
+                      <component class="ma-bg-white-color" :is="wizardConfig.component" :params="wizardConfig.params"></component>
+                    </div>
                     <div class="columns" v-show="results.status == 'error'"><p>{{maketext(results.msg)}}</p></div>
                     <div v-show="!isGridView && results.length > 0" class="columns search-grid-results">
                         <table>
@@ -63,9 +66,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div v-if="hasGridView" v-show="isGridView && results.length > 0" class="columns" v-for="result in results">
-                        <div :is="prefs.gridField.component" :doc="result" :params="prefs.gridField.params"></div>
-                    </div>
+                    
                 </div>
                 <div class="expanded row">
                     <div class="columns">
@@ -158,7 +159,8 @@ export default {
           columnsToHide: [],
           initialHideColumn: false,
           isGridView: false,
-          entryClickHandler: null
+          entryClickHandler: null,
+          wizardConfig: null
        }
     },
     props: ['preferencesSelector','pref'],
@@ -525,6 +527,8 @@ export default {
       this.hasGridView = this.prefs.hasOwnProperty('gridField');
       this.hasLiveFilter = this.prefs.hasLiveFilter;
       this.initialHideColumn = this.prefs.initialHideColumn;
+      this.wizardConfig = this.prefs.wizardConfig;
+      this.wizardConfig
       if(this.prefs.hasOwnProperty("initialSort")){
         let sortCrits = this.prefs.initialSort.split(",");
         let initialSortCrits = [];

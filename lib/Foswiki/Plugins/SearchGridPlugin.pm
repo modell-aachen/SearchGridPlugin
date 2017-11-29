@@ -133,6 +133,7 @@ sub _searchGrid {
     # - FILTER:  List of Filter (e.g. create_date:date,author:user,)
     # - VIEW: defaultSolr,defaultTable,Eigenes Template
     # - displayRows: list von anzeie mata feldern
+    # - wizard: wizard will be displayed if no result or no entry is given
 
     my $frontendPrefs = _generateFrontendData($params);
     my $prefId = md5_hex(rand);
@@ -170,6 +171,7 @@ sub _generateFrontendData {
     my $fieldRestriction = $params->{fieldRestriction} || '';
     my $gridField = $params->{gridField} || '';
     my $addons = $params->{addons} || '';
+    my $wizard = $params->{wizard} || '';
     my $enableExcelExport = JSON::false;
     if($fieldRestriction && $params->{enableExcelExport}){
         $enableExcelExport = JSON::true;
@@ -189,8 +191,16 @@ sub _generateFrontendData {
         fieldRestriction => $fieldRestriction,
         hasLiveFilter => $hasLiveFilter,
         initialHideColumn => $initialHideColumn,
-        enableExcelExport => $enableExcelExport
+        enableExcelExport => $enableExcelExport,
+        wizardConfig => {}
     };
+
+    my $wizardConfig = _parseCommands($wizard)->[0];
+    $frontendPrefs->{wizardConfig} = {
+        component => $wizardConfig->{command},
+        params => $wizardConfig->{params}
+    };
+
 
     my @addonlist = split(/,/,$addons);
     $frontendPrefs->{addons} = \@addonlist;
