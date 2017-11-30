@@ -160,7 +160,8 @@ export default {
           initialHideColumn: false,
           isGridView: false,
           entryClickHandler: null,
-          wizardConfig: null
+          wizardConfig: null,
+          wizardNoResultsConfig: null
        }
     },
     props: ['preferencesSelector','pref'],
@@ -206,6 +207,7 @@ export default {
         }
       },
       applyFiltersDebounce() {
+        console.log("start");
         return debounce(this.applyFilters, 700);
       },
       facets(){
@@ -340,6 +342,7 @@ export default {
           }
         }
         this.currentPage = 1;
+        this.wizardConfig = this.wizardNoResultsConfig;
         this.fetchData();
       },
       sortCritsToString: function() {
@@ -527,7 +530,8 @@ export default {
       this.hasGridView = this.prefs.hasOwnProperty('gridField');
       this.hasLiveFilter = this.prefs.hasLiveFilter;
       this.initialHideColumn = this.prefs.initialHideColumn;
-      this.wizardConfig = this.prefs.wizardNoResultsConfig;
+      this.wizardConfig = this.prefs.wizardNoEntriesConfig;
+      this.wizardNoResultsConfig = this.prefs.wizardNoResultsConfig;
 
       if(this.prefs.hasOwnProperty("initialSort")){
         let sortCrits = this.prefs.initialSort.split(",");
@@ -543,9 +547,6 @@ export default {
       }
       this.parseAllFacetResults(this.prefs.result);
 
-      if(this.sortCrits || this.isFilterApplied ){
-        this.wizardConfig = this.prefs.wizardNoEntriesConfig;
-      }
       NProgress.configure({
         showSpinner: false
       });
