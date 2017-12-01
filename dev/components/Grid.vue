@@ -50,8 +50,8 @@
                 </div>
                 <div class="expanded row" v-bind:class="isGridView ? ['medium-up-1', 'xlarge-up-2', 'xxxlarge-up-3', 'xxxxlarge-up-3'] : []">
                     <!-- Table -->
-                    <div class="columns" v-show="!wizardConfig.component && results.length == 0"><p>{{maketext("No results")}}</p></div>
-                    <div class="columns widgetBoxWrapper ma-bg-beige-color" v-show="wizardConfig.component && results.length == 0">
+                    <div class="columns" v-if="!wizardConfig.component" v-show="results.length == 0"><p>{{maketext("No results")}}</p></div>
+                    <div class="columns widgetBoxWrapper ma-bg-beige-color" v-else v-show="wizardConfig.component && results.length == 0">
                       <component class="ma-bg-white-color" :is="wizardConfig.component" :params="wizardConfig.params"></component>
                     </div>
                     <div class="columns" v-show="results.status == 'error'"><p>{{maketext(results.msg)}}</p></div>
@@ -66,7 +66,9 @@
                             </tbody>
                         </table>
                     </div>
-                    
+                    <div v-if="hasGridView" v-show="isGridView && results.length > 0" class="columns" v-for="result in results">
+                        <div :is="prefs.gridField.component" :doc="result" :params="prefs.gridField.params"></div>
+                    </div>
                 </div>
                 <div class="expanded row">
                     <div class="columns">
@@ -207,7 +209,6 @@ export default {
         }
       },
       applyFiltersDebounce() {
-        console.log("start");
         return debounce(this.applyFilters, 700);
       },
       facets(){
