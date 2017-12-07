@@ -9,8 +9,8 @@
                     <div>
                         <div class="expanded row align-bottom">
                             <template v-for="filter in prefs.filters">
-                                <component v-if="hasLiveFilter" v-on:filter-change="applyFiltersDebounce" v-on:confirm="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
-                                <component v-else v-on:confirm="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
+                                <component v-if="hasLiveFilter" v-on:filter-change="applyFiltersDebounce" v-on:confirm="applyFilters" :is="filter.component" :key="filter.params[0]" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
+                                <component v-else v-on:confirm="applyFilters" :is="filter.component" :key="filter.params[0]" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                             </template>
                             <div v-if="hasFilters" class="columns">
                                 <div class="button-group">
@@ -26,7 +26,7 @@
                             </div>
                             <div v-if="hasAddons" class="shrink columns">
                               <template v-for="addon in prefs.addons">
-                                <component :is="addon" :api="api">
+                                <component :is="addon" :api="api" :key="addon">
                                 </component>
                               </template>
                             </div>
@@ -59,15 +59,14 @@
                         <table>
                             <thead is="grid-header" :headers="filteredFields" :initial-sort="prefs.initialSort"></thead>
                             <tbody>
-                                <tr v-for="result in results" v-on:click=wrappedEntryClickHandler(result)>
-                                    <td v-for="field in filteredFields" :is="field.component" :doc="result" :params="field.params">
+                                <tr v-for="(result, index) in results" :key="index" v-on:click=wrappedEntryClickHandler(result)>
+                                    <td v-for="field in filteredFields" :is="field.component" :key="field.params[0]" :doc="result" :params="field.params">
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
-                    <div v-if="hasGridView" v-show="isGridView && results.length > 0" class="columns" v-for="result in results">
-                        <div :is="prefs.gridField.component" :doc="result" :params="prefs.gridField.params"></div>
+                    <div v-if="hasGridView" v-show="isGridView && results.length > 0" class="columns" v-for="(result, index) in results" :key="index"> <div :is="prefs.gridField.component" :doc="result" :params="prefs.gridField.params"></div>
                     </div>
                 </div>
                 <div class="expanded row">
@@ -81,8 +80,8 @@
                 <div class="wrapper">
                     <div>
                         <h1 class='primary facets-header'><a class="small filter-reset button float-right" @click.stop="clearFacets()">{{maketext("Reset all")}}<i class="fa fa-times fa-lg" aria-hidden="true"></i></a>{{maketext("Facets")}}</h1>
-                        <template v-for="facet in prefs.facets">
-                            <component :is="facet.component" :params="facet.params" :facet-values="facetValues" @facet-changed="facetChanged" :facet-total-counts="prefs.result.facetTotalCounts" @get-facet-info="fetchFacetCharacteristics" @register-facet="registerFacet"></component>
+                        <template v-for="(facet, index) in prefs.facets">
+                            <component :is="facet.component" :key="index" :params="facet.params" :facet-values="facetValues" @facet-changed="facetChanged" :facet-total-counts="prefs.result.facetTotalCounts" @get-facet-info="fetchFacetCharacteristics" @register-facet="registerFacet"></component>
                         </template>
                     </div>
                 </div>

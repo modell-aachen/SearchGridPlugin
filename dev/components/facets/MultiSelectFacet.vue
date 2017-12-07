@@ -3,7 +3,7 @@
     <h4>{{title}}</h4>
     <ul class="facet-list">
         <template v-for="value in facetCharacteristics">
-                <li v-show="value.count > 0 || isSelected(value)">
+                <li v-show="value.count > 0 || isSelected(value)" :key="value.title">
                     <input v-bind:id="getCheckboxId(value.field)" type ="checkbox" v-bind:value="value.field" v-model="selectedCheckboxes">
             <label v-bind:for="getCheckboxId(value.field)">
                  {{getLabel(value.title, value.count)}}
@@ -18,12 +18,12 @@
 import FacetMixin from './FacetMixin.vue'
 export default {
     mixins: [FacetMixin],
-	data: function(){
-		return {
+    data: function(){
+        return {
             selectedCheckboxes: this.params.length > 3 ? this.params[3].split(";") : [],
             facetMap: {}
-		}
-	},
+        }
+    },
     watch: {
         selectedCheckboxes() {
             this.updateSelectedFacets();
@@ -41,12 +41,14 @@ export default {
             }
         },
         isSelected(value){
-            if(this.selectedFacet.length == 0)
+            if(this.selectedFacet.length === 0)
                 return false;
-            for(let i = 0; i < this.selectedFacet.length; i++){
-                if(this.selectedFacet[i].field === value.field)
-                    return true;
-            }
+                console.log("test",this.selectedFacet.length);
+                for(let i = 0; i < this.selectedFacet.length; i++){
+                    if(this.selectFacet[i] && this.selectedFacet[i].field === value.field) {
+                        return true;
+                    }
+                }
             return false;
         },
         getCheckboxId: function(field){

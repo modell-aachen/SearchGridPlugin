@@ -1,6 +1,6 @@
 <template>
 <thead>
-<tr><th is="grid-header-field" v-for="header in headers" :title="header.title" :sort-field="header.sortField"></th></tr>
+<tr><th is="grid-header-field" v-for="header in headers" :key="header.title" :title="header.title" :sort-field="header.sortField"></th></tr>
 </thead>
 </template>
 

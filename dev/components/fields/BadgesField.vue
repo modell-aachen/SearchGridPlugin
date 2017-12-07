@@ -1,6 +1,6 @@
 <template>
     <td>
-        <span class="ma-badge" v-for="item in getList()">{{item}}</span>
+        <span class="ma-badge" v-for="(item, index) in getList()" :key="index">{{item}}</span>
     </td>
 </template>
 

@@ -7,7 +7,7 @@
             <label v-bind:for="getRadioId('All')">{{maketext("All")}}</label>
         </li>
         <template v-for="value in facetCharacteristics">
-        <li v-show="value.count > 0 || isSelected(value)">
+        <li v-show="value.count > 0 || isSelected(value)" :key="value.title">
             <input v-bind:id="getRadioId(value.field)" type ="radio" v-bind:value="value.field" v-model="selectedRadio">
             <label v-bind:for="getRadioId(value.field)">{{getLabel(value.title, value.count)}}</label>
         </li>

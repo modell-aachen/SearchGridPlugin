@@ -1,6 +1,8 @@
 <template>
     <td>
-        <template v-for="item in getList()">{{item}}<br v-if="showMoreHint"></template>
+        <template v-for="item in getList()">
+          {{item}}<br v-if="showMoreHint" :key="item">
+        </template>
         <template v-if="more">{{gettext('and')}} <span class="more-hint">{{gettext('[_1] more', more)}}</span></template>
     </td>
 </template>
