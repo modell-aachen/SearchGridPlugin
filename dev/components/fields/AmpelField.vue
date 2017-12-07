@@ -1,12 +1,12 @@
 <template>
-<td>
-    <div class='ampel'>
-        <div class='signal'>
-            <span v-if="ampel.showDate && ampel.warnStatus != 'none'">{{ampel.dueDate}}</span>
-            <img v-tooltip="tooltip" :src="url">
+    <td>
+        <div class='ampel'>
+            <div class='signal'>
+                <span v-if="ampel.showDate && ampel.warnStatus != 'none'">{{ampel.dueDate}}</span>
+                <img v-tooltip="tooltip" :src="url">
+            </div>
         </div>
-    </div>
-</td>
+    </td>
 </template>
 
 <script>
@@ -17,7 +17,7 @@ export default {
     /* params:
         datefield
         show_date (optional)
-        warning_days_yellow (optional) 
+        warning_days_yellow (optional)
         warning_days_red (optional)
     */
     data() {

@@ -1,10 +1,10 @@
 <template>
-<div>
-<a v-show="!loading" class="excel" v-bind:title="tooltip" @click="exportToExcel()">
-    <img v-bind:src="iconImage">
-</a>
-<i v-show="loading" class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>
-</div>
+    <div>
+        <a v-show="!loading" class="excel" v-bind:title="tooltip" @click="exportToExcel()">
+            <img v-bind:src="iconImage">
+        </a>
+        <i v-show="loading" class="fa fa-circle-o-notch fa-spin fa-3x fa-fw"></i>
+    </div>
 </template>
 
 <script>

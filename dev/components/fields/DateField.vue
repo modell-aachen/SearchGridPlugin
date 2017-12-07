@@ -1,5 +1,5 @@
 <template>
-<td>{{date}}</td>
+    <td>{{date}}</td>
 </template>
 
 <script>

@@ -1,24 +1,25 @@
 {
-	extends: [
-          "eslint:recommended",
-          "plugin:vue/essential"
-        ],
-        parserOptions: {
-          "parser": "babel-eslint",
-        },
-	env: {
-		"browser": true,
-		"node": true,
-		"commonjs": true,
-		"es6": true,
-		"jasmine": true
-	},
-	globals: {
-		"Vue": false
-	},
-	rules: {
-		"linebreak-style": ["error", "unix"],
-		"no-console": "warn",
-		"no-var": "warn"
-	}
+    extends: [
+        "eslint:recommended",
+        "plugin:vue/essential"
+    ],
+    parserOptions: {
+        "parser": "babel-eslint",
+    },
+    env: {
+        "browser": true,
+        "node": true,
+        "commonjs": true,
+        "es6": true,
+        "jasmine": true
+    },
+    globals: {
+        "Vue": false
+    },
+    rules: {
+        "linebreak-style": ["error", "unix"],
+        "no-console": "warn",
+        "no-var": "warn",
+        "vue/html-indent": ["error", 4]
+    }
 }

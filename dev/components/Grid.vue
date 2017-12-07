@@ -19,21 +19,18 @@
                                 </div>
                             </div>
                             <div class="columns">
-                              <!--
-                                  Separator which forces the following
-                                  shrinked columns to align to the right
-                               -->
+                            <!-- Separator which forces the following shrinked columns to align to the right -->
                             </div>
                             <div v-if="hasAddons" class="shrink columns">
-                              <template v-for="addon in prefs.addons">
-                                <component :is="addon" :api="api" :key="addon">
-                                </component>
-                              </template>
+                                <template v-for="addon in prefs.addons">
+                                    <component :is="addon" :api="api" :key="addon">
+                                    </component>
+                                </template>
                             </div>
                             <div v-if="hasExcelExport" class="shrink columns">
-                              <div class="button-group">
-                                <excel-export :fields="prefs.fields"></excel-export>
-                              </div>
+                                <div class="button-group">
+                                    <excel-export :fields="prefs.fields"></excel-export>
+                                </div>
                             </div>
                             <div v-if="hasGridView" class="shrink columns">
                                 <div class="grid-toggle button-group">
@@ -52,7 +49,7 @@
                     <!-- Table -->
                     <div class="columns" v-if="!wizardConfig.component" v-show="results.length == 0"><p>{{maketext("No results")}}</p></div>
                     <div class="columns widgetBoxWrapper ma-bg-beige-color" v-else v-show="wizardConfig.component && results.length == 0">
-                      <component class="ma-bg-white-color" :is="wizardConfig.component" :params="wizardConfig.params"></component>
+                        <component class="ma-bg-white-color" :is="wizardConfig.component" :params="wizardConfig.params"></component>
                     </div>
                     <div class="columns" v-show="results.status == 'error'"><p>{{maketext(results.msg)}}</p></div>
                     <div v-show="!isGridView && results.length > 0" class="columns search-grid-results">

@@ -1,10 +1,10 @@
 <template>
-  <td v-if="shouldRenderUserIcon">
-    <template v-for="(userName, index) in userNames">
-      {{userName}} <vue-user-card :id="userIds[index]" :key="index"></vue-user-card>
-    </template>
-  </td>
-  <td v-else>{{doc[params[0]]}}</td>
+    <td v-if="shouldRenderUserIcon">
+        <template v-for="(userName, index) in userNames">
+            {{userName}} <vue-user-card :id="userIds[index]" :key="index"></vue-user-card>
+        </template>
+    </td>
+    <td v-else>{{doc[params[0]]}}</td>
 </template>
 
 <script>

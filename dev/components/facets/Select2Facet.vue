@@ -1,12 +1,12 @@
 <template>
-<div class="facet">
-<h4>{{header}}</h4>
-<div class="vue-select-wrapper">
-<vue-select multiple label="field" :placeholder="maketext('Search term...')" v-model="selectedFacet" :options="options" :on-search="onSearchDebounce" :get-option-label="getOptionLabel" :get-selected-option-label="getSelectedOptionLabel" :prevent-search-filter="true" :on-get-more-options="onGetMoreOptions">
-    <template slot="more-results">{{maketext(moreResultsText)}}</template>
-</vue-select>
-</div>
-</div>
+    <div class="facet">
+        <h4>{{header}}</h4>
+        <div class="vue-select-wrapper">
+            <vue-select multiple label="field" :placeholder="maketext('Search term...')" v-model="selectedFacet" :options="options" :on-search="onSearchDebounce" :get-option-label="getOptionLabel" :get-selected-option-label="getSelectedOptionLabel" :prevent-search-filter="true" :on-get-more-options="onGetMoreOptions">
+                <template slot="more-results">{{maketext(moreResultsText)}}</template>
+            </vue-select>
+        </div>
+    </div>
 </template>
 
 <script>

@@ -1,19 +1,19 @@
 <template>
-<div class="facet">
-    <h4>{{title}}</h4>
-    <ul class="facet-list">
-        <li>
-            <input v-bind:id="getRadioId('All')" type=radio value="" v-model="selectedRadio">
-            <label v-bind:for="getRadioId('All')">{{maketext("All")}}</label>
-        </li>
-        <template v-for="value in facetCharacteristics">
-        <li v-show="value.count > 0 || isSelected(value)" :key="value.title">
-            <input v-bind:id="getRadioId(value.field)" type ="radio" v-bind:value="value.field" v-model="selectedRadio">
-            <label v-bind:for="getRadioId(value.field)">{{getLabel(value.title, value.count)}}</label>
-        </li>
-        </template>
-    </ul>
-</div>
+    <div class="facet">
+        <h4>{{title}}</h4>
+        <ul class="facet-list">
+            <li>
+                <input v-bind:id="getRadioId('All')" type=radio value="" v-model="selectedRadio">
+                <label v-bind:for="getRadioId('All')">{{maketext("All")}}</label>
+            </li>
+            <template v-for="value in facetCharacteristics">
+                <li v-show="value.count > 0 || isSelected(value)" :key="value.title">
+                    <input v-bind:id="getRadioId(value.field)" type ="radio" v-bind:value="value.field" v-model="selectedRadio">
+                    <label v-bind:for="getRadioId(value.field)">{{getLabel(value.title, value.count)}}</label>
+                </li>
+            </template>
+        </ul>
+    </div>
 </template>
 
 <script>
