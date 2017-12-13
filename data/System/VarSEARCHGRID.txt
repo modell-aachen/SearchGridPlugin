@@ -25,6 +25,7 @@ And here is the corresponding macro call:
    fieldRestriction="title,url,author,createdate,web,type,language"
    gridField="test-grid-field(title,url,createdate)"
    enableExcelExport="1"
+   form="Processes.DocumentForm"
 }%
 %IF{"$CODE='1'" then="</pre>"}%
 %ENDSECTION{"DEFAULT::EXAMPLE"}%
@@ -43,7 +44,7 @@ And here is the corresponding macro call:
 | resultsPerPage | Defines how many entries are shown per page. | 20 | "5" |
 | hasLiveFilter | Per default live filtering is enabled and grid filters straight with typing in anything. If deactivated, filtering is possible via typing enter. To deactivate live filtering, set the option to "0". | 1 | "1" |
 | initialSort | Semicolon-separated list of the grid's initial sorting criteria. Expects _field_, _direction_ pairs, where _field_ is a Solr field and _direction_ is either asc or desc. The first pair in the list has highest priority, the second pair has second highest and so on. | "" | "author,asc;createdate,desc" |
-| form | The form provided by this parameter will be used to identify correct display values for data stored in form fields. E.g. if you create a facet for the user field "field_Creator_s" and you provide the form which defines the field, then the correct display value for the creators will be shown instead of their ids. | "" | "Processes.DocumentForm" |
+| form | The form provided by this parameter will be used to identify correct display values for data stored in form fields. Used for Facets. E.g. if you create a facet for the user field "field_Creator_s" and you provide the form which defines the field, then the correct display value for the creators will be shown instead of their ids. | "" | "Processes.DocumentForm" |
 | mappings_{fieldName} | In addition to providing a form it is also possible to provide direct custom mappings for fields. E.g. if you have a field status_s which has values of 0 and 1 then you may want to provide "mappings_status_s="1=Valid;0=Invalid". This will then be used as display values in facets. This can also be used to override mappings that are provided by the form. | "" | "mappings_status_s="1=Valid;0=Invalid" |
 | addons | A list of addon components to use in the grid. See the addons section for details | "" | "my-addon-component" |
 | enableExcelExport | Set this to 1 to enable excel export for the grid. For performance reasons this setting only takes effect if the setting for field restrictions is also set. The export will disregard the current paging and export all entries that match the applied filter settings. It will only export the configured fields that are currently supported. See the individual field descriptions below for further info on supported fields.| "0" | "1" |
@@ -293,7 +294,8 @@ All filters take as their first parameter the filter label (which gets maketexte
 
 ---+++ Facets
 Facets are also filters which are rendered in a widget next to the grid.
-There are three kinds of facets all of which take at least three parameters. The first one indicates the title of the facet (which gets maketexted), the second one indicates the field to filter on and the third one indicates how many results should be shown (default is all). Moreover, preselected values can be configured for the multi/single select facets using their 4th (optional) parameter (default is: no preselected values). To do so, you *must* provide a third parameter. Choose *-1* here for the default behaviour. 
+There are three kinds of facets all of which take at least three parameters. The first one indicates the title of the facet (which gets maketexted), the second one indicates the field to filter on and the third one indicates how many results should be shown (default is all). Moreover, preselected values can be configured for the multi/single select facets using their 4th (optional) parameter (default is: no preselected values). To do so, you *must* provide a third parameter. Choose *-1* here for the default behaviour.
+To render values as *display values* us the [[/System/SearchGridPlugin#Display_values][form parameter]] for the Searchgrid.
    <table class="foswikiTable">
       <tr><th><br>Field</br></th><th>Definition</th><th>Description</th><th>SeachGrid Code</th></tr>
       <tr>
@@ -333,10 +335,10 @@ There are three kinds of facets all of which take at least three parameters. The
    headers="Web,Title,Date"
    fields="text-field(web),text-field(title),date-field(createdate)"
    sortFields="title_sort,createdate"
-   facets="multi-select-facet(Webs,web,-1,Nominal;Processes)"
+   facets="multi-select-facet(Webs,web,-1,Processes;Audit)"
    resultsPerPage="8"
    initialSort="web_sort,desc;title_sort,asc"
-   fieldRestriction="title,createdate,web"
+   fieldRestriction="title,createdate,web,form"
 }%
 %IF{"$CODE='1'" then="</pre>"}%
 %ENDSECTION{"FACET::SELECT::MULTI"}%
@@ -346,7 +348,7 @@ There are three kinds of facets all of which take at least three parameters. The
    "type:topic form:*DocumentForm field_Responsible_s:*"
    headers="Topic"
    fields="text-field(title)"
-   facets="single-select-facet(Responsible,field_Responsible_s)"
+   facets="single-select-facet(Responsible,field_Responsible_dv_s)"
 }%
 %IF{"$CODE='1'" then="</pre>"}%
 %ENDSECTION{"FACET::SELECT::SINGLE"}%
@@ -356,7 +358,7 @@ There are three kinds of facets all of which take at least three parameters. The
    "type:topic form:*DocumentForm field_Responsible_s:*"
    headers="Topic"
    fields="text-field(title)"
-   facets="select-2-facet(Responsible,field_Responsible_s)"
+   facets="select-2-facet(Responsible,field_Responsible_dv_s)"
 }%
 %IF{"$CODE='1'" then="</pre>"}%
 %ENDSECTION{"FACET::SELECT::TWO"}%
