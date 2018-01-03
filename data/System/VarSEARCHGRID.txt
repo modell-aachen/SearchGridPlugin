@@ -334,7 +334,7 @@ To render values as *display values* us the [[/System/SearchGridPlugin#Display_v
    "type:topic"
    headers="Web,Title,Date"
    fields="text-field(web),text-field(title),date-field(createdate)"
-   sortFields="title_sort,createdate"
+   sortFields="web_sort,title_sort,createdate"
    facets="multi-select-facet(Webs,web,-1,Processes;Audit)"
    resultsPerPage="8"
    initialSort="web_sort,desc;title_sort,asc"
