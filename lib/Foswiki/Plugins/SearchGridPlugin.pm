@@ -213,7 +213,8 @@ sub _generateFrontendData {
             sortField => $parsedSortFields[$index]
         };
         if( @headers ){
-            $field->{title} = $session->i18n->maketext($headers[$index]);
+            my $header = $headers[$index];
+            $field->{title} = ( defined $header && $header ne '' ) ? $session->i18n->maketext($header) : '';
         }
         $field->{component} = $fieldConfig->{command};
 
