@@ -213,7 +213,8 @@ sub _generateFrontendData {
             sortField => $parsedSortFields[$index]
         };
         if( @headers ){
-            $field->{title} = $session->i18n->maketext($headers[$index]);
+            my $header = $headers[$index];
+            $field->{title} = ( defined $header && $header ne '' ) ? $session->i18n->maketext($header) : '';
         }
         $field->{component} = $fieldConfig->{command};
 
@@ -283,8 +284,8 @@ sub _getInitialResultSet {
         start => 0,
         rows => $prefs->{resultsPerPage},
         facet => $prefs->{facets} ? 'true' : 'false',
-        form => $prefs->{form},
         fl => $prefs->{fieldRestriction},
+        form => $prefs->{form},
         'facet.mincount' => 1,
         'facet.field' => [],
         'facet.missing' => 'on',
@@ -401,6 +402,9 @@ sub _parseCommands {
 sub _searchProxy {
     my ($session, $query, $options) = @_;
     my %opts = %{$options};
+    $opts{form} = $opts{form}[0] if ref $opts{form} eq "ARRAY";
+    my $formParam = $opts{form} || "";
+    delete $opts{form};
     my $json = JSON->new->utf8;
     my $meta = Foswiki::Meta->new($session);
 
@@ -480,8 +484,6 @@ sub _searchProxy {
         }
     }
 
-    $opts{form} = $opts{form}[0] if ref $opts{form} eq "ARRAY";
-    my $formParam = $opts{form} || "";
     $content->{facet_dsps} = {};
     if($formParam){
         my ($fweb,$ftopic) = split(/\./,$formParam);
