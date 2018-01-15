@@ -290,6 +290,7 @@ sub _getInitialResultSet {
         'facet.field' => [],
         'facet.missing' => 'on',
         'facet.sort' => 'count',
+        'facet.limit' => -1
     );
 
     if($prefs->{initialSort}) {

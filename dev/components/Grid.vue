@@ -368,7 +368,7 @@ export default {
           "rows":this.resultsPerPage,
           "start": startpoint,
           "facet": true,
-          "facet.limit": 5,
+          "facet.limit": -1,
           "facet.missing": 'on',
           "facet.sort": "count",
           "fl" : this.prefs.fieldRestriction,
