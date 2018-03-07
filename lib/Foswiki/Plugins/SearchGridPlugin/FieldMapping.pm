@@ -90,7 +90,7 @@ sub _replaceNameHash{
         my $value = $arr->{$key};
         if(ref($value) eq 'ARRAY'){
             $value = _replaceNameArr($value,$name);
-        }elsif(ref $value eq ref {}){
+        }elsif(ref($value) eq 'HASH'){
             $value = _replaceNameHash($value,$name);
         }else{
             $value =~ s/%Name%/$name/;
@@ -107,7 +107,7 @@ sub _replaceNameArr{
     foreach my $value (@$arr){
         if(ref($value) eq 'ARRAY'){
             $value = _replaceNameArr($value,$name);
-        }elsif(ref $value eq ref {}){
+        }elsif(ref($value) eq 'HASH'){
             $value = _replaceNameHash($value,$name);
         }else{
             $value =~ s/%Name%/$name/;
