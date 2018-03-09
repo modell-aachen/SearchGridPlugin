@@ -18,6 +18,8 @@ use JSON;
 use version; our $VERSION = version->declare("v0.1");
 use Digest::MD5 qw(md5_hex);
 
+use Foswiki::Plugins::SearchGridPlugin::FieldMapping;
+
 our $RELEASE = "0.1";
 
 our $SHORTDESCRIPTION = 'Search Gird Plugin for create Solr overviews';
@@ -205,17 +207,40 @@ sub _generateFrontendData {
     my @parsedSortFields = (split(/,/,$sortFields));
     my $index = 0;
 
-    my $fieldConfigs = _parseCommands($fields);
+    #set default fieldRestrictions
+    my @values = split(',', $frontendPrefs->{fieldRestriction});
+    if(scalar(@values) <1){
+        $frontendPrefs->{fieldRestriction} = "web,topic,form";
+    } else {
+        foreach my $defValue ('web','form','topic'){
+            $frontendPrefs->{fieldRestriction} .= ",".$defValue if (!grep( /^$defValue$/, @values ) ) ;#!exists(@values[$defValue]);
+        }
+    }
+
+    my $fieldConfigs = _parseCommands($fields, $form);
     # Parse fields
     foreach my $fieldConfig (@$fieldConfigs) {
         my @headers = split(/,/,$headers);
-        my $field = {
-            sortField => $parsedSortFields[$index]
-        };
-        if( @headers ){
-            my $header = $headers[$index];
-            $field->{title} = ( defined $header && $header ne '' ) ? $session->i18n->maketext($header) : '';
+        my $field = {};
+        if($fieldConfig->{sort}){
+            $field->{sortField} = $fieldConfig->{sort};
         }
+        #override sort from sortfields params
+        $field->{sortField} => $parsedSortFields[$index] if $parsedSortFields[$index];
+
+        #get Header from form
+        if($form){
+            my ($fWeb, $fTopic) = Foswiki::Func::normalizeWebTopicName("",$form);
+            my $formObj = Foswiki::Form->new($session, $fWeb, $fTopic);
+            my $formField = $formObj->getField($fieldConfig->{name});
+            $field->{title} = Foswiki::Func::expandCommonVariables($formField->{description});
+            $frontendPrefs->{fieldRestriction} .= ",".$fieldConfig->{fieldRestriction} if $fieldConfig->{fieldRestriction};
+        }
+
+        #override header in headers field
+        my $header = $headers[$index];
+        $field->{title} = ( defined $header && $header ne '' ) ? $session->i18n->maketext($header) : $field->{title};
+
         $field->{component} = $fieldConfig->{command};
 
         $field->{params} = $fieldConfig->{params};
@@ -223,6 +248,7 @@ sub _generateFrontendData {
 
         $index++;
     }
+
     # Parse grid field
     if($gridField){
         my $gridField = @{_parseCommands($gridField)}[0];
@@ -382,19 +408,35 @@ sub _callSearchProxy {
 }
 
 # Input: 'command1(param1,param2),command2(param1,param2)'
+# Short (if form is given): '(FieldName1),(FieldName2)'
 # Output: [{command => 'command1', params => [param1,param2]}, {command => 'command2', params => [param1,param2]}]
 sub _parseCommands {
     my $input = shift;
+    my $form = shift;
+    my $session = $Foswiki::Plugins::SESSION;
     my $result = [];
 
     foreach my $commandString ($input =~ /\s*(.*?\(.*?\))\s*,?\s*/g) {
         my $commandResult = {};
         my ($command) = $commandString =~ /\s*(.*?)\s*\(/;
         $commandResult->{command} = $command;
-        my($params) = $commandString =~ /\(\s*(.*?)\s*\)/;
 
+        my($params) = $commandString =~ /\(\s*(.*?)\s*\)/;
         my @paramsArray = split(/\s*,\s*/, $params);
         $commandResult->{params} = \@paramsArray;
+        $commandResult->{name} = $commandResult->{params}[0];
+        if($form && !$command && $commandResult->{params}[0]){
+            my ($fWeb, $fTopic) = Foswiki::Func::normalizeWebTopicName("",$form);
+            my $formObj = Foswiki::Form->new($session, $fWeb, $fTopic);
+            my $formField = $formObj->getField($commandResult->{params}[0]);
+            if($formField){
+                my $mapping = Foswiki::Plugins::SearchGridPlugin::FieldMapping::getFieldMapping($formField->{type},$formField->{name});
+                $commandResult->{command} = $mapping->{command};
+                $commandResult->{sort} = $mapping->{sort};
+                $commandResult->{params} = $mapping->{params};
+                $commandResult->{fieldRestriction} = $mapping->{fieldRestriction};
+            }
+        }
         push(@$result, $commandResult);
     }
     return $result;
