@@ -207,6 +207,16 @@ sub _generateFrontendData {
     my @parsedSortFields = (split(/,/,$sortFields));
     my $index = 0;
 
+    #set default fieldRestrictions
+    my @values = split(',', $frontendPrefs->{fieldRestriction});
+    if(scalar(@values) <1){
+        $frontendPrefs->{fieldRestriction} = "web,topic,form";
+    } else {
+        foreach my $defValue ('web','form','topic'){
+            $frontendPrefs->{fieldRestriction} .= ",".$defValue if (!grep( /^$defValue$/, @values ) ) ;#!exists(@values[$defValue]);
+        }
+    }
+
     my $fieldConfigs = _parseCommands($fields, $form);
     # Parse fields
     foreach my $fieldConfig (@$fieldConfigs) {

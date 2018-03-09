@@ -13,6 +13,18 @@ my $fieldMapping = {
         fieldRestriction => 'field_%Name%_s',
         command => 'text-field',
     },
+    'editor' => {
+        sort => 'field_%Name%_sort',
+        params => ['field_%Name%_s', 'field_%Name%_s'],
+        fieldRestriction => 'field_%Name%_s',
+        command => 'text-field',
+    },
+    'integer' => {
+        sort => 'field_%Name%_i',
+        params => ['field_%Name%_i', 'field_%Name%_i'],
+        fieldRestriction => 'field_%Name%_i',
+        command => 'text-field',
+    },
     'date' => {
         sort => 'field_%Name%_dt',
         params => ['field_%Name%_dt'],
@@ -73,13 +85,20 @@ my $fieldMapping = {
         fieldRestriction => 'field_%Name%_lst',
         command => 'list-field',
     },
+    'select2+values+integer' => {
+        sort => 'field_%Name%_i',
+        params => ['field_%Name%_lst'],
+        fieldRestriction => 'field_%Name%_lst',
+        command => 'list-field',
+    },
 };
 
 sub getFieldMapping{
     my $type = shift;
     my $name = shift;
     my $mapping = $fieldMapping->{$type};
-    return _replaceNameHash($mapping,$name);
+    return _replaceNameHash($mapping,$name) if $mapping;
+    return;
 }
 sub _replaceNameHash{
     my $arr = shift;
