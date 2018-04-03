@@ -207,6 +207,16 @@ sub _generateFrontendData {
     my @parsedSortFields = (split(/,/,$sortFields));
     my $index = 0;
 
+    #set default fieldRestrictions
+    my @values = split(',', $frontendPrefs->{fieldRestriction});
+    if(scalar(@values) <1){
+        $frontendPrefs->{fieldRestriction} = "web,topic,form";
+    } else {
+        foreach my $defValue ('web','form','topic'){
+            $frontendPrefs->{fieldRestriction} .= ",".$defValue if (!grep( /^$defValue$/, @values ) ) ;#!exists(@values[$defValue]);
+        }
+    }
+
     my $fieldConfigs = _parseCommands($fields, $form);
     # Parse fields
     foreach my $fieldConfig (@$fieldConfigs) {
@@ -216,7 +226,7 @@ sub _generateFrontendData {
             $field->{sortField} = $fieldConfig->{sort};
         }
         #override sort from sortfields params
-        $field->{sortField} = $parsedSortFields[$index] if $parsedSortFields[$index];
+        $field->{sortField} => $parsedSortFields[$index] if $parsedSortFields[$index];
 
         #get Header from form
         if($form){
@@ -285,28 +295,12 @@ sub _generateFrontendData {
         }
     } keys %$params;
 
-    $frontendPrefs->{fieldRestriction} = _generateFieldRestriction($frontendPrefs);
-
     $frontendPrefs->{mappings} = $mappings;
 
     $frontendPrefs->{result} = _getInitialResultSet($session, $frontendPrefs);
 
     return $frontendPrefs;
 
-}
-
-sub _generateFieldRestriction {
-    my ($prefs) = @_;
-
-    my @restrictions = split(',', $prefs->{fieldRestriction});
-    #set default fieldRestrictions
-    push @restrictions, ('web','form','topic');
-
-    # Add all fields/params to fieldRestriction
-    foreach my $field (@{$prefs->{fields}}){
-        push(@restrictions, @{$field->{params}});
-    }
-    return join(",",@restrictions);
 }
 
 sub _getInitialResultSet {
