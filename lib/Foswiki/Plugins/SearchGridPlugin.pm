@@ -208,13 +208,9 @@ sub _generateFrontendData {
     my $index = 0;
 
     #set default fieldRestrictions
-    my @values = split(',', $frontendPrefs->{fieldRestriction});
-    if(scalar(@values) <1){
-        $frontendPrefs->{fieldRestriction} = "web,topic,form";
-    } else {
-        foreach my $defValue ('web','form','topic'){
-            $frontendPrefs->{fieldRestriction} .= ",".$defValue if (!grep( /^$defValue$/, @values ) ) ;#!exists(@values[$defValue]);
-        }
+    if($frontendPrefs->{fieldRestrictions}) {
+        my %values = map { $_ => 1 } (split(',', $frontendPrefs->{fieldRestriction}), 'web', 'topic', 'form');
+        $frontendPrefs->{fieldRestrictions} = join(',', keys %values);
     }
 
     my $fieldConfigs = _parseCommands($fields, $form);
