@@ -75,7 +75,7 @@ my $fieldMapping = {
     },
     'select+multi' => {
         sort => 'field_%Name%_sort',
-        params => ['field_%Name%_lst'], 
+        params => ['field_%Name%_lst'],
         fieldRestriction => 'field_%Name%_lst',
         command => 'list-field',
     },
