@@ -105,7 +105,7 @@ sub _replaceNameHash{
     my $name = shift;
     my $ret = {};
 
-    foreach my $key (keys $arr){
+    foreach my $key (keys %$arr){
         my $value = $arr->{$key};
         if(ref($value) eq 'ARRAY'){
             $value = _replaceNameArr($value,$name);

@@ -222,7 +222,7 @@ sub _generateFrontendData {
             $field->{sortField} = $fieldConfig->{sort};
         }
         #override sort from sortfields params
-        $field->{sortField} => $parsedSortFields[$index] if $parsedSortFields[$index];
+        $field->{sortField} = $parsedSortFields[$index] if $parsedSortFields[$index];
 
         #get Header from form
         if($form){
