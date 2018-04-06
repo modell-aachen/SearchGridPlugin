@@ -37,7 +37,7 @@ export default {
             queries += '(';
             for(let i = 1; i < this.params.length; i++) {
               let currentField = this.params[i];
-              let queryString = `*${words[w]}*`;
+              let queryString = `*"${words[w]}"*`;
               queries += `${currentField}:${queryString}`;
               if(i != this.params.length - 1)
                 queries += " OR ";

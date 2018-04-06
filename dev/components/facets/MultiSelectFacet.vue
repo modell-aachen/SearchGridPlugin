@@ -44,7 +44,7 @@ export default {
             if(this.selectedFacet.length == 0)
                 return false;
             for(let i = 0; i < this.selectedFacet.length; i++){
-                if(this.selectedFacet[i].field === value.field)
+                if(this.selectedFacet[i] && this.selectedFacet[i].field === value.field)
                     return true;
             }
             return false;
