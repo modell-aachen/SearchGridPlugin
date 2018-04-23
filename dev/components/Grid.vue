@@ -15,7 +15,7 @@
                             <div v-if="hasFilters" class="columns">
                                 <div class="button-group">
                                     <vue-button type="primary" :title='maketext("Apply filters")' @click.native='applyFilters' ></vue-button>
-                                    <vue-button type="delete" :title='maketext("Remove filters")' v-show="isFilterApplied" v-on:click="clearFilters"></vue-button>
+                                    <vue-button type="delete" :title='maketext("Remove filters")' v-show="isFilterApplied" @click.native="clearFilters"></vue-button>
                                 </div>
                             </div>
                             <div class="columns">
@@ -320,6 +320,7 @@ export default {
         });
       },
       clearFilters: function(){
+        console.log("reset filter")
         this.isFilterApplied = false;
         for(let i = 0; i < this.facets.length; i++){
           //Only filters have the 'isDefault' property
