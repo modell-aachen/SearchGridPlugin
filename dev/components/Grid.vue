@@ -14,8 +14,8 @@
                             </template>
                             <div v-if="hasFilters" class="columns">
                                 <div class="button-group">
-                                    <a class="primary button" v-on:click="applyFilters">{{maketext("Apply filters")}}</a>
-                                    <a class="alert button" v-show="isFilterApplied" v-on:click="clearFilters">{{maketext("Remove filters")}}</a>
+                                    <vue-button type="primary" :title='maketext("Apply filters")' @click.native='applyFilters' ></vue-button>
+                                    <vue-button type="delete" :title='maketext("Remove filters")' v-show="isFilterApplied" v-on:click="clearFilters"></vue-button>
                                 </div>
                             </div>
                             <div class="columns">
@@ -37,12 +37,8 @@
                             </div>
                             <div v-if="hasGridView" class="shrink columns">
                                 <div class="grid-toggle button-group">
-                                    <a v-bind:class="{disabled: isGridView, selected: !isGridView}" class="small button" @click.stop="toggleGridView('table')">
-                                        <i class="fa fa-bars" aria-hidden="true"></i>
-                                    </a>
-                                    <a v-bind:class="{disabled: !isGridView, selected: isGridView}" class="small button" @click.stop="toggleGridView('grid')">
-                                        <i class="fa fa-th-large" aria-hidden="true"></i>
-                                    </a>
+                                    <vue-button v-bind:class="{disabled: isGridView, selected: !isGridView}" type='icon' icon='fa fa-bars'  @click.native="toggleGridView('table')"></vue-button>
+                                    <vue-button v-bind:class="{disabled: !isGridView, selected: isGridView}" type='icon' icon='fa fa-th-large'  @click.native="toggleGridView('grid')"></vue-button>
                                 </div>
                             </div>
                         </div>
@@ -72,7 +68,7 @@
                 </div>
                 <div class="expanded row">
                     <div class="columns">
-                        <vue-pagination class="ma-pager-new" v-if="pageCount > 1" v-on:page-changed="pageChanged" :page-count="pageCount" :current-page="gridState.currentPage"></vue-pagination>
+                        <vue-pagination class="ma-pager-new" v-if="pageCount > 1" :page-count="pageCount" :value="gridState.currentPage"></vue-pagination>
                     </div>
                 </div>
             </div>
@@ -80,7 +76,9 @@
                 <!-- Facets -->
                 <div class="wrapper">
                     <div>
-                        <h1 class='primary facets-header'><a class="small filter-reset button float-right" @click.stop="clearFacets()">{{maketext("Reset all")}}<i class="fa fa-times fa-lg" aria-hidden="true"></i></a>{{maketext("Facets")}}</h1>
+                        <h1 class='primary facets-header'>
+                        <vue-button icon="fa fa-times fa-lg" class="float-right" :title='maketext("Reset all")' @click.native="clearFacets()">
+                        </vue-button>{{maketext("Facets")}}</h1>
                         <template v-for="facet in prefs.facets">
                             <component :is="facet.component" :params="facet.params" :facet-values="facetValues" @facet-changed="facetChanged" :facet-total-counts="prefs.result.facetTotalCounts" @get-facet-info="fetchFacetCharacteristics" @register-facet="registerFacet"></component>
                         </template>

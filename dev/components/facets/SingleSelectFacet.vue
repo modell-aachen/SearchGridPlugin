@@ -3,14 +3,12 @@
     <h4>{{title}}</h4>
     <ul class="facet-list">
         <li>
-            <input v-bind:id="getRadioId('All')" type=radio value="" v-model="selectedRadio">
-            <label v-bind:for="getRadioId('All')">{{maketext("All")}}</label>
+            <vue-check-item type="radio" v-model="selectedRadio" checked>{{maketext("All")}}</vue-check-item>
         </li>
         <template v-for="value in facetCharacteristics">
-        <li v-show="value.count > 0 || isSelected(value)">
-            <input v-bind:id="getRadioId(value.field)" type ="radio" v-bind:value="value.field" v-model="selectedRadio">
-            <label v-bind:for="getRadioId(value.field)">{{getLabel(value.title, value.count)}}</label>
-        </li>
+            <li v-show="value.count > 0 || isSelected(value)">
+                <vue-check-item type="radio" :value="value.field" v-model="selectedRadio">{{getLabel(value.title, value.count)}}</vue-check-item>
+            </li>
         </template>
     </ul>
 </div>

@@ -3,12 +3,9 @@
     <h4>{{title}}</h4>
     <ul class="facet-list">
         <template v-for="value in facetCharacteristics">
-                <li v-show="value.count > 0 || isSelected(value)">
-                    <input v-bind:id="getCheckboxId(value.field)" type ="checkbox" v-bind:value="value.field" v-model="selectedCheckboxes">
-            <label v-bind:for="getCheckboxId(value.field)">
-                 {{getLabel(value.title, value.count)}}
-            </label>
-        </li>
+            <li v-show="value.count > 0 || isSelected(value)">
+                <vue-check-item :value="value.field" v-model="selectedCheckboxes">{{getLabel(value.title, value.count)}}</vue-check-item>
+            </li>
         </template>
     </ul>
 </div>

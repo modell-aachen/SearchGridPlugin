@@ -1,10 +1,7 @@
 <template>
-    <div class="search-grid-filter small-3 columns">
-    <label v-bind:for="id">{{params[0]}}</label>
-    <select v-bind:id="id" v-model="selectedOption">
-        <option v-bind:value="''">{{maketext('All')}}</option>
-        <option v-if="value.count != 0" v-bind:value="value.field" v-for="value in facetValues[this.params[1]]">{{ value.title }} {{'(' + value.count + ')'}}</option>
-    </select>
+    <div class="">
+        <label v-bind:for="id">{{params[0]}}</label>
+        <vue-select :preventSearchFilter="true" :options="getOptions" v-model="selectedOption"></vue-select>
     </div>
 </template>
 
@@ -15,7 +12,7 @@ export default {
     mixins: [MaketextMixin,FacetMixin],
     data:  function () {
        return {
-          selectedOption: this.params.length > 2 ? this.params[2] : '',
+          selectedOption: this.params.length > 2 ? [this.params[2]] : [],
           isFilter: true
        }
     },
@@ -28,6 +25,19 @@ export default {
         },
         limit: function(){
             return -1;
+        },
+        getOptions: function(){
+            let options = [];
+            let noneOpt = {};
+            noneOpt.value ="";
+            noneOpt.label = this.maketext('All');
+            options.push(noneOpt);
+            for(let facetValue of this.facetValues[this.params[1]]){
+                facetValue.value = [facetValue.field];
+                facetValue.label = `${facetValue.title} (${facetValue.count})`;
+                options.push(facetValue);
+            }
+            return options;
         }
     },
     methods: {
