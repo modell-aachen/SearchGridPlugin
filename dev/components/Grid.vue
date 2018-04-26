@@ -77,10 +77,10 @@
                 <div class="wrapper">
                     <div>
                         <h1 class='primary facets-header'>
-                        <vue-button icon="fa fa-times fa-lg" class="float-right" :title='maketext("Reset all")' @click.native="clearFacets()">
-                        </vue-button>{{maketext("Facets")}}</h1>
+                          <vue-button icon="fa fa-times fa-lg" class="float-right" :title='maketext("Reset all")' @click.native="clearFacets()"/>{{maketext("Facets")}}
+                        </h1>
                         <template v-for="facet in prefs.facets">
-                            <component :is="facet.component" :params="facet.params" :facet-values="facetValues" @facet-changed="facetChanged" :facet-total-counts="prefs.result.facetTotalCounts" @get-facet-info="fetchFacetCharacteristics" @register-facet="registerFacet"></component>
+                            <component :is="facet.component" :params="facet.params" :facet-values="facetValues" @facet-changed="facetChanged" :facet-total-counts="prefs.result.facetTotalCounts" @get-facet-info="fetchFacetCharacteristics" @register-facet="registerFacet"/>
                         </template>
                     </div>
                 </div>
@@ -320,7 +320,6 @@ export default {
         });
       },
       clearFilters: function(){
-        console.log("reset filter")
         this.isFilterApplied = false;
         for(let i = 0; i < this.facets.length; i++){
           //Only filters have the 'isDefault' property
