@@ -72,6 +72,14 @@ export default {
         },
         reset: function(){
             this.selectedFacet = [];
+        },
+        convertQueryToSearchTerms: function(query){
+            let terms = query
+                .split(/\W/)
+                .filter((w) => {
+                    return w !== "";
+                });
+            return terms;
         }
     },
     mounted: function () {
