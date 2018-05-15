@@ -74,8 +74,18 @@ export default {
             this.selectedFacet = [];
         },
         convertQueryToSearchTerms: function(query){
+            let wordBreakChars = [
+                '\'', '"', ':', ',' , ';', '&',
+                '>', '<', '!', '§', '%', '/',
+                '`', '=', '~', '#', '@',
+                // Escaped characters according to mordern regex flavor (PCRE)
+                '\\^', '\\$', '\\*', '\\+', '\\-', '\\_', '\\?',
+                '\\(', '\\)', '\\[', '\\]', '\\{', '\\}', '\\', '\\|',
+            ];
+            //Special case included: split only on "FULL STOP" dots, i.e. at least on whitespace afterwards
+            let wordBreakCharsRegExp = new RegExp('[' + wordBreakChars.join('') + ']|\\.\\s{1,}|\\s');
             let terms = query
-                .split(/\W/)
+                .split(wordBreakCharsRegExp)
                 .filter((w) => {
                     return w !== "";
                 });
