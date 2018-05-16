@@ -1,41 +1,41 @@
 <template>
     <div class="flatskin-wrapped">
-        <div class="expanded row">
+        <div class="grid-x">
             <!--Toplevel container -->
-            <div class="columns">
+            <div class="cell">
                 <!-- Filters and table -->
-                <div v-if="showTopActionBar" class="expanded row wrapper search-grid-top-bar">
+                <div v-if="showTopActionBar" class="grid-x wrapper search-grid-top-bar">
                     <!-- Filters -->
                     <div>
-                        <div class="expanded row align-bottom">
+                        <div class="grid-x align-bottom">
                             <template v-for="filter in prefs.filters">
                                 <component v-if="hasLiveFilter" v-on:filter-change="applyFiltersDebounce" v-on:confirm="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                                 <component v-else v-on:confirm="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                             </template>
-                            <div v-if="hasFilters" class="columns">
+                            <div v-if="hasFilters" class="cell">
                                 <div class="button-group">
                                     <vue-button type="primary" :title='maketext("Apply filters")' @click.native='applyFilters' ></vue-button>
                                     <vue-button type="delete" :title='maketext("Remove filters")' v-show="isFilterApplied" @click.native="clearFilters"></vue-button>
                                 </div>
                             </div>
-                            <div class="columns">
+                            <div class="cell">
                               <!--
                                   Separator which forces the following
                                   shrinked columns to align to the right
                                -->
                             </div>
-                            <div v-if="hasAddons" class="shrink columns">
+                            <div v-if="hasAddons" class="shrink cell">
                               <template v-for="addon in prefs.addons">
                                 <component :is="addon" :api="api">
                                 </component>
                               </template>
                             </div>
-                            <div v-if="hasExcelExport" class="shrink columns">
+                            <div v-if="hasExcelExport" class="shrink cell">
                               <div class="button-group">
                                 <excel-export :fields="prefs.fields"></excel-export>
                               </div>
                             </div>
-                            <div v-if="hasGridView" class="shrink columns">
+                            <div v-if="hasGridView" class="shrink cell">
                                 <div class="grid-toggle button-group">
                                     <vue-button v-bind:class="{disabled: isGridView, selected: !isGridView}" type='icon' icon='fa fa-bars'  @click.native="toggleGridView('table')"></vue-button>
                                     <vue-button v-bind:class="{disabled: !isGridView, selected: isGridView}" type='icon' icon='fa fa-th-large'  @click.native="toggleGridView('grid')"></vue-button>
@@ -44,13 +44,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="expanded row" v-bind:class="isGridView ? ['medium-up-1', 'xlarge-up-2', 'xxxlarge-up-3', 'xxxxlarge-up-3'] : []">
+                <div class="grid-x" v-bind:class="isGridView ? ['medium-up-1', 'xlarge-up-2', 'xxxlarge-up-3', 'xxxxlarge-up-3'] : []">
                     <!-- Table -->
-                    <div class="columns" v-if="!wizardConfig.component" v-show="results.length == 0"><p>{{maketext("No results")}}</p></div>
-                    <div class="columns widgetBoxWrapper ma-bg-beige-color" v-else v-show="wizardConfig.component && results.length == 0">
+                    <div class="cell" v-if="!wizardConfig.component" v-show="results.length == 0"><p>{{maketext("No results")}}</p></div>
+                    <div class="cell ma-bg-beige-color" v-else v-show="wizardConfig.component && results.length == 0">
                       <component class="ma-bg-white-color" :is="wizardConfig.component" :params="wizardConfig.params"></component>
                     </div>
-                    <div class="columns" v-show="results.status == 'error'"><p>{{maketext(results.msg)}}</p></div>
+                    <div class="cell" v-show="results.status == 'error'"><p>{{maketext(results.msg)}}</p></div>
                     <div v-show="!isGridView && results.length > 0" class="columns search-grid-results">
                         <table>
                             <thead is="grid-header" :headers="filteredFields" :initial-sort="prefs.initialSort"></thead>
@@ -66,7 +66,7 @@
                         <div :is="prefs.gridField.component" :doc="result" :params="prefs.gridField.params"></div>
                     </div>
                 </div>
-                <div class="expanded row">
+                <div class="grid-x">
                     <div class="columns">
                         <vue-pagination class="ma-pager-new" v-if="pageCount > 1" :page-count="pageCount" :value="gridState.currentPage"></vue-pagination>
                     </div>
