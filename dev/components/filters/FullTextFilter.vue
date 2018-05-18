@@ -29,12 +29,13 @@ export default {
         if(this.filterText === '')
           return null;
         let queries = "(";
-        let words = this.filterText.trim().split(" ");
+        let words = this.convertQueryToSearchTerms(this.filterText);
+
         for(let w = 0; w < words.length; w++) {
             queries += '(';
             for(let i = 1; i < this.params.length; i++) {
               let currentField = this.params[i];
-              let queryString = `*${words[w]}*`;
+              let queryString = `*${this.escapeSolrQuery(words[w])}*`;
               queries += `${currentField}:${queryString}`;
               if(i != this.params.length - 1)
                 queries += " OR ";

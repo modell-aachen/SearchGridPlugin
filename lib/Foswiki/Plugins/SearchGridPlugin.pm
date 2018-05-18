@@ -18,6 +18,8 @@ use JSON;
 use version; our $VERSION = version->declare("v0.1");
 use Digest::MD5 qw(md5_hex);
 
+use Foswiki::Plugins::SearchGridPlugin::FieldMapping;
+
 our $RELEASE = "0.1";
 
 our $SHORTDESCRIPTION = 'Search Gird Plugin for create Solr overviews';
@@ -53,7 +55,7 @@ FOOBARSOMETHING. This avoids namespace issues.
 =cut
 
 sub maintenanceHandler {
-    Foswiki::Plugins::MaintenancePlugin::registerCheck("SearchGridPlugin:Prevent glossar in the grid", {
+  Foswiki::Plugins::MaintenancePlugin::registerCheck("SearchGridPlugin:Prevent glossar in the grid", {
     name => "Prevent glossar entries in the grid",
     description => "Disable the glossar in Search Grids.",
     check => sub {
@@ -71,6 +73,45 @@ sub maintenanceHandler {
           priority => $Foswiki::Plugins::MaintenancePlugin::ERROR,
           solution => "Please add '.SearchGridContainer' to {Extensions}{GlossarPlugin}{ExcludeSelector} in configure.<verbatim>{Extensions}{GlossarPlugin}{ExcludeSelector} = \"$excludeSelector\"</verbatim>"
         }
+      }
+    }
+  });
+
+  Foswiki::Plugins::MaintenancePlugin::registerCheck("SearchGridPlugin:Invalid form field names", {
+    name => "Invalid form field names",
+    description => "Form fields may only contain latin alpha-numeric characters and underscore",
+    check => sub {
+      my @forms = split("\n", $Foswiki::Plugins::SESSION->search->searchWeb(
+        name => '*',
+        topic => '*Form',
+        web => 'all',
+        type => 'query',
+        format => '$web.$topic',
+        separator => "\n",
+        nonoise => 1,
+      ));
+
+      my @offenders = ();
+      foreach my $formWebTopic (@forms) {
+        my ($web, $topic) = Foswiki::Func::normalizeWebTopicName(undef, $formWebTopic);
+
+        my $form = new Foswiki::Form($Foswiki::Plugins::SESSION, $web, $topic);
+        foreach my $field (@{$form->getFields}) {
+          next unless $field;
+          my $name = $field->{name};
+          next unless $name && $name =~ s#([^a-zA-Z0-9_])#%RED%<b>$1</b>%ENDCOLOR%#g;
+          push @offenders, "<li>field '$name' in the form [[$web.$topic][$web.$topic]].</li>";
+        }
+      }
+
+      return { result => 0 } unless scalar @offenders;
+
+      unshift @offenders, 'Please remove any non-alphanumeric or underscore characters (a-zA-Z0-9_) from the following fields:<ul>';
+      push @offenders, "</ul>";
+      return {
+        result => 1,
+        priority => $Foswiki::Plugins::MaintenancePlugin::ERROR,
+        solution => join('', @offenders),
       }
     }
   });
@@ -221,16 +262,36 @@ sub _generateFrontendData {
     my @parsedSortFields = (split(/,/,$sortFields));
     my $index = 0;
 
-    my $fieldConfigs = _parseCommands($fields);
+    #set default fieldRestrictions
+    if($frontendPrefs->{fieldRestrictions}) {
+        my %values = map { $_ => 1 } (split(',', $frontendPrefs->{fieldRestriction}), 'web', 'topic', 'form');
+        $frontendPrefs->{fieldRestrictions} = join(',', keys %values);
+    }
+
+    my $fieldConfigs = _parseCommands($fields, $form);
     # Parse fields
     foreach my $fieldConfig (@$fieldConfigs) {
         my @headers = split(/,/,$headers);
-        my $field = {
-            sortField => $parsedSortFields[$index]
-        };
-        if( @headers ){
-            $field->{title} = $session->i18n->maketext($headers[$index]);
+        my $field = {};
+        if($fieldConfig->{sort}){
+            $field->{sortField} = $fieldConfig->{sort};
         }
+        #override sort from sortfields params
+        $field->{sortField} = $parsedSortFields[$index] if $parsedSortFields[$index];
+
+        #get Header from form
+        if($form){
+            my ($fWeb, $fTopic) = Foswiki::Func::normalizeWebTopicName("",$form);
+            my $formObj = Foswiki::Form->new($session, $fWeb, $fTopic);
+            my $formField = $formObj->getField($fieldConfig->{name});
+            $field->{title} = Foswiki::Func::expandCommonVariables($formField->{description});
+            $frontendPrefs->{fieldRestriction} .= ",".$fieldConfig->{fieldRestriction} if $fieldConfig->{fieldRestriction};
+        }
+
+        #override header in headers field
+        my $header = $headers[$index];
+        $field->{title} = ( defined $header && $header ne '' ) ? $session->i18n->maketext($header) : $field->{title};
+
         $field->{component} = $fieldConfig->{command};
 
         $field->{params} = $fieldConfig->{params};
@@ -238,6 +299,7 @@ sub _generateFrontendData {
 
         $index++;
     }
+
     # Parse grid field
     if($gridField){
         my $gridField = @{_parseCommands($gridField)}[0];
@@ -299,12 +361,13 @@ sub _getInitialResultSet {
         start => 0,
         rows => $prefs->{resultsPerPage},
         facet => $prefs->{facets} ? 'true' : 'false',
-        form => $prefs->{form},
         fl => $prefs->{fieldRestriction},
+        form => $prefs->{form},
         'facet.mincount' => 1,
         'facet.field' => [],
         'facet.missing' => 'on',
         'facet.sort' => 'count',
+        'facet.limit' => -1
     );
 
     if($prefs->{initialSort}) {
@@ -396,19 +459,35 @@ sub _callSearchProxy {
 }
 
 # Input: 'command1(param1,param2),command2(param1,param2)'
+# Short (if form is given): '(FieldName1),(FieldName2)'
 # Output: [{command => 'command1', params => [param1,param2]}, {command => 'command2', params => [param1,param2]}]
 sub _parseCommands {
     my $input = shift;
+    my $form = shift;
+    my $session = $Foswiki::Plugins::SESSION;
     my $result = [];
 
     foreach my $commandString ($input =~ /\s*(.*?\(.*?\))\s*,?\s*/g) {
         my $commandResult = {};
         my ($command) = $commandString =~ /\s*(.*?)\s*\(/;
         $commandResult->{command} = $command;
-        my($params) = $commandString =~ /\(\s*(.*?)\s*\)/;
 
+        my($params) = $commandString =~ /\(\s*(.*?)\s*\)/;
         my @paramsArray = split(/\s*,\s*/, $params);
         $commandResult->{params} = \@paramsArray;
+        $commandResult->{name} = $commandResult->{params}[0];
+        if($form && !$command && $commandResult->{params}[0]){
+            my ($fWeb, $fTopic) = Foswiki::Func::normalizeWebTopicName("",$form);
+            my $formObj = Foswiki::Form->new($session, $fWeb, $fTopic);
+            my $formField = $formObj->getField($commandResult->{params}[0]);
+            if($formField){
+                my $mapping = Foswiki::Plugins::SearchGridPlugin::FieldMapping::getFieldMapping($formField->{type},$formField->{name});
+                $commandResult->{command} = $mapping->{command};
+                $commandResult->{sort} = $mapping->{sort};
+                $commandResult->{params} = $mapping->{params};
+                $commandResult->{fieldRestriction} = $mapping->{fieldRestriction};
+            }
+        }
         push(@$result, $commandResult);
     }
     return $result;
@@ -417,6 +496,9 @@ sub _parseCommands {
 sub _searchProxy {
     my ($session, $query, $options) = @_;
     my %opts = %{$options};
+    $opts{form} = $opts{form}[0] if ref $opts{form} eq "ARRAY";
+    my $formParam = $opts{form} || "";
+    delete $opts{form};
     my $json = JSON->new->utf8;
     my $meta = Foswiki::Meta->new($session);
 
@@ -465,7 +547,7 @@ sub _searchProxy {
             my $fields = $forms{$form}->getFields();
             my %tempDoc = %doc;
             while(my ($key, $value) = each(%tempDoc)) {
-                if ($key =~ /^field_([A-Za-z0-9]*)_/ && $key !~ /_dv$/) {
+                if ($key =~ /^field_([A-Za-z0-9_]*)_/ && $key !~ /_dv$/) {
                     my $formField = $forms{$form}->getField($1);
                     next unless $formField && $formField->can('getDisplayValue');
 
@@ -496,15 +578,13 @@ sub _searchProxy {
         }
     }
 
-    $opts{form} = $opts{form}[0] if ref $opts{form} eq "ARRAY";
-    my $formParam = $opts{form} || "";
     $content->{facet_dsps} = {};
     if($formParam){
         my ($fweb,$ftopic) = split(/\./,$formParam);
         my $form = Foswiki::Form->new($session, $fweb, $ftopic);
         my $facetDsps = {};
         while(my ($key, $value) = each(%{$content->{facet_counts}->{facet_fields}})) {
-            $key =~ /^field_([A-Za-z0-9]*)_/;
+            $key =~ /^field_([A-Za-z0-9_]*)_/;
             next unless defined $1;
             my $formField = $form->getField($1);
             next unless $formField;
