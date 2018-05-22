@@ -33,13 +33,16 @@ export default {
                     url[index] = "/"+element;
                 }
             });
- 
+
             let topicTitle = this.doc[this.field];
+            if(!topicTitle) {
+                return '';
+            }
             topicTitle = topicTitle.split(/^, /gm);
- 
-            var result = new Array();
- 
-            for(var i = 0 ; i < url.length ; i++){
+
+            let result = new Array();
+
+            for(let i = 0 ; i < url.length ; i++){
                 result[i] = {Url:url[i],Title:topicTitle[i]};
             }
 

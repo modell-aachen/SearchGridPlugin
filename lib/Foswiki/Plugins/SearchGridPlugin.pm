@@ -265,7 +265,7 @@ sub _generateFrontendData {
     #set default fieldRestrictions
     if($frontendPrefs->{fieldRestrictions}) {
         my %values = map { $_ => 1 } (split(',', $frontendPrefs->{fieldRestriction}), 'web', 'topic', 'form');
-        $frontendPrefs->{fieldRestrictions} = join(',', keys %values);
+        #$frontendPrefs->{fieldRestrictions} = join(',', keys %values);
     }
 
     my $fieldConfigs = _parseCommands($fields, $form);
@@ -280,12 +280,14 @@ sub _generateFrontendData {
         $field->{sortField} = $parsedSortFields[$index] if $parsedSortFields[$index];
 
         #get Header from form
-        if($form){
+        if($form && !$fieldConfig->{title}){
             my ($fWeb, $fTopic) = Foswiki::Func::normalizeWebTopicName("",$form);
             my $formObj = Foswiki::Form->new($session, $fWeb, $fTopic);
             my $formField = $formObj->getField($fieldConfig->{name});
             $field->{title} = Foswiki::Func::expandCommonVariables($formField->{description});
-            $frontendPrefs->{fieldRestriction} .= ",".$fieldConfig->{fieldRestriction} if $fieldConfig->{fieldRestriction};
+            #$frontendPrefs->{fieldRestriction} .= ",".$fieldConfig->{fieldRestriction} if $fieldConfig->{fieldRestriction};
+        } else {
+            $field->{title} = $fieldConfig->{title};
         }
 
         #override header in headers field
@@ -480,13 +482,22 @@ sub _parseCommands {
             my ($fWeb, $fTopic) = Foswiki::Func::normalizeWebTopicName("",$form);
             my $formObj = Foswiki::Form->new($session, $fWeb, $fTopic);
             my $formField = $formObj->getField($commandResult->{params}[0]);
+            my $mapping;
             if($formField){
-                my $mapping = Foswiki::Plugins::SearchGridPlugin::FieldMapping::getFieldMapping($formField->{type},$formField->{name});
+                $mapping = Foswiki::Plugins::SearchGridPlugin::FieldMapping::getFieldMapping($formField->{type},$formField->{name});
+            } else {
+                $mapping = Foswiki::Plugins::SearchGridPlugin::FieldMapping::getStaticFieldMapping($commandResult->{params}[0]);
+                $commandResult->{title} = $mapping->{title};
+            }
+                if($commandResult->{params}[1] =~ /link/) {
+                    $mapping->{command} = 'url-field';
+                    my $linkTarget = $commandResult->{params}[1] =~ /link[(.*)]/;
+                    $mapping->{params}[1] = $linkTarget || 'webtopic';
+                }
                 $commandResult->{command} = $mapping->{command};
                 $commandResult->{sort} = $mapping->{sort};
                 $commandResult->{params} = $mapping->{params};
                 $commandResult->{fieldRestriction} = $mapping->{fieldRestriction};
-            }
         }
         push(@$result, $commandResult);
     }

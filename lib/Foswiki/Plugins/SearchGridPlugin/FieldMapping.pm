@@ -6,6 +6,43 @@ use warnings;
 use Foswiki::Plugins::SearchGridPlugin;
 
 
+my %staticFieldMapping = (
+    "author" => {
+        sort => 'author_s',
+        params => ['author_s', 'author'],
+        fieldRestriction => 'author_s, author',
+        command => 'user-field',
+        title => 'Author'
+    },
+    "title" => {
+        sort => 'title_search',
+        params => ['title'],
+        fieldRestriction => 'title',
+        command => 'text-field',
+        title => 'Title'
+    },
+    "lastEdited" => {
+        sort => 'workflowmeta_lasttime_currentstate_dt',
+        params => ['workflowmeta_lasttime_currentstate_dt'],
+        fieldRestriction => 'workflowmeta_lasttime_currentstate_dt',
+        command => 'date-field',
+        title => 'lasttime edited'
+    },
+    "createDate" => {
+        sort => 'createdate',
+        params => ['createdate'],
+        fieldRestriction => 'createdate',
+        command => 'date-field',
+        title => 'Created'
+    },
+    "workflowState" => {
+        sort => 'workflowstate_displayname_s',
+        params => ['workflowstate_displayname_s'],
+        fieldRestriction => 'workflowstate_displayname_s',
+        command => 'text-field',
+        title => 'State'
+    },
+);
 my $fieldMapping = {
     'text' => {
         sort => 'field_%Name%_sort',
@@ -38,8 +75,8 @@ my $fieldMapping = {
         command => 'date-field',
     },
     'user' => {
-        sort => 'field_%Name%_s',
-        params => ['field_%Name%_s_dv', 'field_%Name%_s'],
+        sort => 'field_%Name%_dv_s',
+        params => ['field_%Name%_dv_s', 'field_%Name%_s'],
         fieldRestriction => 'field_%Name%_s',
         command => 'user-field',
     },
@@ -68,8 +105,26 @@ my $fieldMapping = {
         command => 'text-field',
     },
     'user+multi' => {
-        sort => 'field_%Name%_sort',
-        params => ['field_%Name%_lst'],
+        sort => 'field_%Name%_dv_lst',
+        params => ['field_%Name%_dv_lst'],
+        fieldRestriction => 'field_%Name%_dv_lst',
+        command => 'list-field',
+    },
+    'user+group+multi' => {
+        sort => 'field_%Name%_dv_lst',
+        params => ['field_%Name%_dv_lst'],
+        fieldRestriction => 'field_%Name%_dv_lst',
+        command => 'list-field',
+    },
+    'user+grouponly' => {
+        sort => 'field_%Name%_dv_s',
+        params => ['field_%Name%_s_dv'],
+        fieldRestriction => 'field_%Name%_dv_s',
+        command => 'text-field',
+    },
+    'user+grouponly+multi' => {
+        sort => 'field_%Name%_dv_lst',
+        params => ['field_%Name%_dv_lst'],
         fieldRestriction => 'field_%Name%_lst',
         command => 'list-field',
     },
@@ -99,6 +154,10 @@ sub getFieldMapping{
     my $mapping = $fieldMapping->{$type};
     return _replaceNameHash($mapping,$name) if $mapping;
     return;
+}
+sub getStaticFieldMapping{
+    my $id = shift;
+    return %staticFieldMapping->{$id};
 }
 sub _replaceNameHash{
     my $arr = shift;
