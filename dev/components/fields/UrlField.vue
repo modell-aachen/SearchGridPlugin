@@ -1,6 +1,6 @@
 <template>
 <td>
-    <template v-for="(item, index) in splitList()"> 
+    <template v-for="(item, index) in splitList()">
     <a v-bind:href=item.Url>
         {{item.Title}}<br>
     </a>

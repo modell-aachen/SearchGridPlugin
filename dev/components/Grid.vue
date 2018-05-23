@@ -46,7 +46,7 @@
                 </div>
                 <div class="grid-x" v-bind:class="isGridView ? ['medium-up-1', 'xlarge-up-2', 'xxxlarge-up-3', 'xxxxlarge-up-3'] : []">
                     <!-- Table -->
-                    <div class="cell" v-if="!wizardConfig.component" v-show="results.length == 0"><p>{{maketext("No results")}}</p></div>
+                    <div class="cell" v-if="!wizardConfig || !wizardConfig.component" v-show="results.length == 0"><p>{{maketext("No results")}}</p></div>
                     <div class="cell ma-bg-beige-color" v-else v-show="wizardConfig.component && results.length == 0">
                       <component class="ma-bg-white-color" :is="wizardConfig.component" :params="wizardConfig.params"></component>
                     </div>

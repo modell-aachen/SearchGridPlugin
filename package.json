@@ -14,7 +14,7 @@
   "author": "Modell Aachen GmbH",
   "license": "GPL-3.0",
   "devDependencies": {
-    "FrontendUnitTestLibrary": "git://github.com/modell-aachen/FrontendUnitTestLibrary.git",
+    "VueJSPlugin": "git://github.com/modell-aachen/VueJSPlugin.git#feature/WorkflowApp",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.1",
     "babel-loader": "^7.1.2",

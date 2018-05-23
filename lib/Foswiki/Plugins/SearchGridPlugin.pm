@@ -263,9 +263,9 @@ sub _generateFrontendData {
     my $index = 0;
 
     #set default fieldRestrictions
-    if($frontendPrefs->{fieldRestrictions}) {
+    if($frontendPrefs->{fieldRestriction}) {
         my %values = map { $_ => 1 } (split(',', $frontendPrefs->{fieldRestriction}), 'web', 'topic', 'form');
-        #$frontendPrefs->{fieldRestrictions} = join(',', keys %values);
+        $frontendPrefs->{fieldRestriction} = join(',', keys %values);
     }
 
     my $fieldConfigs = _parseCommands($fields, $form);
@@ -285,9 +285,11 @@ sub _generateFrontendData {
             my $formObj = Foswiki::Form->new($session, $fWeb, $fTopic);
             my $formField = $formObj->getField($fieldConfig->{name});
             $field->{title} = Foswiki::Func::expandCommonVariables($formField->{description});
-            #$frontendPrefs->{fieldRestriction} .= ",".$fieldConfig->{fieldRestriction} if $fieldConfig->{fieldRestriction};
         } else {
             $field->{title} = $fieldConfig->{title};
+        }
+        if($frontendPrefs->{fieldRestriction} && $fieldConfig->{fieldRestriction}) {
+            $frontendPrefs->{fieldRestriction} .= ",".$fieldConfig->{fieldRestriction};
         }
 
         #override header in headers field
@@ -493,6 +495,8 @@ sub _parseCommands {
                     $mapping->{command} = 'url-field';
                     my $linkTarget = $commandResult->{params}[1] =~ /link[(.*)]/;
                     $mapping->{params}[1] = $linkTarget || 'webtopic';
+                    $mapping->{fieldRestriction} .= ',';
+                    $mapping->{fieldRestriction} .= $linkTarget || 'webtopic';
                 }
                 $commandResult->{command} = $mapping->{command};
                 $commandResult->{sort} = $mapping->{sort};
