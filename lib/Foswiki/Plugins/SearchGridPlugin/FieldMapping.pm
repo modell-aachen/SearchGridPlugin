@@ -77,7 +77,7 @@ my $fieldMapping = {
     'user' => {
         sort => 'field_%Name%_dv_s',
         params => ['field_%Name%_dv_s', 'field_%Name%_s'],
-        fieldRestriction => 'field_%Name%_s',
+        fieldRestriction => 'field_%Name%_s,field_%Name%_dv_s',
         command => 'user-field',
     },
     'acl' => {
@@ -171,7 +171,7 @@ sub _replaceNameHash{
         }elsif(ref($value) eq 'HASH'){
             $value = _replaceNameHash($value,$name);
         }else{
-            $value =~ s/%Name%/$name/;
+            $value =~ s/%Name%/$name/g;
         }
         $ret->{$key} = $value;
     }
@@ -188,7 +188,7 @@ sub _replaceNameArr{
         }elsif(ref($value) eq 'HASH'){
             $value = _replaceNameHash($value,$name);
         }else{
-            $value =~ s/%Name%/$name/;
+            $value =~ s/%Name%/$name/g;
         }
         push @ret, $value;
     }
