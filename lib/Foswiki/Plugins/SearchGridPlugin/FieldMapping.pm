@@ -7,6 +7,13 @@ use Foswiki::Plugins::SearchGridPlugin;
 
 
 my %staticFieldMapping = (
+    "workflowmeta_lastprocessor_static_state_new_s" => {
+        sort => 'none',
+        params => ['workflowmeta_lastprocessor_static_state_new_s', 'workflowmeta_lastprocessor_static_state_new_s'],
+        fieldRestriction => 'workflowmeta_lastprocessor_static_state_new_s',
+        command => 'user-field',
+        title => 'Creator'
+    },
     "author" => {
         sort => 'author_s',
         params => ['author_s', 'author'],
