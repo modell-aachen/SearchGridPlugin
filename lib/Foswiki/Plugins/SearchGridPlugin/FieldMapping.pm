@@ -50,7 +50,6 @@ my %staticFieldMapping = (
         title => 'State'
     },
 );
-
 sub _getFieldMappingTemplate {
     return {
         'text' => {
@@ -115,27 +114,27 @@ sub _getFieldMappingTemplate {
         },
         'user+multi' => {
             sort => 'none',
-            params => ['field_%Name%_dv_s'],
-            fieldRestriction => 'field_%Name%_dv_s',
-            command => 'text-field',
+            params => ['field_%Name%_dv_s','field_%Name%_s'],
+            fieldRestriction => 'field_%Name%_dv_s,field_%Name%_s',
+            command => 'user-field',
         },
         'user+group+multi' => {
             sort => 'none',
-            params => ['field_%Name%_dv_s'],
-            fieldRestriction => 'field_%Name%_dv_s',
-            command => 'text-field',
+            params => ['field_%Name%_dv_s','field_%Name%_s'],
+            fieldRestriction => 'field_%Name%_dv_s,field_%Name%_s',
+            command => 'user-field',
         },
         'user+grouponly' => {
             sort => 'field_%Name%_dv_s',
             params => ['field_%Name%_dv_s'],
             fieldRestriction => 'field_%Name%_dv_s',
-            command => 'text-field',
+            command => 'user-field',
         },
         'user+grouponly+multi' => {
             sort => 'none',
-            params => ['field_%Name%_dv_s'],
-            fieldRestriction => 'field_%Name%_s',
-            command => 'text-field',
+            params => ['field_%Name%_dv_s,field_%Name%_dv_s'],
+            fieldRestriction => 'field_%Name_dv_s,field_%Name%_s',
+            command => 'user-field',
         },
         'select+multi' => {
             sort => 'none',
