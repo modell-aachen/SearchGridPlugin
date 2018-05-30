@@ -50,115 +50,119 @@ my %staticFieldMapping = (
         title => 'State'
     },
 );
-my $fieldMapping = {
-    'text' => {
-        sort => 'field_%Name%_sort',
-        params => ['field_%Name%_s_dv', 'field_%Name%_s'],
-        fieldRestriction => 'field_%Name%_s',
-        command => 'text-field',
-    },
-    'editor' => {
-        sort => 'field_%Name%_sort',
-        params => ['field_%Name%_s', 'field_%Name%_s'],
-        fieldRestriction => 'field_%Name%_s',
-        command => 'text-field',
-    },
-    'integer' => {
-        sort => 'field_%Name%_i',
-        params => ['field_%Name%_i', 'field_%Name%_i'],
-        fieldRestriction => 'field_%Name%_i',
-        command => 'text-field',
-    },
-    'date' => {
-        sort => 'field_%Name%_dt',
-        params => ['field_%Name%_dt'],
-        fieldRestriction => 'field_%Name%_dt',
-        command => 'date-field',
-    },
-    'date2' => {
-        sort => 'field_%Name%_dt',
-        params => ['field_%Name%_dt', ''],
-        fieldRestriction => 'field_%Name%_dt',
-        command => 'date-field',
-    },
-    'user' => {
-        sort => 'field_%Name%_dv_s',
-        params => ['field_%Name%_dv_s', 'field_%Name%_s'],
-        fieldRestriction => 'field_%Name%_s,field_%Name%_dv_s',
-        command => 'user-field',
-    },
-    'acl' => {
-        sort => 'field_%Name%_sort',
-        params => ['field_%Name%_s_dv', 'field_%Name%_s'],
-        fieldRestriction => 'field_%Name%_s',
-        command => 'text-field',
-    },
-    'select' => {
-        sort => 'field_%Name%_s',
-        params => ['field_%Name%_s_dv', 'field_%Name%_s'],
-        fieldRestriction => 'field_%Name%_s',
-        command => 'text-field',
-    },
-    'select+values' => {
-        sort => 'field_%Name%_s',
-        params => ['field_%Name%_s_dv', 'field_%Name%_s'],
-        fieldRestriction => 'field_%Name%_s',
-        command => 'text-field',
-    },
-    'select2' => {
-        sort => 'field_%Name%_s',
-        params => ['field_%Name%_s_dv', 'field_%Name%_s'],
-        fieldRestriction => 'field_%Name%_s',
-        command => 'text-field',
-    },
-    'user+multi' => {
-        sort => 'none',
-        params => ['field_%Name%_dv_s'],
-        fieldRestriction => 'field_%Name%_dv_s',
-        command => 'text-field',
-    },
-    'user+group+multi' => {
-        sort => 'none',
-        params => ['field_%Name%_dv_s'],
-        fieldRestriction => 'field_%Name%_dv_s',
-        command => 'text-field',
-    },
-    'user+grouponly' => {
-        sort => 'field_%Name%_dv_s',
-        params => ['field_%Name%_dv_s'],
-        fieldRestriction => 'field_%Name%_dv_s',
-        command => 'text-field',
-    },
-    'user+grouponly+multi' => {
-        sort => 'none',
-        params => ['field_%Name%_dv_s'],
-        fieldRestriction => 'field_%Name%_s',
-        command => 'text-field',
-    },
-    'select+multi' => {
-        sort => 'none',
-        params => ['field_%Name%_lst'],
-        fieldRestriction => 'field_%Name%_lst',
-        command => 'list-field',
-    },
-    'select2+multi' => {
-        sort => 'none',
-        params => ['field_%Name%_lst'],
-        fieldRestriction => 'field_%Name%_lst',
-        command => 'list-field',
-    },
-    'select2+values+integer' => {
-        sort => 'field_%Name%_i',
-        params => ['field_%Name%_lst'],
-        fieldRestriction => 'field_%Name%_lst',
-        command => 'list-field',
-    },
-};
+
+sub _getFieldMappingTemplate {
+    return {
+        'text' => {
+            sort => 'field_%Name%_sort',
+            params => ['field_%Name%_s_dv', 'field_%Name%_s'],
+            fieldRestriction => 'field_%Name%_s',
+            command => 'text-field',
+        },
+        'editor' => {
+            sort => 'field_%Name%_sort',
+            params => ['field_%Name%_s', 'field_%Name%_s'],
+            fieldRestriction => 'field_%Name%_s',
+            command => 'text-field',
+        },
+        'integer' => {
+            sort => 'field_%Name%_i',
+            params => ['field_%Name%_i', 'field_%Name%_i'],
+            fieldRestriction => 'field_%Name%_i',
+            command => 'text-field',
+        },
+        'date' => {
+            sort => 'field_%Name%_dt',
+            params => ['field_%Name%_dt'],
+            fieldRestriction => 'field_%Name%_dt',
+            command => 'date-field',
+        },
+        'date2' => {
+            sort => 'field_%Name%_dt',
+            params => ['field_%Name%_dt', ''],
+            fieldRestriction => 'field_%Name%_dt',
+            command => 'date-field',
+        },
+        'user' => {
+            sort => 'field_%Name%_dv_s',
+            params => ['field_%Name%_dv_s', 'field_%Name%_s'],
+            fieldRestriction => 'field_%Name%_s,field_%Name%_dv_s',
+            command => 'user-field',
+        },
+        'acl' => {
+            sort => 'field_%Name%_sort',
+            params => ['field_%Name%_s_dv', 'field_%Name%_s'],
+            fieldRestriction => 'field_%Name%_s',
+            command => 'text-field',
+        },
+        'select' => {
+            sort => 'field_%Name%_s',
+            params => ['field_%Name%_s_dv', 'field_%Name%_s'],
+            fieldRestriction => 'field_%Name%_s',
+            command => 'text-field',
+        },
+        'select+values' => {
+            sort => 'field_%Name%_s',
+            params => ['field_%Name%_s_dv', 'field_%Name%_s'],
+            fieldRestriction => 'field_%Name%_s',
+            command => 'text-field',
+        },
+        'select2' => {
+            sort => 'field_%Name%_s',
+            params => ['field_%Name%_s_dv', 'field_%Name%_s'],
+            fieldRestriction => 'field_%Name%_s',
+            command => 'text-field',
+        },
+        'user+multi' => {
+            sort => 'none',
+            params => ['field_%Name%_dv_s'],
+            fieldRestriction => 'field_%Name%_dv_s',
+            command => 'text-field',
+        },
+        'user+group+multi' => {
+            sort => 'none',
+            params => ['field_%Name%_dv_s'],
+            fieldRestriction => 'field_%Name%_dv_s',
+            command => 'text-field',
+        },
+        'user+grouponly' => {
+            sort => 'field_%Name%_dv_s',
+            params => ['field_%Name%_dv_s'],
+            fieldRestriction => 'field_%Name%_dv_s',
+            command => 'text-field',
+        },
+        'user+grouponly+multi' => {
+            sort => 'none',
+            params => ['field_%Name%_dv_s'],
+            fieldRestriction => 'field_%Name%_s',
+            command => 'text-field',
+        },
+        'select+multi' => {
+            sort => 'none',
+            params => ['field_%Name%_lst'],
+            fieldRestriction => 'field_%Name%_lst',
+            command => 'list-field',
+        },
+        'select2+multi' => {
+            sort => 'none',
+            params => ['field_%Name%_lst'],
+            fieldRestriction => 'field_%Name%_lst',
+            command => 'list-field',
+        },
+        'select2+values+integer' => {
+            sort => 'field_%Name%_i',
+            params => ['field_%Name%_lst'],
+            fieldRestriction => 'field_%Name%_lst',
+            command => 'list-field',
+        },
+    };
+}
 
 sub getFieldMapping{
     my $type = shift;
     my $name = shift;
-    my $mapping = $fieldMapping->{$type};
+    my $fieldMappingTemplate = _getFieldMappingTemplate();
+    my $mapping = $fieldMappingTemplate->{$type};
     return _replaceNameHash($mapping,$name) if $mapping;
     return;
 }
