@@ -1,16 +1,16 @@
 <template>
   <td v-if="shouldRenderUserIcon">
-    <template v-for="userName in sortedUserNames">
-      {{userHash[userName].displayName}}
+    <template v-for="user in users">
+      {{user.name}}
       <vue-user-card
-        v-if="!userHash[userName].displayName.includes('Group')"
-        :id="userHash[userName].cuid">
+        v-if="!user.name.includes('Group')"
+        :id="user.id">
       </vue-user-card><br>
     </template>
   </td>
   <td v-else>
-    <template v-for="userName in sortedUserNames">
-      {{userHash[userName].displayName}}<br>
+    <template v-for="user in users">
+      {{user.name}}<br>
     </template>
   </td>
 </template>
@@ -25,22 +25,6 @@ export default {
       shouldRenderUserIcon: function() {
         return this.isEmployeeEnabled && parseInt(this.$foswiki.getPreference('EMPLOYEESAPP_USERICON'));
       },
-      sortedUserNames: function() {
-        let lowerCaseNames = this.userNames.map((userName) => {
-          return userName.toLowerCase();
-        });
-        return lowerCaseNames.sort();
-      },
-      userHash: function() {
-        let users = {};
-        for(let i=0; i < this.userNames.length; i++) {
-          users[this.userNames[i].toLowerCase()] = {
-            cuid: this.userIds[i],
-            displayName: this.userNames[i]
-          }
-        }
-        return users;
-      },
       userNames: function(){
         let userNames = this.doc[this.params[0]] || "";
         return userNames.split(", ");
@@ -48,6 +32,24 @@ export default {
       userIds: function(){
         let userIds = this.doc[this.params[1]] || "";
         return userIds.split(", ");
+      },
+      users: function() {
+        let users = [];
+        this.userNames.forEach((name, index) => {
+          users.push({
+            name,
+            id: this.userIds[index]
+          });
+        });
+        return users.sort((a,b) => {
+              let lcNameA = a.name.toLowerCase();
+              let lcNameB = b.name.toLowerCase();
+              if (lcNameA < lcNameB)
+                    return -1;
+              if (lcNameA > lcNameB)
+                    return 1;
+              return 0;
+        });
       }
     }
 }
