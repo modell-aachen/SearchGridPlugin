@@ -34,21 +34,16 @@ export default {
         return userIds.split(", ");
       },
       users: function() {
-        let users = [];
-        this.userNames.forEach((name, index) => {
-          users.push({
+        let users = this.userNames.map((name, index) => {
+          return {
             name,
             id: this.userIds[index]
-          });
+          };
         });
         return users.sort((a,b) => {
               let lcNameA = a.name.toLowerCase();
               let lcNameB = b.name.toLowerCase();
-              if (lcNameA < lcNameB)
-                    return -1;
-              if (lcNameA > lcNameB)
-                    return 1;
-              return 0;
+              return lcNameA.localeCompare(lcNameB);
         });
       }
     }
