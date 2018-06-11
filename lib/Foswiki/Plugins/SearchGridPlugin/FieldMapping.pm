@@ -8,16 +8,18 @@ use Foswiki::Plugins::SearchGridPlugin;
 
 my %staticFieldMapping = (
     "workflowmeta_lastprocessor_static_state_new_s" => {
-        sort => 'workflowmeta_lastprocessor_static_state_new_dv_s',
-        search => 'workflowmeta_lastprocessor_static_state_new_dv_s',
-        params => ['workflowmeta_lastprocessor_static_state_new_dv_s', 'workflowmeta_lastprocessor_static_state_new_s'],
-        fieldRestriction => 'workflowmeta_lastprocessor_static_state_new_dv_s,workflowmeta_lastprocessor_static_state_new_s',
+        sort => 'workflowmeta_lastprocessor_static_state_new_s',
+        search => 'workflowmeta_lastprocessor_static_state_new_s',
+        facet => 'workflowmeta_lastprocessor_static_state_new_dv_s',
+        params => ['workflowmeta_lastprocessor_static_state_new_s', 'workflowmeta_lastprocessor_static_state_new_s'],
+        fieldRestriction => 'workflowmeta_lastprocessor_static_state_new_s,workflowmeta_lastprocessor_static_state_new_s',
         command => 'user-field',
         title => 'Creator'
     },
     "author" => {
         sort => 'author_s',
         search => 'author_s',
+        facet => 'author_s',
         params => ['author_s', 'author'],
         fieldRestriction => 'author_s, author',
         command => 'user-field',
@@ -26,6 +28,7 @@ my %staticFieldMapping = (
     "title" => {
         sort => 'title_search',
         search => 'title_search',
+        facet => 'title',
         params => ['title'],
         fieldRestriction => 'title',
         command => 'text-field',
@@ -34,6 +37,7 @@ my %staticFieldMapping = (
     "lastEdited" => {
         sort => 'workflowmeta_lasttime_currentstate_dt',
         search => 'workflowmeta_lasttime_currentstate_dt',
+        facet => 'workflowmeta_lasttime_currentstate_dt',
         params => ['workflowmeta_lasttime_currentstate_dt'],
         fieldRestriction => 'workflowmeta_lasttime_currentstate_dt',
         command => 'date-field',
@@ -42,6 +46,7 @@ my %staticFieldMapping = (
     "createDate" => {
         sort => 'createdate',
         search => 'createdate',
+        facet => 'createdate',
         params => ['createdate'],
         fieldRestriction => 'createdate',
         command => 'date-field',
@@ -50,6 +55,7 @@ my %staticFieldMapping = (
     "workflowState" => {
         sort => 'workflowstate_displayname_s',
         search => 'workflowstate_displayname_s',
+        facet => 'workflowstate_displayname_s',
         params => ['workflowstate_displayname_s'],
         fieldRestriction => 'workflowstate_displayname_s',
         command => 'text-field',
@@ -61,6 +67,7 @@ sub _getFieldMappingTemplate {
         'text' => {
             sort => 'field_%Name%_search',
             search => 'field_%Name%_search',
+            facet => 'field_%Name%_s',
             params => ['field_%Name%_s_dv', 'field_%Name%_s'],
             fieldRestriction => 'field_%Name%_s',
             command => 'text-field',
@@ -68,6 +75,7 @@ sub _getFieldMappingTemplate {
         'editor' => {
             sort => 'field_%Name%_sort',
             search => 'field_%Name%_search',
+            facet => 'field_%Name%_s',
             params => ['field_%Name%_s', 'field_%Name%_s'],
             fieldRestriction => 'field_%Name%_s',
             command => 'text-field',
@@ -75,20 +83,23 @@ sub _getFieldMappingTemplate {
         'integer' => {
             sort => 'field_%Name%_i',
             search => 'field_%Name%_i',
+            facet => 'field_%Name%_i',
             params => ['field_%Name%_i', 'field_%Name%_i'],
             fieldRestriction => 'field_%Name%_i',
             command => 'text-field',
         },
         'date' => {
-            sort => 'field_%Name%_dt',
+            sort => 'field_%Name%_dt_sort',
             search => 'field_%Name%_dt',
+            facet => 'field_%Name%_dt',
             params => ['field_%Name%_dt'],
             fieldRestriction => 'field_%Name%_dt',
             command => 'date-field',
         },
         'date2' => {
-            sort => 'field_%Name%_dt',
+            sort => 'field_%Name%_dt_sort',
             search => 'field_%Name%_dt',
+            facet => 'field_%Name%_dt',
             params => ['field_%Name%_dt', ''],
             fieldRestriction => 'field_%Name%_dt',
             command => 'date-field',
@@ -96,6 +107,7 @@ sub _getFieldMappingTemplate {
         'user' => {
             sort => 'field_%Name%_dv_s',
             search => 'field_%Name%_dv_search',
+            facet => 'field_%Name%_dv_s',
             params => ['field_%Name%_dv_s', 'field_%Name%_s'],
             fieldRestriction => 'field_%Name%_s,field_%Name%_dv_s',
             command => 'user-field',
@@ -103,6 +115,7 @@ sub _getFieldMappingTemplate {
         'acl' => {
             sort => 'field_%Name%_sort',
             search => 'field_%Name%_search',
+            facet => 'field_%Name%_s',
             params => ['field_%Name%_s_dv', 'field_%Name%_s'],
             fieldRestriction => 'field_%Name%_s',
             command => 'text-field',
@@ -110,6 +123,7 @@ sub _getFieldMappingTemplate {
         'select' => {
             sort => 'field_%Name%_s',
             search => 'field_%Name%_s',
+            facet => 'field_%Name%_s',
             params => ['field_%Name%_s_dv', 'field_%Name%_s'],
             fieldRestriction => 'field_%Name%_s',
             command => 'text-field',
@@ -117,6 +131,7 @@ sub _getFieldMappingTemplate {
         'select+values' => {
             sort => 'field_%Name%_s',
             search => 'field_%Name%_s',
+            facet => 'field_%Name%_s',
             params => ['field_%Name%_s_dv', 'field_%Name%_s'],
             fieldRestriction => 'field_%Name%_s',
             command => 'text-field',
@@ -124,6 +139,7 @@ sub _getFieldMappingTemplate {
         'select2' => {
             sort => 'field_%Name%_s',
             search => 'field_%Name%_s',
+            facet => 'field_%Name%_s',
             params => ['field_%Name%_s_dv', 'field_%Name%_s'],
             fieldRestriction => 'field_%Name%_s',
             command => 'text-field',
@@ -131,6 +147,7 @@ sub _getFieldMappingTemplate {
         'user+multi' => {
             sort => 'none',
             search => 'none',
+            facet => 'none',
             params => ['field_%Name%_dv_s','field_%Name%_s'],
             fieldRestriction => 'field_%Name%_dv_s,field_%Name%_s',
             command => 'user-field',
@@ -138,6 +155,7 @@ sub _getFieldMappingTemplate {
         'user+group+multi' => {
             sort => 'none',
             search => 'none',
+            facet => 'none',
             params => ['field_%Name%_dv_s','field_%Name%_s'],
             fieldRestriction => 'field_%Name%_dv_s,field_%Name%_s',
             command => 'user-field',
@@ -145,6 +163,7 @@ sub _getFieldMappingTemplate {
         'user+grouponly' => {
             sort => 'field_%Name%_dv_s',
             search => 'field_%Name%_dv_s',
+            facet => 'field_%Name%_dv_s',
             params => ['field_%Name%_dv_s'],
             fieldRestriction => 'field_%Name%_dv_s',
             command => 'user-field',
@@ -152,6 +171,7 @@ sub _getFieldMappingTemplate {
         'user+grouponly+multi' => {
             sort => 'none',
             search => 'none',
+            facet => 'none',
             params => ['field_%Name%_dv_s,field_%Name%_dv_s'],
             fieldRestriction => 'field_%Name_dv_s,field_%Name%_s',
             command => 'user-field',
@@ -159,6 +179,7 @@ sub _getFieldMappingTemplate {
         'select+multi' => {
             sort => 'none',
             search => 'none',
+            facet => 'none',
             params => ['field_%Name%_lst'],
             fieldRestriction => 'field_%Name%_lst',
             command => 'list-field',
@@ -166,6 +187,7 @@ sub _getFieldMappingTemplate {
         'select2+multi' => {
             sort => 'none',
             search => 'none',
+            facet => 'none',
             params => ['field_%Name%_lst'],
             fieldRestriction => 'field_%Name%_lst',
             command => 'list-field',
@@ -173,6 +195,7 @@ sub _getFieldMappingTemplate {
         'select2+values+integer' => {
             sort => 'field_%Name%_i',
             search => 'field_%Name%_i',
+            facet => 'field_%Name%_i',
             params => ['field_%Name%_lst'],
             fieldRestriction => 'field_%Name%_lst',
             command => 'list-field',
