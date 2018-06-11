@@ -490,17 +490,12 @@ sub _parseCommands {
         my($params) = $commandString =~ /\(\s*(.*?)\s*\)/;
         my @paramsArray = split(/\s*,\s*/, $params);
 
-        use v5.10.1;
-        given ($type) {
-            when (/filter/) {
-                push(@$result, _processFilterCommands($command,$form,\@paramsArray));
-            }
-            when (/facet/) {
-                push(@$result, _processFacetCommands($command,$form,\@paramsArray));
-            }
-            default {
-                push(@$result, _processFieldCommands($command,$form,\@paramsArray));
-            }
+        if ($type =~ m/filter/) {
+            push(@$result, _processFilterCommands($command,$form,\@paramsArray));
+        } elsif ($type =~ m/facet/) {
+            push(@$result, _processFacetCommands($command,$form,\@paramsArray));
+        } else {
+            push(@$result, _processFieldCommands($command,$form,\@paramsArray));
         }
     }
     return $result;
@@ -521,7 +516,7 @@ sub _processFieldCommands{
 
     if($form && !$command && $commandResult->{params}[0]){
         my $mapping = _getFieldMapping($form, $commandResult->{params}[0]);
-        if($commandResult->{params}[1] =~ /link/) {
+        if($commandResult->{params} && $commandResult->{params}[1] =~ /link/) {
             $mapping->{command} = 'url-field';
             my $linkTarget = $commandResult->{params}[1] =~ /link[(.*)]/;
             $mapping->{params}[1] = $linkTarget || 'webtopic';
