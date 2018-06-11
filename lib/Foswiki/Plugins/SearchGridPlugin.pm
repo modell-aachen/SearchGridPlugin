@@ -325,7 +325,7 @@ sub _generateFrontendData {
         push(@{$frontendPrefs->{filters}}, $newFilter);
     }
     # Parse facets
-    foreach my $facet (@{_parseCommands($facets)}) {
+    foreach my $facet (@{_parseCommands($facets,$form,'facet')}) {
         @{$facet->{params}}[0] = $session->i18n->maketext(@{$facet->{params}}[0]);
         if(@{$facet->{params}}[3]) {
             $frontendPrefs->{initialFacetting} = 1;
@@ -495,6 +495,9 @@ sub _parseCommands {
             when (/filter/) {
                 push(@$result, _processFilterCommands($command,$form,\@paramsArray));
             }
+            when (/facet/) {
+                push(@$result, _processFacetCommands($command,$form,\@paramsArray));
+            }
             default {
                 push(@$result, _processFieldCommands($command,$form,\@paramsArray));
             }
@@ -534,6 +537,28 @@ sub _processFieldCommands{
     return $commandResult;
 }
 
+# Input: 'multi-select(title,solrField,number,initialValues...)'
+# Short  (if form is given): '(facetType,title,FieldName,Number,initialValues...)'
+# Output: [{command => 'command1', params => [param1,param2]}, {command => 'command2', params => [param1,param2]}]
+sub _processFacetCommands {
+    my $command = shift;
+    my $form = shift;
+    my $paramsArray = shift;
+    my $commandResult = {};
+
+    if($form && !$command){
+        $commandResult->{command} = shift @$paramsArray;
+        my $mapping = _getFieldMapping($form, @$paramsArray[1]);
+        @$paramsArray[1] = $mapping->{facet};
+        $commandResult->{params} = \@$paramsArray;
+    }else{
+        $commandResult->{command} = $command;
+        $commandResult->{params} = $paramsArray;
+    }
+    return $commandResult;
+}
+
+
 # Input: 'full-text-filter(header,param1,param2,...)'
 # Short for full-text-filter (if form is given): '(header,FieldName1,FieldName2)'
 # Output: [{command => 'command1', params => [param1,param2]}, {command => 'command2', params => [param1,param2]}]
@@ -551,12 +576,8 @@ sub _processFilterCommands {
         my $header = shift @$paramsArray;
         push (@autoParamsArray, $header);
         foreach my $param (@$paramsArray) {
-            Foswiki::Func::writeWarning($param);
             my $mapping = _getFieldMapping($form, $param);
             push (@autoParamsArray, $mapping->{search});
-        }
-        foreach my $param (@autoParamsArray) {
-            Foswiki::Func::writeWarning($param);
         }
         $commandResult->{params} = \@autoParamsArray;
     }else{
