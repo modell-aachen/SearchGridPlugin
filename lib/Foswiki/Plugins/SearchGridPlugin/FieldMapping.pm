@@ -8,15 +8,15 @@ use Foswiki::Plugins::SearchGridPlugin;
 
 my %staticFieldMapping = (
     "workflowmeta_lastprocessor_static_state_new_s" => {
-        sort => 'workflowmeta_lastprocessor_static_state_new_dv_s',
-        params => ['workflowmeta_lastprocessor_static_state_new_dv_s', 'workflowmeta_lastprocessor_static_state_new_s'],
-        fieldRestriction => 'workflowmeta_lastprocessor_static_state_new_dv_s,workflowmeta_lastprocessor_static_state_new_s',
+        sort => 'createauthor_dv_s',
+        params => ['createauthor_dv_s', 'createauthor_s'],
+        fieldRestriction => 'createauthor_dv_s,createauthor_s',
         command => 'user-field',
         title => 'Creator'
     },
     "author" => {
-        sort => 'author_s',
-        params => ['author_s', 'author'],
+        sort => 'author_dv_s',
+        params => ['author_dv_s', 'author_s'],
         fieldRestriction => 'author_s, author',
         command => 'user-field',
         title => 'Author'
