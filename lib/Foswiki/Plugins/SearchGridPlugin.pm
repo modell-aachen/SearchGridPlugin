@@ -313,7 +313,7 @@ sub _generateFrontendData {
         }
     }
     # Parse filters
-    foreach my $filter (@{_parseCommands($filters)}) {
+    foreach my $filter (@{_parseCommands($filters,$form,'filter')}) {
         @{$filter->{params}}[0] = $session->i18n->maketext(@{$filter->{params}}[0]);
         if(@{$filter->{params}}[2] and $filter->{command} eq 'select-filter') {
             $frontendPrefs->{initialFiltering} = 1;
@@ -325,7 +325,7 @@ sub _generateFrontendData {
         push(@{$frontendPrefs->{filters}}, $newFilter);
     }
     # Parse facets
-    foreach my $facet (@{_parseCommands($facets)}) {
+    foreach my $facet (@{_parseCommands($facets,$form,'facet')}) {
         @{$facet->{params}}[0] = $session->i18n->maketext(@{$facet->{params}}[0]);
         if(@{$facet->{params}}[3]) {
             $frontendPrefs->{initialFacetting} = 1;
@@ -462,50 +462,124 @@ sub _callSearchProxy {
     return to_json(_searchProxy($session, undef, $query->{param}));
 }
 
-# Input: 'command1(param1,param2),command2(param1,param2)'
-# Short (if form is given): '(FieldName1),(FieldName2)'
-# Output: [{command => 'command1', params => [param1,param2]}, {command => 'command2', params => [param1,param2]}]
+sub _getFieldMapping {
+    my ($form,$field) = @_;
+    my $session = $Foswiki::Plugins::SESSION;
+    my ($fWeb, $fTopic) = Foswiki::Func::normalizeWebTopicName("",$form);
+    my $formObj = Foswiki::Form->new($session, $fWeb, $fTopic);
+    my $formField = $formObj->getField($field);
+    my $mapping;
+    if($formField){
+        $mapping = Foswiki::Plugins::SearchGridPlugin::FieldMapping::getFieldMapping($formField->{type},$formField->{name});
+    } else {
+        $mapping = Foswiki::Plugins::SearchGridPlugin::FieldMapping::getStaticFieldMapping($field);
+    }
+    return $mapping;
+}
+
 sub _parseCommands {
     my $input = shift;
     my $form = shift;
-    my $session = $Foswiki::Plugins::SESSION;
+    my $type = shift || 'fields';
     my $result = [];
 
     foreach my $commandString ($input =~ /\s*(.*?\(.*?\))\s*,?\s*/g) {
-        my $commandResult = {};
+
         my ($command) = $commandString =~ /\s*(.*?)\s*\(/;
-        $commandResult->{command} = $command;
 
         my($params) = $commandString =~ /\(\s*(.*?)\s*\)/;
         my @paramsArray = split(/\s*,\s*/, $params);
-        $commandResult->{params} = \@paramsArray;
-        $commandResult->{name} = $commandResult->{params}[0];
-        if($form && !$command && $commandResult->{params}[0]){
-            my ($fWeb, $fTopic) = Foswiki::Func::normalizeWebTopicName("",$form);
-            my $formObj = Foswiki::Form->new($session, $fWeb, $fTopic);
-            my $formField = $formObj->getField($commandResult->{params}[0]);
-            my $mapping;
-            if($formField){
-                $mapping = Foswiki::Plugins::SearchGridPlugin::FieldMapping::getFieldMapping($formField->{type},$formField->{name});
-            } else {
-                $mapping = Foswiki::Plugins::SearchGridPlugin::FieldMapping::getStaticFieldMapping($commandResult->{params}[0]);
-                $commandResult->{title} = $mapping->{title};
-            }
-                if($commandResult->{params}[1] =~ /link/) {
-                    $mapping->{command} = 'url-field';
-                    my $linkTarget = $commandResult->{params}[1] =~ /link[(.*)]/;
-                    $mapping->{params}[1] = $linkTarget || 'webtopic';
-                    $mapping->{fieldRestriction} .= ',';
-                    $mapping->{fieldRestriction} .= $linkTarget || 'webtopic';
-                }
-                $commandResult->{command} = $mapping->{command};
-                $commandResult->{sort} = $mapping->{sort};
-                $commandResult->{params} = $mapping->{params};
-                $commandResult->{fieldRestriction} = $mapping->{fieldRestriction};
+
+        if ($type =~ m/filter/) {
+            push(@$result, _processFilterCommands($command,$form,\@paramsArray));
+        } elsif ($type =~ m/facet/) {
+            push(@$result, _processFacetCommands($command,$form,\@paramsArray));
+        } else {
+            push(@$result, _processFieldCommands($command,$form,\@paramsArray));
         }
-        push(@$result, $commandResult);
     }
     return $result;
+}
+
+# Input: 'command1(param1,param2),command2(param1,param2)'
+# Short (if form is given): '(FieldName1),(FieldName2)'
+# Output: [{command => 'command1', params => [param1,param2]}, {command => 'command2', params => [param1,param2]}]
+sub _processFieldCommands{
+    my $command = shift;
+    my $form = shift;
+    my $paramsArray = shift;
+
+    my $commandResult = {};
+    $commandResult->{command} = $command;
+    $commandResult->{params} = \@$paramsArray;
+    $commandResult->{name} = $commandResult->{params}[0];
+
+    if($form && !$command && $commandResult->{params}[0]){
+        my $mapping = _getFieldMapping($form, $commandResult->{params}[0]);
+        if($commandResult->{params} && $commandResult->{params}[1] =~ /link/) {
+            $mapping->{command} = 'url-field';
+            my $linkTarget = $commandResult->{params}[1] =~ /link[(.*)]/;
+            $mapping->{params}[1] = $linkTarget || 'webtopic';
+            $mapping->{fieldRestriction} .= ',';
+            $mapping->{fieldRestriction} .= $linkTarget || 'webtopic';
+        }
+        $commandResult->{title} = $mapping->{title} if $mapping->{title};
+        $commandResult->{command} = $mapping->{command};
+        $commandResult->{sort} = $mapping->{sort};
+        $commandResult->{params} = $mapping->{params};
+        $commandResult->{fieldRestriction} = $mapping->{fieldRestriction};
+    }
+    return $commandResult;
+}
+
+# Input: 'multi-select(title,solrField,number,initialValues...)'
+# Short  (if form is given): '(facetType,title,FieldName,Number,initialValues...)'
+# Output: [{command => 'command1', params => [param1,param2]}, {command => 'command2', params => [param1,param2]}]
+sub _processFacetCommands {
+    my $command = shift;
+    my $form = shift;
+    my $paramsArray = shift;
+    my $commandResult = {};
+
+    if($form && !$command){
+        $commandResult->{command} = shift @$paramsArray;
+        my $mapping = _getFieldMapping($form, @$paramsArray[1]);
+        @$paramsArray[1] = $mapping->{facet};
+        $commandResult->{params} = \@$paramsArray;
+    }else{
+        $commandResult->{command} = $command;
+        $commandResult->{params} = $paramsArray;
+    }
+    return $commandResult;
+}
+
+
+# Input: 'full-text-filter(header,param1,param2,...)'
+# Short for full-text-filter (if form is given): '(header,FieldName1,FieldName2)'
+# Output: [{command => 'command1', params => [param1,param2]}, {command => 'command2', params => [param1,param2]}]
+sub _processFilterCommands {
+    my $command = shift;
+    my $form = shift;
+    my $paramsArray = shift;
+
+    my $commandResult = {};
+
+    if($form && !$command){
+        # default filter
+        $commandResult->{command} = "full-text-filter";
+        my @autoParamsArray = ();
+        my $header = shift @$paramsArray;
+        push (@autoParamsArray, $header);
+        foreach my $param (@$paramsArray) {
+            my $mapping = _getFieldMapping($form, $param);
+            push (@autoParamsArray, $mapping->{search});
+        }
+        $commandResult->{params} = \@autoParamsArray;
+    }else{
+        $commandResult->{command} = $command;
+        $commandResult->{params} = $paramsArray;
+    }
+    return $commandResult;
 }
 
 sub _searchProxy {

@@ -2,7 +2,7 @@
     <div class="flatskin-wrapped">
         <div class="grid-x">
             <!--Toplevel container -->
-            <div class="cell">
+            <div class="columns">
                 <!-- Filters and table -->
                 <div v-if="showTopActionBar" class="grid-x wrapper search-grid-top-bar">
                     <!-- Filters -->
