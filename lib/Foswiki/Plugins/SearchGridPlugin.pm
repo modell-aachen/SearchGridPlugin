@@ -190,7 +190,11 @@ sub _searchGrid {
     if($Foswiki::cfg{Plugins}{EmployeesAppPlugin}{Enabled}){
         Foswiki::Plugins::EmployeesAppPlugin::loadJavaScripts($session);
     }
-    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\"><grid preferences-selector='$prefSelector'></grid></div>";
+
+    # register plugin as vuejs client
+    my $vueClientId = "SearchGridContainer_" . substr(md5_hex(rand), -6);
+    my $vueToken = Foswiki::Plugins::VueJSPlugin::registerClient($vueClientId);
+    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\" data-vue-client-id=\"$vueClientId\" data-vue-client-token=\"$vueToken\"><grid preferences-selector='$prefSelector'></grid></div>";
 }
 
 sub _generateFrontendData {
