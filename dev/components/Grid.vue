@@ -1,6 +1,6 @@
 <template>
     <div class="flatskin-wrapped">
-        <div class="grid-x">
+        <div class="row">
             <!--Toplevel container -->
             <div class="columns">
                 <!-- Filters and table -->
