@@ -109,7 +109,7 @@ sub _getFieldMappingTemplate {
             search => 'field_%Name%_dv_search',
             facet => 'field_%Name%_dv_s',
             params => ['field_%Name%_dv_s', 'field_%Name%_s'],
-            fieldRestriction => 'field_%Name%_s','field_%Name%_dv_s',
+            fieldRestriction => 'field_%Name%_dv_s',
             command => 'user-field',
         },
         'acl' => {
@@ -157,6 +157,14 @@ sub _getFieldMappingTemplate {
             search => 'none',
             facet => 'field_%Name%_lst',
             params => ['field_%Name%_dv_s','field_%Name%_s'],
+            fieldRestriction => 'field_%Name%_dv_s',
+            command => 'user-field',
+        },
+        'user+group' => {
+            sort => 'field_%Name%_dv_s',
+            search => 'field_%Name%_dv_s',
+            facet => 'field_%Name%_dv_s',
+            params => ['field_%Name%_dv_s'],
             fieldRestriction => 'field_%Name%_dv_s',
             command => 'user-field',
         },
