@@ -3,7 +3,7 @@
         <h4>{{header}}</h4>
         <div class="facet-select2">
             <vue-select
-                multiple 
+                multiple
                 :placeholder="maketext('Search term...')"
                 v-model="selectedFacet"
                 :initial-options="options"
@@ -50,11 +50,11 @@ export default {
     },
     methods: {
         getOptions: function(search, loading, offset){
-            // loading(true);
+            loading(true);
             let self = this;
             this.$parent.fetchFacetCharacteristics(this, search, offset, function(result){
                 self.buildOptions(result, offset != 0);
-                // loading(false);
+                loading(false);
             });
         },
         onSearch: function(search, loading){
