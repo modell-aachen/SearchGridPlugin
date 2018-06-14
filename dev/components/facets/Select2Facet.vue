@@ -135,7 +135,6 @@ export default {
 
 <style lang="scss">
     .facet-select2 {
-        -webkit-margin-before: 1em;
-        -webkit-margin-after: 1em;
+        margin-top: 1em;
     }
 </style>
