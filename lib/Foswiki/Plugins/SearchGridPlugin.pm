@@ -193,8 +193,8 @@ sub _searchGrid {
 
     # register plugin as vuejs client
     my $vueClientId = "SearchGridContainer_" . substr(md5_hex(rand), -6);
-    my $vueToken = Foswiki::Plugins::VueJSPlugin::registerClient($vueClientId);
-    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\" data-vue-client-id=\"$vueClientId\" data-vue-client-token=\"$vueToken\"><grid preferences-selector='$prefSelector'></grid></div>";
+    my $vueClientToken = Foswiki::Plugins::VueJSPlugin::registerClient($vueClientId);
+    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\" data-vue-client-id=\"$vueClientId\" data-vue-client-token=\"$vueClientToken\"><grid preferences-selector='$prefSelector'></grid></div>";
 }
 
 sub _generateFrontendData {
