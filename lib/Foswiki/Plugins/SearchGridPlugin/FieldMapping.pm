@@ -149,7 +149,7 @@ sub _getFieldMappingTemplate {
             search => 'none',
             facet => 'field_%Name%_lst',
             params => ['field_%Name%_dv_s','field_%Name%_s'],
-            fieldRestriction => 'field_%Name%_dv_s','field_%Name%_s',
+            fieldRestriction => 'field_%Name%_dv_s',
             command => 'user-field',
         },
         'user+group+multi' => {
@@ -157,7 +157,7 @@ sub _getFieldMappingTemplate {
             search => 'none',
             facet => 'field_%Name%_lst',
             params => ['field_%Name%_dv_s','field_%Name%_s'],
-            fieldRestriction => 'field_%Name%_dv_s','field_%Name%_s',
+            fieldRestriction => 'field_%Name%_dv_s',
             command => 'user-field',
         },
         'user+grouponly' => {
@@ -173,7 +173,7 @@ sub _getFieldMappingTemplate {
             search => 'none',
             facet => 'field_%Name%_lst',
             params => ['field_%Name%_dv_s', 'field_%Name%_s'],
-            fieldRestriction => 'field_%Name%_dv_s','field_%Name%_s',
+            fieldRestriction => 'field_%Name%_dv_s',
             command => 'user-field',
         },
         'select+multi' => {
