@@ -1,6 +1,6 @@
 <template>
 <div class="facet">
-    <h4>{{title}}</h4>
+    <label>{{title}}</label>
     <ul class="facet-list">
         <template v-for="value in facetCharacteristics">
             <li v-show="value.count > 0 || isSelected(value)">

@@ -1,6 +1,6 @@
 <template>
     <div class="search-grid-top-filter">
-      <vue-input-text :label="params[0]" v-on:keyup.enter="onConfirm" icon="far fa-search" :placeholder="maketext('Search term...')" :id="id" v-model="filterText">
+      <vue-input-text :label="params[0]" is-small v-on:keyup.enter="onConfirm" :id="id" v-model="filterText">
       </vue-input-text>
     </div>
 </template>

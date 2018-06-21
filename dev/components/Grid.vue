@@ -1,87 +1,91 @@
 <template>
     <div class="flatskin-wrapped">
-        <div class="row">
+        <div class="grid-x">
             <!--Toplevel container -->
-            <div class="columns">
+            <div class="cell">
                 <!-- Filters and table -->
-                <div v-if="showTopActionBar" class="grid-x wrapper search-grid-top-bar">
-                    <!-- Filters -->
-                    <div>
-                        <div class="grid-x align-bottom">
-                            <template v-for="filter in prefs.filters">
+                <div v-if="showTopActionBar" class="grid-x align-bottom">
+                    <div class="cell small-8 medium-10 large-10">
+                        <div class="grid-x">
+                            <!-- Filters -->
+                            <template v-for="filter in prefs.filters" class="cell shrink">
                                 <component v-if="hasLiveFilter" v-on:filter-change="applyFiltersDebounce" v-on:confirm="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                                 <component v-else v-on:confirm="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                             </template>
-                            <div v-if="hasFilters" class="cell">
-                                <div class="button-group">
-                                    <vue-button type="primary" :title='maketext("Apply filters")' @click.native='applyFilters' ></vue-button>
-                                    <vue-button type="delete" :title='maketext("Remove filters")' v-show="isFilterApplied" @click.native="clearFilters"></vue-button>
-                                </div>
+                            <vue-spacer
+                                factor-horizontal="3"/>
+                            <div v-if="hasFilters" class="cell shrink align-self-bottom">
+                                <vue-button type='icon' icon='fas fa-filter' @click.native='applyFilters' />
                             </div>
-                            <div class="cell">
-                              <!--
-                                  Separator which forces the following
-                                  shrinked columns to align to the right
-                               -->
-                            </div>
-                            <div v-if="hasAddons" class="shrink cell">
+                            <div v-if="hasAddons" class="cell shrink">
                               <template v-for="addon in prefs.addons">
                                 <component :is="addon" :api="api">
                                 </component>
                               </template>
                             </div>
-                            <div v-if="hasExcelExport" class="shrink cell">
-                              <div class="button-group">
+                            <div v-if="hasExcelExport" class="cell shrink">
+                              <div class="">
                                 <excel-export :fields="prefs.fields"></excel-export>
                               </div>
                             </div>
-                            <div v-if="hasGridView" class="shrink cell">
-                                <div class="grid-toggle button-group">
+                            <div v-if="hasGridView" class="cell shrink">
+                                <div class="grid-toggle ">
                                     <vue-button v-bind:class="{disabled: isGridView, selected: !isGridView}" type='icon' icon='fa fa-bars'  @click.native="toggleGridView('table')"></vue-button>
                                     <vue-button v-bind:class="{disabled: !isGridView, selected: isGridView}" type='icon' icon='fa fa-th-large'  @click.native="toggleGridView('grid')"></vue-button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="grid-x" v-bind:class="isGridView ? ['medium-up-1', 'xlarge-up-2', 'xxxlarge-up-3', 'xxxxlarge-up-3'] : []">
-                    <!-- Table -->
-                    <div class="cell" v-if="!wizardConfig || !wizardConfig.component" v-show="results.length == 0"><p>{{maketext("No results")}}</p></div>
-                    <div class="cell ma-bg-beige-color" v-else v-show="wizardConfig.component && results.length == 0">
-                      <component class="ma-bg-white-color" :is="wizardConfig.component" :params="wizardConfig.params"></component>
-                    </div>
-                    <div class="cell" v-show="results.status == 'error'"><p>{{maketext(results.msg)}}</p></div>
-                    <div v-show="!isGridView && results.length > 0" class="columns search-grid-results">
-                        <table>
-                            <thead is="grid-header" :headers="filteredFields" :initial-sort="prefs.initialSort"></thead>
-                            <tbody>
-                                <tr v-for="result in results" v-on:click=wrappedEntryClickHandler(result)>
-                                    <td v-for="field in filteredFields" :is="field.component" :doc="result" :params="field.params">
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div v-if="hasGridView" v-show="isGridView && results.length > 0" class="columns" v-for="result in results">
-                        <div :is="prefs.gridField.component" :doc="result" :params="prefs.gridField.params"></div>
+                    <div class="cell small-4 medium-2 large-2">
+                        <vue-button :is-disabled="!isFilterApplied" :title='maketext("Reset all")' @click.native="clearFacets()"/>
                     </div>
                 </div>
                 <div class="grid-x">
-                    <div class="columns">
-                        <vue-pagination v-if="pageCount > 1" @input="pageChanged" :page-count="pageCount" v-model="gridState.currentPage"></vue-pagination>
+                    <div class="cell auto">
+                        <div class="grid-x searchGridTable" v-bind:class="isGridView ? ['medium-up-1', 'xlarge-up-2', 'xxxlarge-up-3', 'xxxxlarge-up-3'] : []">
+                            <!-- Table -->
+                            <div class="cell auto" v-if="!wizardConfig || !wizardConfig.component" v-show="results.length == 0"><p>{{maketext("No results")}}</p></div>
+                            <div class="cell auto ma-bg-beige-color" v-else v-show="wizardConfig.component && results.length == 0">
+                              <component class="ma-bg-white-color" :is="wizardConfig.component" :params="wizardConfig.params"></component>
+                            </div>
+                            <div class="cell auto" v-show="results.status == 'error'"><p>{{maketext(results.msg)}}</p></div>
+                            <div v-show="!isGridView && results.length > 0" class="columns search-grid-results">
+                                <table>
+                                    <thead is="grid-header" :headers="filteredFields" :initial-sort="prefs.initialSort"></thead>
+                                    <tbody>
+                                        <tr v-for="result in results" v-on:click=wrappedEntryClickHandler(result)>
+                                            <td v-for="field in filteredFields" :is="field.component" :doc="result" :params="field.params">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div v-if="hasGridView" v-show="isGridView && results.length > 0" class="columns" v-for="result in results">
+                                <div :is="prefs.gridField.component" :doc="result" :params="prefs.gridField.params"></div>
+                            </div>
+                            <vue-spacer class="cell shrink" v-if="showFacets"
+                                factor-horizontal="5"/>
+                        </div>
+                    </div>
+                    <div v-if="showFacets" class="cell small-4 medium-2 large-2">
+                        <!-- Facets -->
+                        <div class="wrapper">
+                            <div>
+                                <h3 class="headlineFacets">
+                                  {{maketext("Filters")}}
+                                </h3>
+                                <vue-spacer
+                                    factor-vertical="3"/>
+                                <template v-for="facet in prefs.facets">
+                                    <component :is="facet.component" :params="facet.params" :facet-values="facetValues" @facet-changed="facetChanged" :facet-total-counts="prefs.result.facetTotalCounts" @get-facet-info="fetchFacetCharacteristics" @register-facet="registerFacet"/>
+                                </template>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="small-3 columns search-grid-facets" v-if="showFacets">
-                <!-- Facets -->
-                <div class="wrapper">
-                    <div>
-                        <h1 class='primary facets-header'>
-                          <vue-button icon="fa fa-times fa-lg" class="float-right" :title='maketext("Reset all")' @click.native="clearFacets()"/>{{maketext("Facets")}}
-                        </h1>
-                        <template v-for="facet in prefs.facets">
-                            <component :is="facet.component" :params="facet.params" :facet-values="facetValues" @facet-changed="facetChanged" :facet-total-counts="prefs.result.facetTotalCounts" @get-facet-info="fetchFacetCharacteristics" @register-facet="registerFacet"/>
-                        </template>
+                <div class="grid-x">
+                    <div class="cell">
+                        <vue-pagination v-if="pageCount > 1" @input="pageChanged" :page-count="pageCount" v-model="gridState.currentPage"></vue-pagination>
                     </div>
                 </div>
             </div>
@@ -218,6 +222,9 @@ export default {
       hasFilters(){
         return this.prefs.filters.length > 0;
       },
+      hasFacets(){
+        return this.prefs.facets.length > 0;
+      },
       hasExcelExport(){
         return this.prefs.enableExcelExport;
       },
@@ -226,12 +233,15 @@ export default {
                 this.prefs.addons.length > 0);
       },
       showTopActionBar: function( ){
-        return (this.hasFilters ||
-                this.hasExcelExport ||
-                this.hasAddons);
+        return (
+            this.isFilterApplied || this.results.length > 0 && (
+            this.hasFilters ||
+            this.hasExcelExport ||
+            this.hasAddons)
+        );
       },
       showFacets: function(){
-        return this.prefs.facets.length > 0;
+        return (this.results.length > 0 || this.isFilterApplied) && this.prefs.facets.length > 0;
       },
       isLoading: function() {
         return this.request != null;
@@ -309,34 +319,20 @@ export default {
           this.fetchData();
       },
       clearFacets: function () {
-        for(let i = 0; i < this.facets.length; i++){
-          //Only filters have the 'isDefault' property
-          if(!this.facets[i].isFilter){
+        if(this.isFilterApplied){
+          this.isFilterApplied = false;
+          for(let i = 0; i < this.facets.length; i++){
             this.facets[i].reset();
           }
+          this.$nextTick(function(){
+            this.fetchData();
+          });
         }
-        this.$nextTick(function(){
-          this.fetchData();
-        });
-      },
-      clearFilters: function(){
-        this.isFilterApplied = false;
-        for(let i = 0; i < this.facets.length; i++){
-          //Only filters have the 'isDefault' property
-          if(this.facets[i].isFilter){
-            this.facets[i].reset();
-          }
-        }
-        this.$nextTick(function(){
-          this.fetchData();
-        });
       },
       applyFilters: function(){
-        this.isFilterApplied = false;
         for(let i = 0; i < this.facets.length; i++){
           if(this.facets[i].isFilter &&
              !this.facets[i].isDefault){
-            this.isFilterApplied = true;
             break;
           }
         }
@@ -353,10 +349,15 @@ export default {
         return result;
       },
       collectFilterQueries: function(){
+        this.isFilterApplied = false;
         let filterQueries = [];
         for(let i = 0; i < this.facets.length; i++){
-          if(this.facets[i].filterQuery)
-            filterQueries.push(this.facets[i].filterQuery);
+          if(this.facets[i].filterQuery){
+            if(this.facets[i].filterQuery){
+              this.isFilterApplied = true;
+              filterQueries.push(this.facets[i].filterQuery);
+            }
+          }
         }
         return filterQueries;
       },
@@ -571,21 +572,16 @@ h1.facets-header {
   margin: 0px;
 }
 
-.filter-reset {
-  i {
-    margin-left: 5px;
-  }
+.searchGridTable {
+  clear: both;
 }
 
-.search-grid-top-bar {
-  margin-bottom: 10px;
-  .input-group,
-  .button-group,
-  .button-group .button,
-  select,
-   {
-    margin-bottom: 0px;
-  }
+.search-grid-top-filter {
+  width: 262px;
+}
+
+h3.headlineFacets{
+  margin-top: 16px;
 }
 
 .columns.search-grid-results {

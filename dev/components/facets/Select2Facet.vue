@@ -1,9 +1,10 @@
 <template>
     <div class="facet">
-        <h4>{{header}}</h4>
+        <label>{{header}}</label>
         <div class="facet-select2">
             <vue-select
                 multiple
+                is-small
                 :placeholder="maketext('Search term...')"
                 v-model="selectedFacet"
                 :initial-options="options"
@@ -135,6 +136,6 @@ export default {
 
 <style lang="scss">
     .facet-select2 {
-        margin-top: 1em;
+        margin-top: 8px;
     }
 </style>

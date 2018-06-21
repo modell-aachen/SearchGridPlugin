@@ -104,6 +104,7 @@ export default {
 <style lang="scss">
 .facet {
     .facet-list {
+        margin-top: 8px;
         list-style: none !important;
         padding: 0px;
         li {

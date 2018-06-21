@@ -1,6 +1,6 @@
 <template>
 <div class="facet">
-    <h4>{{title}}</h4>
+    <label>{{title}}</label>
     <ul class="facet-list">
         <li>
             <vue-check-item type="radio" v-model="selectedRadio" checked>{{maketext("All")}}</vue-check-item>

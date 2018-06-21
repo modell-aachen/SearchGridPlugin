@@ -1,7 +1,7 @@
 <template>
     <div class="search-grid-top-filter">
         <label v-bind:for="id">{{params[0]}}</label>
-        <vue-select :preventSearchFilter="true" :options="getOptions" v-model="selectedOption"></vue-select>
+        <vue-select is-small :preventSearchFilter="true" :options="getOptions" v-model="selectedOption"></vue-select>
     </div>
 </template>
 
