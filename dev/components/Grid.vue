@@ -68,7 +68,7 @@
                 </div>
                 <div class="grid-x">
                     <div class="columns">
-                        <vue-pagination class="ma-pager-new" v-if="pageCount > 1" :page-count="pageCount" :value="gridState.currentPage"></vue-pagination>
+                        <vue-pagination v-if="pageCount > 1" @input="pageChanged" :page-count="pageCount" v-model="gridState.currentPage"></vue-pagination>
                     </div>
                 </div>
             </div>
