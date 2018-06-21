@@ -353,10 +353,8 @@ export default {
         let filterQueries = [];
         for(let i = 0; i < this.facets.length; i++){
           if(this.facets[i].filterQuery){
-            if(this.facets[i].filterQuery){
-              this.isFilterApplied = true;
-              filterQueries.push(this.facets[i].filterQuery);
-            }
+            this.isFilterApplied = true;
+            filterQueries.push(this.facets[i].filterQuery);
           }
         }
         return filterQueries;
