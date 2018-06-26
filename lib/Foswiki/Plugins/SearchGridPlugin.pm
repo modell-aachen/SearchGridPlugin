@@ -13,7 +13,7 @@ use strict;
 use warnings;
 use Foswiki::Func    ();    # The plugins API
 use Foswiki::Plugins ();    # For the API version
-
+use Digest::MD5 qw(md5_hex);
 use JSON;
 use version; our $VERSION = version->declare("v0.1");
 
