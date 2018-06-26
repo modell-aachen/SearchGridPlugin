@@ -16,7 +16,6 @@ use Foswiki::Plugins ();    # For the API version
 
 use JSON;
 use version; our $VERSION = version->declare("v0.1");
-use Digest::MD5 qw(md5_hex);
 
 use Foswiki::Plugins::SearchGridPlugin::FieldMapping;
 
@@ -191,10 +190,8 @@ sub _searchGrid {
         Foswiki::Plugins::EmployeesAppPlugin::loadJavaScripts($session);
     }
 
-    # register plugin as vuejs client
-    my $vueClientId = "SearchGridContainer_" . substr(md5_hex(rand), -6);
-    my $vueClientToken = Foswiki::Plugins::VueJSPlugin::registerClient($vueClientId);
-    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\" data-vue-client-id=\"$vueClientId\" data-vue-client-token=\"$vueClientToken\"><grid preferences-selector='$prefSelector'></grid></div>";
+    my $vueClientToken = Foswiki::Plugins::VueJSPlugin::getClientToken();
+    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\" data-vue-client-token=\"$vueClientToken\"><grid preferences-selector='$prefSelector'></grid></div>";
 }
 
 sub _generateFrontendData {
