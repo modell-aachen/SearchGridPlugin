@@ -36,7 +36,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="cell small-4 medium-2 large-2">
+                    <div class="cell small-4 medium-2 large-2 resetFilterButton">
                         <vue-button :is-disabled="!isFilterApplied" :title='maketext("Reset all")' @click.native="clearFacets()"/>
                     </div>
                 </div>
@@ -67,7 +67,7 @@
                                 factor-horizontal="5"/>
                         </div>
                     </div>
-                    <div v-if="showFacets" class="cell small-4 medium-2 large-2">
+                    <div v-if="showFacets" class="cell small-4 xlarge-3 xxlarge-2">
                         <!-- Facets -->
                         <div class="wrapper">
                             <div>
@@ -558,6 +558,10 @@ export default {
 </script>
 
 <style lang="scss">
+.flatskin-wrapped div.resetFilterButton a {
+    float: right;
+    margin-right: 0px;
+}
 .searchGridWrapper {
   overflow: auto;
 }
