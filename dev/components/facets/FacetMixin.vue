@@ -40,7 +40,7 @@ export default {
             let queryString = "";
             if(this.selectedFacet.length > 0){
                 for(let i=0; i < this.selectedFacet.length; i++){
-                    queryString += this.escapeSolrQuery(this.selectedFacet[i].field);
+                    queryString += this.escapeSolrQuery((this.selectedFacet[i].field)?this.selectedFacet[i].field:this.selectedFacet[i].value);
                     if(i != this.selectedFacet.length - 1)
                         queryString += " ";
                 }

@@ -87,7 +87,7 @@ export default {
                             options.unshift({
                                 label: this.getLabel(facet.title, facet.count),
                                 title: facet.title,
-                                field: facet.field,
+                                value: facet.field,
                                 count: facet.count
                             });
                         }
@@ -96,7 +96,7 @@ export default {
                     options.push({
                         label: this.getLabel(facet.title, facet.count),
                         title: facet.title,
-                        field: facet.field,
+                        value: facet.field,
                         count: facet.count
                     });
                 }
