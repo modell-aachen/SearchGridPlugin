@@ -558,9 +558,11 @@ export default {
 </script>
 
 <style lang="scss">
-.flatskin-wrapped div.resetFilterButton a {
-    float: right;
-    margin-right: 0px;
+.flatskin-wrapped div.resetFilterButton {
+    text-align: right;
+    a {
+        margin-right: 0px;
+    }
 }
 .searchGridWrapper {
   overflow: auto;
