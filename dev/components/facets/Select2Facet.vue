@@ -6,6 +6,7 @@
                 multiple
                 is-small
                 :placeholder="maketext('Search term...')"
+                :sort-slot-options="false"
                 v-model="selectedFacet"
                 :initial-options="options"
                 :on-search="onSearchDebounce"
@@ -63,7 +64,7 @@ export default {
         },
         onGetMoreOptions: function(search, loading){
             let offset = this.options.length;
-            if(offset && this.options[0].field == '__none__') { // XXX guesswork
+            if(offset && this.options[0].field === '__none__') { // XXX guesswork
                 offset--;
             }
             this.getOptions(search, loading, offset);
@@ -79,7 +80,7 @@ export default {
             for(let i = 0; i < facets.length; i++){
                 let facet = facets[i];
                 if(facet.field == '__none__'){
-                    if(append && this.options && this.options[0] && this.options[0].field === '__none__') {
+                    if(append && this.options && this.options[0] && this.options[0].field == '__none__') {
                         // there already is a 'None' option
                     } else {
                         // sort facet option 'None' to top
@@ -88,6 +89,7 @@ export default {
                                 label: this.getLabel(facet.title, facet.count),
                                 title: facet.title,
                                 value: facet.field,
+                                field: facet.field, // required for sorting / finding out if there is a none option
                                 count: facet.count
                             });
                         }
@@ -107,10 +109,10 @@ export default {
                 this.options = options;
 
             this.options.sort((a, b) => { // this SHOULD be a noop
-                if(a.field === '__none__') {
+                if(a.field == '__none__') {
                     return -1;
                 }
-                if(b.field === '__none__') {
+                if(b.field == '__none__') {
                     return 1;
                 }
 
