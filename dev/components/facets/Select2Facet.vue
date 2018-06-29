@@ -79,8 +79,8 @@ export default {
             let options = [];
             for(let i = 0; i < facets.length; i++){
                 let facet = facets[i];
-                if(facet.field == '__none__'){
-                    if(append && this.options && this.options[0] && this.options[0].field == '__none__') {
+                if(facet.field === '__none__'){
+                    if(append && this.options && this.options[0] && this.options[0].field === '__none__') {
                         // there already is a 'None' option
                     } else {
                         // sort facet option 'None' to top
@@ -109,10 +109,10 @@ export default {
                 this.options = options;
 
             this.options.sort((a, b) => { // this SHOULD be a noop
-                if(a.field == '__none__') {
+                if(a.field === '__none__') {
                     return -1;
                 }
-                if(b.field == '__none__') {
+                if(b.field === '__none__') {
                     return 1;
                 }
 
