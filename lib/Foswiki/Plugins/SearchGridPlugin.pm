@@ -517,7 +517,7 @@ sub _processFieldCommands{
 
     if($form && !$command && $commandResult->{params}[0]){
         my $mapping = _getFieldMapping($form, $commandResult->{params}[0]);
-        if($commandResult->{params} && $commandResult->{params}[1] =~ /link/) {
+        if($commandResult->{params} && $commandResult->{params}[1] && $commandResult->{params}[1] =~ /link/) {
             $mapping->{command} = 'url-field';
             my $linkTarget = $commandResult->{params}[1] =~ /link[(.*)]/;
             $mapping->{params}[1] = $linkTarget || 'webtopic';
