@@ -208,6 +208,14 @@ sub _getFieldMappingTemplate {
             fieldRestriction => 'field_%Name%_lst',
             command => 'list-field',
         },
+        'select2+values' => {
+            sort => 'field_%Name%_s',
+            search => 'field_%Name%_s',
+            facet => 'field_%Name%_s',
+            params => ['field_%Name%_s_dv', 'field_%Name%_s'],
+            fieldRestriction => 'field_%Name%_s',
+            command => 'text-field',
+        },
     };
 }
 
