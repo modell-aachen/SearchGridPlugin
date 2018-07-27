@@ -254,6 +254,11 @@ sub _generateFrontendData {
     $frontendPrefs->{addons} = \@addonlist;
 
     if($initialSort){
+        my @sortFieldToMap = $initialSort =~ m/\((.*?)\)/g;
+        foreach my $sortField (@sortFieldToMap){
+            my $mapping = _getFieldMapping($form, $sortField);
+            $initialSort =~ s/\($sortField\)/$mapping->{sort}/g;
+        }
         $initialSort =~ s/,/ /g;
         $initialSort =~ s/;/,/g;
         $frontendPrefs->{initialSort} = $initialSort;
