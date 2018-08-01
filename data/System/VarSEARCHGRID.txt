@@ -52,6 +52,20 @@ And here is the corresponding macro call:
 | wizardNoEntries | Add a wizard if now entry exists. You could set heading, icon, text and a button (buttonText, buttonHref, buttonCallback). | "" | "vue-wizard(Nothing here,fa-magic,Unfortunately we could not find anything,Create some Topic,ButtonHref,)" |
 | wizardNoResults | Add a wizard for empty resultset You could set heading, icon, text and a button (buttonText, buttonHref, buttonCallback). | "" | "vue-wizard(Nothing here,fa-magic,Unfortunately, we could not find anything for these filters,,,)" |
 
+---++++ Escapings
+
+Most parameters support escaping of special characters. Besides foswiki's [[FormatTokens]] (of which only the important ones are listed here), there are additional escape sequences:
+
+| *Character to be escaped* | *Standard escape* | *Additional escapement* |
+| =,= | =$comma= | =\,= |
+| =%= | =$percent= | |
+| =\= | =\\= | =$backslash= |
+| ="= | =$quot= or =\"= | |
+| =(= | | =$oparenthesis= or =\(= |
+| =)= | | =$cparenthesis= or =\)= |
+| === | | =$equals= or =\== |
+| =;= | | =$semicolon= or =\;= |
+
 ---+++ Fields
 The following fields are predefined and can be used as entries in the fields parameter of the search grid macro:
 

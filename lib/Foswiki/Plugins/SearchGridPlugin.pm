@@ -277,7 +277,7 @@ sub _generateFrontendData {
     my $fieldConfigs = _parseCommands($fields, $form);
     # Parse fields
     foreach my $fieldConfig (@$fieldConfigs) {
-        my @headers = split(/,/,$headers);
+        my @headers = map{_toDisplayString($_)} split(/,/, _escapeBackslashes($headers));
         my $field = {};
         if($fieldConfig->{sort}){
             $field->{sortField} = $fieldConfig->{sort};
@@ -483,11 +483,35 @@ sub _getFieldMapping {
     return $mapping;
 }
 
+sub _escapeBackslashes {
+    my ($string) = @_;
+    $string =~ s#\\\\#\$backslash#g;
+    $string =~ s#\\,#\$comma#g;
+    $string =~ s#\\\(#\$oparenthesis#g;
+    $string =~ s#\\\)#\$cparenthesis#g;
+    $string =~ s#\\=#\$equals#g;
+    $string =~ s#\\;#\$semicolon#g;
+    return $string;
+}
+
+sub _toDisplayString {
+    my ($string) = @_;
+    $string =~ s#\$backslash#\\#g;
+    $string =~ s#\$oparenthesis#(#g;
+    $string =~ s#\$cparenthesis#)#g;
+    $string =~ s#\$equals#=#g;
+    $string =~ s#\$semicolon#;#g;
+    $string = Foswiki::Func::decodeFormatTokens($string);
+    return $string;
+}
+
 sub _parseCommands {
     my $input = shift;
     my $form = shift;
     my $type = shift || 'fields';
     my $result = [];
+
+    $input = _escapeBackslashes($input);
 
     foreach my $commandString ($input =~ /\s*(.*?\(.*?\))\s*,?\s*/g) {
 
@@ -495,6 +519,7 @@ sub _parseCommands {
 
         my($params) = $commandString =~ /\(\s*(.*?)\s*\)/;
         my @paramsArray = split(/\s*,\s*/, $params);
+        @paramsArray = map{_toDisplayString($_)} @paramsArray;
 
         if ($type =~ m/filter/) {
             push(@$result, _processFilterCommands($command,$form,\@paramsArray));
