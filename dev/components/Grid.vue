@@ -12,26 +12,41 @@
                                 <component v-if="hasLiveFilter" v-on:filter-change="applyFiltersDebounce" v-on:confirm="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                                 <component v-else v-on:confirm="applyFilters" :is="filter.component" :params="filter.params" :facet-values="facetValues" @facet-changed="facetChanged" @register-facet="registerFacet"></component>
                             </template>
-                            <vue-spacer
-                                factor-horizontal="3"/>
-                            <div v-if="hasFilters" class="cell shrink align-self-bottom">
+                            <div v-if="hasFilters && !hasLiveFilter" class="cell shrink align-self-bottom">
                                 <vue-button type='icon' icon='fas fa-filter' @click.native='applyFilters' />
                             </div>
-                            <div v-if="hasAddons" class="cell shrink">
+                            <vue-spacer
+                                v-if="hasFilters && !hasLiveFilter"
+                                factor-horizontal="2"/>
+                            <div v-if="hasAddons" class="cell shrink align-self-bottom">
                               <template v-for="addon in prefs.addons">
                                 <component :is="addon" :api="api">
                                 </component>
                               </template>
                             </div>
-                            <div v-if="hasExcelExport" class="cell shrink">
+                            <vue-spacer
+                                v-if="hasAddons"
+                                factor-horizontal="3"/>
+                            <div v-if="hasExcelExport" class="cell shrink align-self-bottom">
                               <div class="">
                                 <excel-export :fields="prefs.fields"></excel-export>
                               </div>
                             </div>
-                            <div v-if="hasGridView" class="cell shrink">
-                                <div class="grid-toggle ">
-                                    <vue-button v-bind:class="{disabled: isGridView, selected: !isGridView}" type='icon' icon='fa fa-bars'  @click.native="toggleGridView('table')"></vue-button>
-                                    <vue-button v-bind:class="{disabled: !isGridView, selected: isGridView}" type='icon' icon='fa fa-th-large'  @click.native="toggleGridView('grid')"></vue-button>
+                            <vue-spacer
+                                v-if="hasExcelExport"
+                                factor-horizontal="3"/>
+                            <div v-if="hasGridView" class="cell shrink align-self-bottom">
+                                <div class="grid-toggle">
+                                    <vue-button
+                                        v-bind:class="{disabled: isGridView, selected: !isGridView}"
+                                        type='icon' icon='fa fa-bars'
+                                        @click.native="toggleGridView('table')"
+                                    >
+                                    </vue-button><vue-button
+                                        v-bind:class="{disabled: !isGridView, selected: isGridView}"
+                                        type='icon' icon='fa fa-th-large'
+                                        @click.native="toggleGridView('grid')">
+                                    </vue-button>
                                 </div>
                             </div>
                         </div>
@@ -582,6 +597,8 @@ h1.facets-header {
 
 .search-grid-top-filter {
   width: 262px;
+  margin-right: 24px;
+
 }
 
 h3.headlineFacets{

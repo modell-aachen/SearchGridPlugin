@@ -139,5 +139,9 @@ export default {
 <style lang="scss">
     .facet-select2 {
         margin-top: 8px;
+        .input-area {
+            padding-top: 4px;
+            padding-bottom: 8px;
+        }
     }
 </style>

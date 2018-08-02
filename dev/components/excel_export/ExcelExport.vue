@@ -126,7 +126,8 @@ export default {
 .excel {
     cursor: pointer;
     img {
-        height: 40px;
+        height: 32px;
+        margin-bottom:16px;
     }
 }
 </style>
