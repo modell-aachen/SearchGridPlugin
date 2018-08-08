@@ -203,7 +203,7 @@ sub _getFieldMappingTemplate {
         'select2+values+multi' => {
             sort => 'none',
             search => 'none',
-            facet => 'field_%Name%_s',
+            facet => 'field_%Name%_lst',
             params => ['field_%Name%_lst_dv'],
             fieldRestriction => 'field_%Name%_lst',
             command => 'list-field',
