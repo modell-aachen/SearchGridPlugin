@@ -200,6 +200,14 @@ sub _getFieldMappingTemplate {
             fieldRestriction => 'field_%Name%_lst',
             command => 'list-field',
         },
+        'select2+values+multi' => {
+            sort => 'none',
+            search => 'none',
+            facet => 'field_%Name%_s',
+            params => ['field_%Name%_lst_dv'],
+            fieldRestriction => 'field_%Name%_lst',
+            command => 'list-field',
+        },
         'select2+values+integer' => {
             sort => 'field_%Name%_i',
             search => 'field_%Name%_i',
