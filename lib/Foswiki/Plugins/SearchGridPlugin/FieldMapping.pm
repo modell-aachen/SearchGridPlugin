@@ -89,7 +89,7 @@ sub _getFieldMappingTemplate {
             command => 'text-field',
         },
         'date' => {
-            sort => 'field_%Name%_dt_sort',
+            sort => 'field_%Name%_sort',
             search => 'field_%Name%_dt',
             facet => 'field_%Name%_dt',
             params => ['field_%Name%_dt'],
@@ -97,7 +97,7 @@ sub _getFieldMappingTemplate {
             command => 'date-field',
         },
         'date2' => {
-            sort => 'field_%Name%_dt_sort',
+            sort => 'field_%Name%_sort',
             search => 'field_%Name%_dt',
             facet => 'field_%Name%_dt',
             params => ['field_%Name%_dt', ''],
