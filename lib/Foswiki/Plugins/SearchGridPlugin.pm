@@ -13,10 +13,9 @@ use strict;
 use warnings;
 use Foswiki::Func    ();    # The plugins API
 use Foswiki::Plugins ();    # For the API version
-
+use Digest::MD5 qw(md5_hex);
 use JSON;
 use version; our $VERSION = version->declare("v0.1");
-use Digest::MD5 qw(md5_hex);
 
 use Foswiki::Plugins::SearchGridPlugin::FieldMapping;
 
@@ -55,7 +54,7 @@ FOOBARSOMETHING. This avoids namespace issues.
 =cut
 
 sub maintenanceHandler {
-    Foswiki::Plugins::MaintenancePlugin::registerCheck("SearchGridPlugin:Prevent glossar in the grid", {
+  Foswiki::Plugins::MaintenancePlugin::registerCheck("SearchGridPlugin:Prevent glossar in the grid", {
     name => "Prevent glossar entries in the grid",
     description => "Disable the glossar in Search Grids.",
     check => sub {
@@ -73,6 +72,45 @@ sub maintenanceHandler {
           priority => $Foswiki::Plugins::MaintenancePlugin::ERROR,
           solution => "Please add '.SearchGridContainer' to {Extensions}{GlossarPlugin}{ExcludeSelector} in configure.<verbatim>{Extensions}{GlossarPlugin}{ExcludeSelector} = \"$excludeSelector\"</verbatim>"
         }
+      }
+    }
+  });
+
+  Foswiki::Plugins::MaintenancePlugin::registerCheck("SearchGridPlugin:Invalid form field names", {
+    name => "Invalid form field names",
+    description => "Form fields may only contain latin alpha-numeric characters and underscore",
+    check => sub {
+      my @forms = split("\n", $Foswiki::Plugins::SESSION->search->searchWeb(
+        name => '*',
+        topic => '*Form',
+        web => 'all',
+        type => 'query',
+        format => '$web.$topic',
+        separator => "\n",
+        nonoise => 1,
+      ));
+
+      my @offenders = ();
+      foreach my $formWebTopic (@forms) {
+        my ($web, $topic) = Foswiki::Func::normalizeWebTopicName(undef, $formWebTopic);
+
+        my $form = new Foswiki::Form($Foswiki::Plugins::SESSION, $web, $topic);
+        foreach my $field (@{$form->getFields}) {
+          next unless $field;
+          my $name = $field->{name};
+          next unless $name && $name =~ s#([^a-zA-Z0-9_])#%RED%<b>$1</b>%ENDCOLOR%#g;
+          push @offenders, "<li>field '$name' in the form [[$web.$topic][$web.$topic]].</li>";
+        }
+      }
+
+      return { result => 0 } unless scalar @offenders;
+
+      unshift @offenders, 'Please remove any non-alphanumeric or underscore characters (a-zA-Z0-9_) from the following fields:<ul>';
+      push @offenders, "</ul>";
+      return {
+        result => 1,
+        priority => $Foswiki::Plugins::MaintenancePlugin::ERROR,
+        solution => join('', @offenders),
       }
     }
   });
@@ -151,7 +189,9 @@ sub _searchGrid {
     if($Foswiki::cfg{Plugins}{EmployeesAppPlugin}{Enabled}){
         Foswiki::Plugins::EmployeesAppPlugin::loadJavaScripts($session);
     }
-    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\"><grid preferences-selector='$prefSelector'></grid></div>";
+
+    my $vueClientToken = Foswiki::Plugins::VueJSPlugin::getClientToken();
+    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\" data-vue-client-token=\"$vueClientToken\"><grid preferences-selector='$prefSelector'></grid></div>";
 }
 
 sub _generateFrontendData {
@@ -492,7 +532,7 @@ sub _searchProxy {
             my $fields = $forms{$form}->getFields();
             my %tempDoc = %doc;
             while(my ($key, $value) = each(%tempDoc)) {
-                if ($key =~ /^field_([A-Za-z0-9]*)_/ && $key !~ /_dv$/) {
+                if ($key =~ /^field_([A-Za-z0-9_]*)_/ && $key !~ /_dv$/) {
                     my $formField = $forms{$form}->getField($1);
                     next unless $formField && $formField->can('getDisplayValue');
 
@@ -529,7 +569,7 @@ sub _searchProxy {
         my $form = Foswiki::Form->new($session, $fweb, $ftopic);
         my $facetDsps = {};
         while(my ($key, $value) = each(%{$content->{facet_counts}->{facet_fields}})) {
-            $key =~ /^field_([A-Za-z0-9]*)_/;
+            $key =~ /^field_([A-Za-z0-9_]*)_/;
             next unless defined $1;
             my $formField = $form->getField($1);
             next unless $formField;
