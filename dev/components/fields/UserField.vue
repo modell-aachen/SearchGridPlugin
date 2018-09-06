@@ -1,5 +1,5 @@
 <template>
-  <td v-if="shouldRenderUserIcon">
+  <div v-if="shouldRenderUserIcon">
     <template v-for="user in users">
       {{user.name}}
       <vue-user-card
@@ -7,12 +7,12 @@
         :id="user.id">
       </vue-user-card><br>
     </template>
-  </td>
-  <td v-else>
+  </div>
+  <div v-else>
     <template v-for="user in users">
       {{user.name}}<br>
     </template>
-  </td>
+  </div>
 </template>
 
 <script>

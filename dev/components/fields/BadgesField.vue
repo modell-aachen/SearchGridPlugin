@@ -1,7 +1,7 @@
 <template>
-    <td>
-        <span class="ma-badge" v-for="item in getList()">{{item}}</span>
-    </td>
+<div>
+    <span class="ma-badge" v-for="item in getList()">{{item}}</span>
+</div>
 </template>
 
 <script>

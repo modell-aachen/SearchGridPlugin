@@ -1,12 +1,10 @@
 <template>
-<td>
     <div class='ampel'>
         <div class='signal'>
             <span v-if="ampel.showDate && ampel.warnStatus != 'none'">{{ampel.dueDate}}</span>
             <img v-tooltip="tooltip" :src="url">
         </div>
     </div>
-</td>
 </template>
 
 <script>

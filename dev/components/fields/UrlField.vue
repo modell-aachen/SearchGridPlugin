@@ -1,11 +1,11 @@
 <template>
-<td>
+<div>
     <template v-for="(item, index) in splitList()">
     <a v-bind:href=item.Url>
         {{item.Title}}<br>
     </a>
     </template>
-</td>
+</div>
 </template>
 
 <script>

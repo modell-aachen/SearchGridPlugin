@@ -65,15 +65,11 @@
                             </div>
                             <div class="cell auto" v-show="results.status == 'error'"><p>{{maketext(results.msg)}}</p></div>
                             <div v-show="!isGridView && results.length > 0" class="columns search-grid-results">
-                                <table>
-                                    <thead is="grid-header" :headers="filteredFields" :initial-sort="prefs.initialSort"></thead>
-                                    <tbody>
-                                        <tr v-for="result in results" v-on:click=wrappedEntryClickHandler(result)>
-                                            <td v-for="field in filteredFields" :is="field.component" :doc="result" :params="field.params">
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <table-controller
+                                  :results="results"
+                                  :filtered-fields="filteredFields"
+                                  :initial-sort="prefs.initialSort"
+                                />
                             </div>
                             <div v-if="hasGridView" v-show="isGridView && results.length > 0" class="columns" v-for="result in results">
                                 <div :is="prefs.gridField.component" :doc="result" :params="prefs.gridField.params"></div>
@@ -81,7 +77,12 @@
                             <vue-spacer class="cell shrink" v-if="showFacets"
                                 factor-horizontal="5"/>
                         </div>
+                        <div class="grid-x">
+                    <div class="cell">
+                        <vue-pagination v-if="pageCount > 1" @input="pageChanged" :page-count="pageCount" v-model="gridState.currentPage"></vue-pagination>
                     </div>
+                    </div>
+                </div>
                     <div v-if="showFacets" class="cell small-4 xlarge-3 xxlarge-2">
                         <!-- Facets -->
                         <div class="wrapper">
@@ -98,11 +99,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="grid-x">
-                    <div class="cell">
-                        <vue-pagination v-if="pageCount > 1" @input="pageChanged" :page-count="pageCount" v-model="gridState.currentPage"></vue-pagination>
-                    </div>
-                </div>
+                
             </div>
         </div>
     </div>
@@ -111,17 +108,7 @@
 
 <script>
 import MaketextMixin from './MaketextMixin.vue'
-import GridHeader from './GridHeader.vue'
-import AmpelField from './fields/AmpelField.vue'
-import UrlField from './fields/UrlField.vue'
-import UrlFormatField from './fields/UrlFormatField.vue'
-import TextField from './fields/TextField.vue'
-import UserField from './fields/UserField.vue'
-import ListField from './fields/ListField.vue'
-import BadgesField from './fields/BadgesField.vue'
-import DateField from './fields/DateField.vue'
-import SolrField from './fields/SolrField.vue'
-import ImageField from './fields/ImageField.vue'
+import TableController from './TableController.vue'
 import TestGridField from './fields/TestGridField.vue'
 import FullTextFilter from './filters/FullTextFilter.vue'
 import SelectFilter from './filters/SelectFilter.vue'
@@ -137,17 +124,7 @@ import debounce from 'lodash/debounce';
 export default {
     mixins: [MaketextMixin],
     components : {
-      GridHeader,
-      AmpelField,
-      UrlField,
-      UrlFormatField,
-      TextField,
-      UserField,
-      ListField,
-      BadgesField,
-      DateField,
-      SolrField,
-      ImageField,
+      TableController,
       TestGridField,
       FullTextFilter,
       SelectFilter,

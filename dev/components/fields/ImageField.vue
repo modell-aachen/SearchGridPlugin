@@ -1,9 +1,9 @@
 <template>
-<td>
+<div>
     <a v-bind:href="url" v-bind:class="classObject">
     <img :src="this.doc[params[0]]">
     </a>
-</td>
+</div>
 </template>
 
 <script>

@@ -1,5 +1,5 @@
 <template>
-    <td>
+    <div>
         <div class="solrSearchHit solrTopicHit clearfix">
             <h3 title="topic">
                 <img class="solrHitIcon" :src="doc['icon']" height="16" width="16"></img>
@@ -11,7 +11,7 @@
             <div class="solrHilite">{{doc["text"]}}</div>
             <div class="solrRevisoin">{{date}}, {{doc["author_s"]}}</div>
         </div>
-    </td>
+    </div>
 </template>
 
 <script>

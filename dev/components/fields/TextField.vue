@@ -1,5 +1,5 @@
 <template>
-    <td>{{doc[params[0]]}}</td>
+    <div>{{doc[params[0]]}}</div>
 </template>
 
 <script>
