@@ -184,8 +184,12 @@ sub _searchGrid {
     Foswiki::Func::expandCommonVariables("%VUE{VERSION=\"2\"}%");
     Foswiki::Func::addToZone( 'script', $prefSelector,
         "<script type='text/json'>$jsonPrefs</script>");
+    
+    #This empty script remains because it funcions as a dependency
+    #for other plugins that extend the SearchGrid with custom components
+    #e.g. InternalProjectsContrib.
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
-        "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js?v=$RELEASE'></script>","jsi18nCore,VUEJSPLUGIN"
+        "<script></script>","jsi18nCore,VUEJSPLUGIN"
     );
     if($Foswiki::cfg{Plugins}{EmployeesAppPlugin}{Enabled}){
         Foswiki::Plugins::EmployeesAppPlugin::loadJavaScripts($session);
