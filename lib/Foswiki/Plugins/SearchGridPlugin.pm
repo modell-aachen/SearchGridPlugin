@@ -151,6 +151,13 @@ sub initPlugin {
                                         http_allow => 'GET,POST',
                                       );
 
+    Foswiki::Func::registerRESTHandler( 'initialResultSet',
+                                        \&_restInitialResultSet,
+                                        authenticate => 0,
+                                        validate => 0,
+                                        http_allow => 'POST',
+                                        );
+
     # Plugin correctly initialized
     $searchGridCounter = 0;
     return 1;
@@ -233,7 +240,6 @@ sub _generateFrontendData {
         facets => [],
         initialFacetting => 0,
         initialFiltering => 0,
-        language => $session->i18n->language,
         form => $form,
         fieldRestriction => $fieldRestriction,
         hasLiveFilter => $hasLiveFilter,
@@ -366,6 +372,14 @@ sub _generateFrontendData {
 
     return $frontendPrefs;
 
+}
+
+sub _restInitialResultSet {
+    my ($session) = @_;
+    my $request = Foswiki::Func::getRequestObject();
+    use Data::Dumper;
+    my $config = from_json($request->param('config'));
+    return to_json(_getInitialResultSet($session, $config));
 }
 
 sub _getInitialResultSet {
