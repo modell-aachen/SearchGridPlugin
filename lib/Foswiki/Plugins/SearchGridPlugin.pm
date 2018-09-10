@@ -230,6 +230,7 @@ sub _generateFrontendData {
     if($fieldRestriction && $params->{enableExcelExport}){
         $enableExcelExport = JSON::true;
     }
+    my $includeDeletedDocuments = (defined $params->{includeDeletedDocuments} && $params->{includeDeletedDocuments} eq '1') ? JSON::true : JSON::false;
 
     my $frontendPrefs = {
         q => $defaultQuery,
@@ -245,7 +246,8 @@ sub _generateFrontendData {
         hasLiveFilter => $hasLiveFilter,
         initialHideColumn => $initialHideColumn,
         enableExcelExport => $enableExcelExport,
-        wizardConfig => {}
+        wizardConfig => {},
+        includeDeletedDocuments => $includeDeletedDocuments
     };
 
     my $wizardNoEntriesConfig = _parseCommands($wizardNoEntries)->[0];
@@ -377,7 +379,6 @@ sub _generateFrontendData {
 sub _restInitialResultSet {
     my ($session) = @_;
     my $request = Foswiki::Func::getRequestObject();
-    use Data::Dumper;
     my $config = from_json($request->param('config'));
     return to_json(_getInitialResultSet($session, $config));
 }
@@ -391,6 +392,7 @@ sub _getInitialResultSet {
         facet => $prefs->{facets} ? 'true' : 'false',
         fl => $prefs->{fieldRestriction},
         form => $prefs->{form},
+        includeDeletedDocuments => [$prefs->{includeDeletedDocuments}],
         'facet.mincount' => 1,
         'facet.field' => [],
         'facet.missing' => 'on',
@@ -664,7 +666,6 @@ sub _searchProxy {
 
     $opts{'facet.mincount'} = 1 unless $opts{'facet.mincount'} && $opts{'facet.mincount'} > 0;
 
-    #my $content = Foswiki::Plugins::SolrPlugin::getSearcher($session)->restSOLRPROXY($web, $topic);
     my $searcher = Foswiki::Plugins::SolrPlugin::getSearcher($session);
     my $results = $searcher->solrSearch(undef, \%opts);
     return {status => 'error', msg => 'Can\'t connect to solr.', details => $results->raw_response->{_content}} unless $results->raw_response->{_rc} =~ /200/;
