@@ -151,6 +151,13 @@ sub initPlugin {
                                         http_allow => 'GET,POST',
                                       );
 
+    Foswiki::Func::registerRESTHandler( 'initialResultSet',
+                                        \&_restInitialResultSet,
+                                        authenticate => 0,
+                                        validate => 0,
+                                        http_allow => 'POST',
+                                        );
+
     # Plugin correctly initialized
     $searchGridCounter = 0;
     return 1;
@@ -184,8 +191,12 @@ sub _searchGrid {
     Foswiki::Func::expandCommonVariables("%VUE{VERSION=\"2\"}%");
     Foswiki::Func::addToZone( 'script', $prefSelector,
         "<script type='text/json'>$jsonPrefs</script>");
+    
+    #This empty script remains because it funcions as a dependency
+    #for other plugins that extend the SearchGrid with custom components
+    #e.g. InternalProjectsContrib.
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
-        "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js?v=$RELEASE'></script>","jsi18nCore,VUEJSPLUGIN"
+        "<script></script>","jsi18nCore,VUEJSPLUGIN"
     );
     if($Foswiki::cfg{Plugins}{EmployeesAppPlugin}{Enabled}){
         Foswiki::Plugins::EmployeesAppPlugin::loadJavaScripts($session);
@@ -219,6 +230,7 @@ sub _generateFrontendData {
     if($fieldRestriction && $params->{enableExcelExport}){
         $enableExcelExport = JSON::true;
     }
+    my $includeDeletedDocuments = (defined $params->{includeDeletedDocuments} && $params->{includeDeletedDocuments} eq '1') ? JSON::true : JSON::false;
 
     my $frontendPrefs = {
         q => $defaultQuery,
@@ -229,13 +241,13 @@ sub _generateFrontendData {
         facets => [],
         initialFacetting => 0,
         initialFiltering => 0,
-        language => $session->i18n->language,
         form => $form,
         fieldRestriction => $fieldRestriction,
         hasLiveFilter => $hasLiveFilter,
         initialHideColumn => $initialHideColumn,
         enableExcelExport => $enableExcelExport,
-        wizardConfig => {}
+        wizardConfig => {},
+        includeDeletedDocuments => $includeDeletedDocuments
     };
 
     my $wizardNoEntriesConfig = _parseCommands($wizardNoEntries)->[0];
@@ -364,6 +376,13 @@ sub _generateFrontendData {
 
 }
 
+sub _restInitialResultSet {
+    my ($session) = @_;
+    my $request = Foswiki::Func::getRequestObject();
+    my $config = from_json($request->param('config'));
+    return to_json(_getInitialResultSet($session, $config));
+}
+
 sub _getInitialResultSet {
     my ($session, $prefs) = @_;
     my %search = (
@@ -373,6 +392,7 @@ sub _getInitialResultSet {
         facet => $prefs->{facets} ? 'true' : 'false',
         fl => $prefs->{fieldRestriction},
         form => $prefs->{form},
+        includeDeletedDocuments => [$prefs->{includeDeletedDocuments}],
         'facet.mincount' => 1,
         'facet.field' => [],
         'facet.missing' => 'on',
@@ -646,7 +666,6 @@ sub _searchProxy {
 
     $opts{'facet.mincount'} = 1 unless $opts{'facet.mincount'} && $opts{'facet.mincount'} > 0;
 
-    #my $content = Foswiki::Plugins::SolrPlugin::getSearcher($session)->restSOLRPROXY($web, $topic);
     my $searcher = Foswiki::Plugins::SolrPlugin::getSearcher($session);
     my $results = $searcher->solrSearch(undef, \%opts);
     return {status => 'error', msg => 'Can\'t connect to solr.', details => $results->raw_response->{_content}} unless $results->raw_response->{_rc} =~ /200/;
