@@ -107,7 +107,7 @@ The following fields are predefined and can be used as entries in the fields par
       <tr>
          <td>User</td>
          <td>user-field(user:solrField(display), user:solrField(cuid)) </td>
-         <td>Yes</td>
+         <td>No</td>
          <td>Just renders the value stored in solrField as plain text. When the EmployeesAppPlugin is enabled, an icon with user information from the EmployeesApp will be shown.</td>
          <td width='40%'>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%"section="FIELD::USER"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::USER" CODE="1"}%</td>
