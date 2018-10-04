@@ -1,6 +1,6 @@
 <template>
 <td>
-    <template v-for="(item, index) in splitList()"> 
+    <template v-for="(item, index) in splitList()">
     <a v-bind:href=item.Url>
         {{item.Title}}<br>
     </a>
@@ -33,12 +33,12 @@ export default {
                     url[index] = "/"+element;
                 }
             });
- 
+
             let topicTitle = this.doc[this.field];
             topicTitle = topicTitle.split(/^, /gm);
- 
+
             var result = new Array();
- 
+
             for(var i = 0 ; i < url.length ; i++){
                 result[i] = {Url:url[i],Title:topicTitle[i]};
             }

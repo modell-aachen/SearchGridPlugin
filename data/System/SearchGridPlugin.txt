@@ -35,7 +35,7 @@ Get Responsible as display value use:
 ---++++ Facet display values
 To get more readable values for the facets, the =form= parameter must be given. Solr does not provides no more informations for the facet fields, so the user has to specify how to render the display value. Here is no _dv value needed.
 ---++ Extension development
-Other apps can define and register custom field and addon components to be used in the search grid. 
+Other apps can define and register custom field and addon components to be used in the search grid.
 ---+++ Custom fields
 A barebone component for a grid field and its registration would look like this:
 

@@ -17,7 +17,7 @@ export default {
     /* params:
         datefield
         show_date (optional)
-        warning_days_yellow (optional) 
+        warning_days_yellow (optional)
         warning_days_red (optional)
     */
     data() {
