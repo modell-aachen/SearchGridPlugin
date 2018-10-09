@@ -151,6 +151,13 @@ sub initPlugin {
                                         http_allow => 'GET,POST',
                                       );
 
+    Foswiki::Func::registerRESTHandler( 'initialResultSet',
+                                        \&_restInitialResultSet,
+                                        authenticate => 0,
+                                        validate => 0,
+                                        http_allow => 'POST',
+                                        );
+
     # Plugin correctly initialized
     $searchGridCounter = 0;
     return 1;
@@ -173,6 +180,7 @@ sub _searchGrid {
     # - FILTER:  List of Filter (e.g. create_date:date,author:user,)
     # - VIEW: defaultSolr,defaultTable,Eigenes Template
     # - displayRows: list von anzeie mata feldern
+    # - wizard: wizard will be displayed if no result or no entry is given
 
     my $frontendPrefs = _generateFrontendData($params);
     my $prefId = md5_hex(rand);
@@ -183,8 +191,12 @@ sub _searchGrid {
     Foswiki::Func::expandCommonVariables("%VUE{VERSION=\"2\"}%");
     Foswiki::Func::addToZone( 'script', $prefSelector,
         "<script type='text/json'>$jsonPrefs</script>");
+    
+    #This empty script remains because it funcions as a dependency
+    #for other plugins that extend the SearchGrid with custom components
+    #e.g. InternalProjectsContrib.
     Foswiki::Func::addToZone( 'script', 'SEARCHGRID',
-        "<script type='text/javascript' src='%PUBURL%/%SYSTEMWEB%/SearchGridPlugin/searchGrid.js?v=$RELEASE'></script>","jsi18nCore,VUEJSPLUGIN"
+        "<script></script>","jsi18nCore,VUEJSPLUGIN"
     );
     if($Foswiki::cfg{Plugins}{EmployeesAppPlugin}{Enabled}){
         Foswiki::Plugins::EmployeesAppPlugin::loadJavaScripts($session);
@@ -212,10 +224,13 @@ sub _generateFrontendData {
     my $fieldRestriction = $params->{fieldRestriction} || '';
     my $gridField = $params->{gridField} || '';
     my $addons = $params->{addons} || '';
+    my $wizardNoResults = $params->{wizardNoResults} || '';
+    my $wizardNoEntries = $params->{wizardNoEntries} || '';
     my $enableExcelExport = JSON::false;
     if($fieldRestriction && $params->{enableExcelExport}){
         $enableExcelExport = JSON::true;
     }
+    my $includeDeletedDocuments = (defined $params->{includeDeletedDocuments} && $params->{includeDeletedDocuments} eq '1') ? JSON::true : JSON::false;
 
     my $frontendPrefs = {
         q => $defaultQuery,
@@ -226,18 +241,36 @@ sub _generateFrontendData {
         facets => [],
         initialFacetting => 0,
         initialFiltering => 0,
-        language => $session->i18n->language,
         form => $form,
         fieldRestriction => $fieldRestriction,
         hasLiveFilter => $hasLiveFilter,
         initialHideColumn => $initialHideColumn,
-        enableExcelExport => $enableExcelExport
+        enableExcelExport => $enableExcelExport,
+        wizardConfig => {},
+        includeDeletedDocuments => $includeDeletedDocuments
     };
+
+    my $wizardNoEntriesConfig = _parseCommands($wizardNoEntries)->[0];
+    $frontendPrefs->{wizardNoEntriesConfig} = {
+        component => $wizardNoEntriesConfig->{command},
+        params => $wizardNoEntriesConfig->{params}
+    };
+    my $wizardNoResultsConfig = _parseCommands($wizardNoResults)->[0];
+    $frontendPrefs->{wizardNoResultsConfig} = {
+        component => $wizardNoResultsConfig->{command},
+        params => $wizardNoResultsConfig->{params}
+    };
+
 
     my @addonlist = split(/,/,$addons);
     $frontendPrefs->{addons} = \@addonlist;
 
     if($initialSort){
+        my @sortFieldToMap = $initialSort =~ m/\((.*?)\)/g;
+        foreach my $sortField (@sortFieldToMap){
+            my $mapping = _getFieldMapping($form, $sortField);
+            $initialSort =~ s/\($sortField\)/$mapping->{sort}/g;
+        }
         $initialSort =~ s/,/ /g;
         $initialSort =~ s/;/,/g;
         $frontendPrefs->{initialSort} = $initialSort;
@@ -248,15 +281,15 @@ sub _generateFrontendData {
     my $index = 0;
 
     #set default fieldRestrictions
-    if($frontendPrefs->{fieldRestrictions}) {
+    if($frontendPrefs->{fieldRestriction}) {
         my %values = map { $_ => 1 } (split(',', $frontendPrefs->{fieldRestriction}), 'web', 'topic', 'form');
-        $frontendPrefs->{fieldRestrictions} = join(',', keys %values);
+        $frontendPrefs->{fieldRestriction} = join(',', keys %values);
     }
 
     my $fieldConfigs = _parseCommands($fields, $form);
     # Parse fields
     foreach my $fieldConfig (@$fieldConfigs) {
-        my @headers = split(/,/,$headers);
+        my @headers = map{_toDisplayString($_)} split(/,/, _escapeBackslashes($headers));
         my $field = {};
         if($fieldConfig->{sort}){
             $field->{sortField} = $fieldConfig->{sort};
@@ -265,12 +298,16 @@ sub _generateFrontendData {
         $field->{sortField} = $parsedSortFields[$index] if $parsedSortFields[$index];
 
         #get Header from form
-        if($form){
+        if($form && !$fieldConfig->{title}){
             my ($fWeb, $fTopic) = Foswiki::Func::normalizeWebTopicName("",$form);
             my $formObj = Foswiki::Form->new($session, $fWeb, $fTopic);
             my $formField = $formObj->getField($fieldConfig->{name});
             $field->{title} = Foswiki::Func::expandCommonVariables($formField->{description});
-            $frontendPrefs->{fieldRestriction} .= ",".$fieldConfig->{fieldRestriction} if $fieldConfig->{fieldRestriction};
+        } else {
+            $field->{title} = $fieldConfig->{title};
+        }
+        if($frontendPrefs->{fieldRestriction} && $fieldConfig->{fieldRestriction}) {
+            $frontendPrefs->{fieldRestriction} .= ",".$fieldConfig->{fieldRestriction};
         }
 
         #override header in headers field
@@ -294,7 +331,7 @@ sub _generateFrontendData {
         }
     }
     # Parse filters
-    foreach my $filter (@{_parseCommands($filters)}) {
+    foreach my $filter (@{_parseCommands($filters,$form,'filter')}) {
         @{$filter->{params}}[0] = $session->i18n->maketext(@{$filter->{params}}[0]);
         if(@{$filter->{params}}[2] and $filter->{command} eq 'select-filter') {
             $frontendPrefs->{initialFiltering} = 1;
@@ -306,7 +343,7 @@ sub _generateFrontendData {
         push(@{$frontendPrefs->{filters}}, $newFilter);
     }
     # Parse facets
-    foreach my $facet (@{_parseCommands($facets)}) {
+    foreach my $facet (@{_parseCommands($facets,$form,'facet')}) {
         @{$facet->{params}}[0] = $session->i18n->maketext(@{$facet->{params}}[0]);
         if(@{$facet->{params}}[3]) {
             $frontendPrefs->{initialFacetting} = 1;
@@ -339,6 +376,13 @@ sub _generateFrontendData {
 
 }
 
+sub _restInitialResultSet {
+    my ($session) = @_;
+    my $request = Foswiki::Func::getRequestObject();
+    my $config = from_json($request->param('config'));
+    return to_json(_getInitialResultSet($session, $config));
+}
+
 sub _getInitialResultSet {
     my ($session, $prefs) = @_;
     my %search = (
@@ -348,6 +392,7 @@ sub _getInitialResultSet {
         facet => $prefs->{facets} ? 'true' : 'false',
         fl => $prefs->{fieldRestriction},
         form => $prefs->{form},
+        includeDeletedDocuments => [$prefs->{includeDeletedDocuments}],
         'facet.mincount' => 1,
         'facet.field' => [],
         'facet.missing' => 'on',
@@ -443,39 +488,149 @@ sub _callSearchProxy {
     return to_json(_searchProxy($session, undef, $query->{param}));
 }
 
-# Input: 'command1(param1,param2),command2(param1,param2)'
-# Short (if form is given): '(FieldName1),(FieldName2)'
-# Output: [{command => 'command1', params => [param1,param2]}, {command => 'command2', params => [param1,param2]}]
+sub _getFieldMapping {
+    my ($form,$field) = @_;
+    my $session = $Foswiki::Plugins::SESSION;
+    my ($fWeb, $fTopic) = Foswiki::Func::normalizeWebTopicName("",$form);
+    my $formObj = Foswiki::Form->new($session, $fWeb, $fTopic);
+    my $formField = $formObj->getField($field);
+    my $mapping;
+    if($formField){
+        $mapping = Foswiki::Plugins::SearchGridPlugin::FieldMapping::getFieldMapping($formField->{type},$formField->{name});
+    } else {
+        $mapping = Foswiki::Plugins::SearchGridPlugin::FieldMapping::getStaticFieldMapping($field);
+    }
+    return $mapping;
+}
+
+sub _escapeBackslashes {
+    my ($string) = @_;
+    $string =~ s#\\\\#\$backslash#g;
+    $string =~ s#\\,#\$comma#g;
+    $string =~ s#\\\(#\$oparenthesis#g;
+    $string =~ s#\\\)#\$cparenthesis#g;
+    $string =~ s#\\=#\$equals#g;
+    $string =~ s#\\;#\$semicolon#g;
+    return $string;
+}
+
+sub _toDisplayString {
+    my ($string) = @_;
+    $string =~ s#\$backslash#\\#g;
+    $string =~ s#\$oparenthesis#(#g;
+    $string =~ s#\$cparenthesis#)#g;
+    $string =~ s#\$equals#=#g;
+    $string =~ s#\$semicolon#;#g;
+    $string = Foswiki::Func::decodeFormatTokens($string);
+    return $string;
+}
+
 sub _parseCommands {
     my $input = shift;
     my $form = shift;
-    my $session = $Foswiki::Plugins::SESSION;
+    my $type = shift || 'fields';
     my $result = [];
 
+    $input = _escapeBackslashes($input);
+
     foreach my $commandString ($input =~ /\s*(.*?\(.*?\))\s*,?\s*/g) {
-        my $commandResult = {};
+
         my ($command) = $commandString =~ /\s*(.*?)\s*\(/;
-        $commandResult->{command} = $command;
 
         my($params) = $commandString =~ /\(\s*(.*?)\s*\)/;
         my @paramsArray = split(/\s*,\s*/, $params);
-        $commandResult->{params} = \@paramsArray;
-        $commandResult->{name} = $commandResult->{params}[0];
-        if($form && !$command && $commandResult->{params}[0]){
-            my ($fWeb, $fTopic) = Foswiki::Func::normalizeWebTopicName("",$form);
-            my $formObj = Foswiki::Form->new($session, $fWeb, $fTopic);
-            my $formField = $formObj->getField($commandResult->{params}[0]);
-            if($formField){
-                my $mapping = Foswiki::Plugins::SearchGridPlugin::FieldMapping::getFieldMapping($formField->{type},$formField->{name});
-                $commandResult->{command} = $mapping->{command};
-                $commandResult->{sort} = $mapping->{sort};
-                $commandResult->{params} = $mapping->{params};
-                $commandResult->{fieldRestriction} = $mapping->{fieldRestriction};
-            }
+        @paramsArray = map{_toDisplayString($_)} @paramsArray;
+
+        if ($type =~ m/filter/) {
+            push(@$result, _processFilterCommands($command,$form,\@paramsArray));
+        } elsif ($type =~ m/facet/) {
+            push(@$result, _processFacetCommands($command,$form,\@paramsArray));
+        } else {
+            push(@$result, _processFieldCommands($command,$form,\@paramsArray));
         }
-        push(@$result, $commandResult);
     }
     return $result;
+}
+
+# Input: 'command1(param1,param2),command2(param1,param2)'
+# Short (if form is given): '(FieldName1),(FieldName2)'
+# Output: [{command => 'command1', params => [param1,param2]}, {command => 'command2', params => [param1,param2]}]
+sub _processFieldCommands{
+    my $command = shift;
+    my $form = shift;
+    my $paramsArray = shift;
+
+    my $commandResult = {};
+    $commandResult->{command} = $command;
+    $commandResult->{params} = \@$paramsArray;
+    $commandResult->{name} = $commandResult->{params}[0];
+
+    if($form && !$command && $commandResult->{params}[0]){
+        my $mapping = _getFieldMapping($form, $commandResult->{params}[0]);
+        if($commandResult->{params} && $commandResult->{params}[1] && $commandResult->{params}[1] =~ /link/) {
+            $mapping->{command} = 'url-field';
+            my $linkTarget = $commandResult->{params}[1] =~ /link[(.*)]/;
+            $mapping->{params}[1] = $linkTarget || 'webtopic';
+            $mapping->{fieldRestriction} .= ',';
+            $mapping->{fieldRestriction} .= $linkTarget || 'webtopic';
+        }
+        $commandResult->{title} = $mapping->{title} if $mapping->{title};
+        $commandResult->{command} = $mapping->{command};
+        $commandResult->{sort} = $mapping->{sort};
+        $commandResult->{params} = $mapping->{params};
+        $commandResult->{fieldRestriction} = $mapping->{fieldRestriction};
+    }
+    return $commandResult;
+}
+
+# Input: 'multi-select(title,solrField,number,initialValues...)'
+# Short  (if form is given): '(facetType,title,FieldName,Number,initialValues...)'
+# Output: [{command => 'command1', params => [param1,param2]}, {command => 'command2', params => [param1,param2]}]
+sub _processFacetCommands {
+    my $command = shift;
+    my $form = shift;
+    my $paramsArray = shift;
+    my $commandResult = {};
+
+    if($form && !$command){
+        $commandResult->{command} = shift @$paramsArray;
+        my $mapping = _getFieldMapping($form, @$paramsArray[1]);
+        @$paramsArray[1] = $mapping->{facet};
+        $commandResult->{params} = \@$paramsArray;
+    }else{
+        $commandResult->{command} = $command;
+        $commandResult->{params} = $paramsArray;
+    }
+    return $commandResult;
+}
+
+
+# Input: 'full-text-filter(header,param1,param2,...)'
+# Short for full-text-filter (if form is given): '(header,FieldName1,FieldName2)'
+# Output: [{command => 'command1', params => [param1,param2]}, {command => 'command2', params => [param1,param2]}]
+sub _processFilterCommands {
+    my $command = shift;
+    my $form = shift;
+    my $paramsArray = shift;
+
+    my $commandResult = {};
+
+    if($form && !$command){
+        # default filter
+        $commandResult->{command} = "full-text-filter";
+        my @autoParamsArray = ();
+        my $header = shift @$paramsArray;
+        push (@autoParamsArray, $header);
+        foreach my $param (@$paramsArray) {
+            my $mapping = _getFieldMapping($form, $param);
+            push (@autoParamsArray, $mapping->{search});
+        }
+        $commandResult->{params} = \@autoParamsArray;
+    }else{
+        $commandResult->{command} = $command;
+        $commandResult->{params} = $paramsArray;
+    }
+    return $commandResult;
 }
 
 sub _searchProxy {
@@ -511,7 +666,6 @@ sub _searchProxy {
 
     $opts{'facet.mincount'} = 1 unless $opts{'facet.mincount'} && $opts{'facet.mincount'} > 0;
 
-    #my $content = Foswiki::Plugins::SolrPlugin::getSearcher($session)->restSOLRPROXY($web, $topic);
     my $searcher = Foswiki::Plugins::SolrPlugin::getSearcher($session);
     my $results = $searcher->solrSearch(undef, \%opts);
     return {status => 'error', msg => 'Can\'t connect to solr.', details => $results->raw_response->{_content}} unless $results->raw_response->{_rc} =~ /200/;

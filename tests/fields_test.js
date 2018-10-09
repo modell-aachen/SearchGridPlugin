@@ -1,4 +1,4 @@
-import TestCase from 'FrontendUnitTestLibrary'
+import TestCase from 'VueJSPlugin/unit-test-dist/frontend-unit-test-library'
 import moment from 'moment'
 // import $ from 'jquery'
 

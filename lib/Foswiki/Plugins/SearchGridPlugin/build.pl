@@ -13,17 +13,9 @@ sub new {
 
 sub target_build {
   my $this = shift;
-  $this->_installDeps();
 }
 
 sub target_compress {}
-
-sub _installDeps {
-  my $this = shift;
-
-  local $| = 1;
-  print $this->sys_action( qw(npm install) );
-}
 
 my $build = SearchGridBuild->new();
 $build->build($build->{target});
