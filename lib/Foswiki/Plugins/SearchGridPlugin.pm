@@ -13,6 +13,8 @@ use strict;
 use warnings;
 use Foswiki::Func    ();    # The plugins API
 use Foswiki::Plugins ();    # For the API version
+use Foswiki::Plugins::SolrPlugin;
+use Foswiki::Plugins::SolrPlugin::Search;
 use Digest::MD5 qw(md5_hex);
 use JSON;
 use version; our $VERSION = version->declare("v0.1");
@@ -660,9 +662,7 @@ sub _searchProxy {
 
     my $wikiUser = Foswiki::Func::getWikiName();
 
-    unless (Foswiki::Func::isAnAdmin($wikiUser)) { # add ACLs
-        push @{$opts{fq}}, " (access_granted:$wikiUser OR access_granted:all)"
-    }
+    push @{$opts{fq}}, Foswiki::Plugins::SolrPlugin::Search::getACLFilters();
 
     $opts{'facet.mincount'} = 1 unless $opts{'facet.mincount'} && $opts{'facet.mincount'} > 0;
 
