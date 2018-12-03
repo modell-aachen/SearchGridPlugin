@@ -224,6 +224,14 @@ sub _getFieldMappingTemplate {
             fieldRestriction => 'field_%Name%_s',
             command => 'text-field',
         },
+        'matheval' => {
+            sort => 'field_%Name%_f',
+            search => 'field_%Name%_f',
+            facet => 'field_%Name%_f',
+            params => ['field_%Name%_f', 'field_%Name%_f'],
+            fieldRestriction => 'field_%Name%_f',
+            command => 'text-field',
+        },
     };
 }
 
