@@ -26,7 +26,7 @@ my %staticFieldMapping = (
         title => 'Author'
     },
     "title" => {
-        sort => 'title_search',
+        sort => 'title_sort',
         search => 'title_search',
         facet => 'title',
         params => ['title'],
@@ -65,7 +65,7 @@ my %staticFieldMapping = (
 sub _getFieldMappingTemplate {
     return {
         'text' => {
-            sort => 'field_%Name%_search',
+            sort => 'field_%Name%_sort',
             search => 'field_%Name%_search',
             facet => 'field_%Name%_s',
             params => ['field_%Name%_s_dv', 'field_%Name%_s'],
