@@ -694,12 +694,14 @@ sub _searchProxy {
                     if(ref($doc->{$key}) eq 'ARRAY'){
                         $dsp = [];
                         foreach my $value (@{$doc->{$key}}){
+                            $dsp = Foswiki::entityDecode($dsp);
                             push(@$dsp, $meta->expandMacros($formField->getDisplayValue($value)));
                         }
                     }
                     else{
                         $dsp = $formField->getDisplayValue($doc->{$key});
                         $dsp = $meta->expandMacros($dsp);
+                        $dsp = Foswiki::entityDecode($dsp);
                     }
                     next unless $dsp;
                     # Add display value to result set.
@@ -736,6 +738,7 @@ sub _searchProxy {
             for(my $index = 0; $index < $length; $index += 2){
                 next unless defined $array[$index]; # set to empty
                 my $dsp = $formField->getDisplayValue($array[$index]);
+                $dsp = Foswiki::entityDecode($dsp);
                 $mapping->{$array[$index]} = $dsp;
             }
         }
