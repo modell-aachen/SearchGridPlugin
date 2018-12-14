@@ -1,5 +1,3 @@
-import TestCase from 'FrontendUnitTestLibrary';
-
 import ExcelFieldRenderer from '../dev/components/excel_export/FieldRenderer.js';
 import UrlFormatField from '../dev/components/fields/UrlFormatField.vue';
 

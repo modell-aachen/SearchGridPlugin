@@ -25,7 +25,8 @@ And here is the corresponding macro call:
    fieldRestriction="title,url,author,createdate,web,type,language"
    gridField="test-grid-field(title,url,createdate)"
    enableExcelExport="1"
-   form="Processes.DocumentForm"
+   wizardNoEntries="vue-wizard(Nothing here,fa-magic,Unfortunately we could not find anything,Create some Topic,ButtonHref,)"
+   wizardNoResults="vue-wizard(Nothing here,fa-magic,Unfortunately we could not find anything for these filters,,,)"
 }%
 %IF{"$CODE='1'" then="</pre>"}%
 %ENDSECTION{"DEFAULT::EXAMPLE"}%
@@ -36,7 +37,7 @@ And here is the corresponding macro call:
 | "..." | This is the default Solr query on which the result set will be based on. | "" | "type:topic form:*DocumentForm" |
 | headers | Comma-separated list of headers in the grid. Automatic maketexting. The header for each formfield will be automaticly set if the form is given. | "" | "Title,Author" |
 | sortFields | This list corresponds to the list of headers and defines on which data field a header should perform sorting. It needs to have as many entries as the headers list. If you do not want to enable sorting for a header, set the entry to "none". The sortField-param for each formfield will be automaticly set if the form is given | "" | "topic,none" |
-| fields | Defines which fields to render and how they should be rendered. A field is always defined in the form "name(param1,param2,...)". Each field could be defined in a short notation "(name)" if it is in the form which is given. See [[#Fields][Fields]]. | "" | "url-field(title,url),text-field(author_s)" |
+| fields | Defines which fields to render and how they should be rendered. A field is always defined in the form "name(param1,param2,...)". Each field could be defined in a short notation "(name)" if it is in the form which is given (More information: [[#Short_definition][short definition]]). See [[#Fields][Fields]]. | "" | "url-field(title,url),text-field(author_s)" |
 | gridField | If this is set to a field component then the grid view is enabled. The specified field component is responsible for rendering a single entry in grid view. | "" | "test-grid-field(title,url,createdate)" |
 | fieldRestriction | Defines which fields should be provided by the solar API in order to minimze the response size. This should be a list of all solr fields needed by the fields, filters and facets used in the grid. The fieldRestriction for each formfield will be automaticly set if the form is given. | "web,form,topic" | "title,url" |
 | filters | List of filters which appear above the grid. See [[#Filters][Filters]]. | "" | "full-text-filter(Title,title)" |
@@ -48,6 +49,22 @@ And here is the corresponding macro call:
 | mappings_{fieldName} | In addition to providing a form it is also possible to provide direct custom mappings for fields. E.g. if you have a field status_s which has values of 0 and 1 then you may want to provide "mappings_status_s="1=Valid;0=Invalid". This will then be used as display values in facets. This can also be used to override mappings that are provided by the form. | "" | "mappings_status_s="1=Valid;0=Invalid" |
 | addons | A list of addon components to use in the grid. See the addons section for details | "" | "my-addon-component" |
 | enableExcelExport | Set this to 1 to enable excel export for the grid. For performance reasons this setting only takes effect if the setting for field restrictions is also set. The export will disregard the current paging and export all entries that match the applied filter settings. It will only export the configured fields that are currently supported. See the individual field descriptions below for further info on supported fields.| "0" | "1" |
+| wizardNoEntries | Add a wizard if now entry exists. You could set heading, icon, text and a button (buttonText, buttonHref, buttonCallback). | "" | "vue-wizard(Nothing here,fa-magic,Unfortunately we could not find anything,Create some Topic,ButtonHref,)" |
+| wizardNoResults | Add a wizard for empty resultset You could set heading, icon, text and a button (buttonText, buttonHref, buttonCallback). | "" | "vue-wizard(Nothing here,fa-magic,Unfortunately, we could not find anything for these filters,,,)" |
+
+---++++ Escapings
+
+Most parameters support escaping of special characters. Besides foswiki's [[FormatTokens]] (of which only the important ones are listed here), there are additional escape sequences:
+
+| *Character to be escaped* | *Standard escape* | *Additional escapement* |
+| =,= | =$comma= | =\,= |
+| =%= | =$percent= | |
+| =\= | =\\= | =$backslash= |
+| ="= | =$quot= or =\"= | |
+| =(= | | =$oparenthesis= or =\(= |
+| =)= | | =$cparenthesis= or =\)= |
+| === | | =$equals= or =\== |
+| =;= | | =$semicolon= or =\;= |
 
 ---+++ Fields
 The following fields are predefined and can be used as entries in the fields parameter of the search grid macro:
@@ -107,7 +124,7 @@ The following fields are predefined and can be used as entries in the fields par
       <tr>
          <td>User</td>
          <td>user-field(user:solrField(display), user:solrField(cuid)) </td>
-         <td>Yes</td>
+         <td>No</td>
          <td>Just renders the value stored in solrField as plain text. When the EmployeesAppPlugin is enabled, an icon with user information from the EmployeesApp will be shown.</td>
          <td width='40%'>%TWISTY{showlink="Show working example"}%%INCLUDE{"%TOPIC%"section="FIELD::USER"}%%ENDTWISTY%</td>
          <td>%INCLUDE{"%TOPIC%" section="FIELD::USER" CODE="1"}%</td>

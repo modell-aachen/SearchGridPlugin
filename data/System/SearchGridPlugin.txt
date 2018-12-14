@@ -17,6 +17,31 @@ This Plugin provides an easy to use macro for generating topic overviews with da
 ---++ Macro
 %INCLUDE{"VarSEARCHGRID"}%
 
+---++ Short definition
+There is a short notation available, which will auto generate most of the needed information:
+
+Example:
+<verbatim>
+%SEARCHGRID{
+   "web:* form:*DummyForm"
+   headers="My Cutom Title,,,Datum,"
+   fields="(author),(WF05611789398461883),(WF08329482890188932,link[target:solrfield]),date-field(date)"
+   fieldRestrictions=""
+   form="System.DummyForm"
+}%
+</verbatim>
+The general idea is, that the name of the form field is given and based on this information and the specified Form, all needed data will be generated. So the Form value is mandatory.
+---+++ Links
+When the field should be a link, this can be specified by writing 'link' as second argument. The default target is webtopic, when this should be overwritten a target can be specified in the []-Field directly behind the link text.
+---+++ Special Fields
+There are some special metadata fields, which are not defined in a Form, but stored by Solr:
+| *Field name* | *Solr field* |
+| author | author_s |
+| title | title |
+| lastEdited | workflowmeta_lasttime_currentstate_dt |
+| createDate | createdate |
+| workflowState | workflowstate_displayname_s |
+
 ---++ Solr Proxy
 The plugin adds a 'REST proxy' which will forward the solr request to the solr plugin and processe the answer that are the main display values are added. For fields which have an displayvalue like Select+value fields. The result set gets an extra field with postfix =_dv=. So for a =field_Status_s= there is also a =field_Status_s_dv= which is the mapped value of the field_Status_s field.
 
@@ -35,7 +60,7 @@ Get Responsible as display value use:
 ---++++ Facet display values
 To get more readable values for the facets, the =form= parameter must be given. Solr does not provides no more informations for the facet fields, so the user has to specify how to render the display value. Here is no _dv value needed.
 ---++ Extension development
-Other apps can define and register custom field and addon components to be used in the search grid. 
+Other apps can define and register custom field and addon components to be used in the search grid.
 ---+++ Custom fields
 A barebone component for a grid field and its registration would look like this:
 
