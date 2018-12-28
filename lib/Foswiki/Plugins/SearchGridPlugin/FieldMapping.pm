@@ -245,7 +245,7 @@ sub getFieldMapping{
 }
 sub getStaticFieldMapping{
     my $id = shift;
-    return %staticFieldMapping{$id};
+    return $staticFieldMapping{$id};
 }
 sub _replaceNameHash{
     my $arr = shift;
