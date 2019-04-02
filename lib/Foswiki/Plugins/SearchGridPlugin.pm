@@ -454,7 +454,13 @@ sub _getInitialResultSet {
     }
 
     my $searchProxyResult = _searchProxy($session, $prefs->{q}, \%search);
-
+    if($searchProxyResult->{status} eq 'error') {
+        return {
+            status => 'error',
+            msg => 'Can\'t connect to solr.',
+            details => $searchProxyResult->{details},
+        };
+    }
     # We additionally add the total number of characteristics per facet
     # For now we do a separate search for this
     $searchProxyResult->{facetTotalCounts} = {};

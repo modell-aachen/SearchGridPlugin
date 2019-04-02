@@ -88,6 +88,14 @@ sub _getFieldMappingTemplate {
             fieldRestriction => 'field_%Name%_i',
             command => 'text-field',
         },
+        'realnumber' => {
+            sort => 'field_%Name%_d',
+            search => 'field_%Name%_d',
+            facet => 'field_%Name%_d',
+            params => ['field_%Name%_d'],
+            fieldRestriction => 'field_%Name%_d',
+            command => 'text-field',
+        },
         'date' => {
             sort => 'field_%Name%_sort',
             search => 'field_%Name%_dt',
