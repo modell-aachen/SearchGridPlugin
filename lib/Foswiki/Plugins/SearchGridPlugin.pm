@@ -454,7 +454,7 @@ sub _getInitialResultSet {
     }
 
     my $searchProxyResult = _searchProxy($session, $prefs->{q}, \%search);
-    if($searchProxyResult->{status} eq 'error') {
+    if((defined $searchProxyResult->{status}) && $searchProxyResult->{status} eq 'error') {
         return {
             status => 'error',
             msg => 'Can\'t connect to solr.',
