@@ -154,7 +154,7 @@ sub _getFieldMappingTemplate {
         },
         'user+multi' => {
             sort => 'none',
-            search => 'field_%Name%_select_lst',
+            search => 'field_%Name%_dv_search',
             facet => 'field_%Name%_lst',
             params => ['field_%Name%_dv_s','field_%Name%_s'],
             fieldRestriction => 'field_%Name%_s,field_%Name%_dv_s',
@@ -162,7 +162,7 @@ sub _getFieldMappingTemplate {
         },
         'user+group+multi' => {
             sort => 'none',
-            search => 'field_%Name%_select_lst',
+            search => 'field_%Name%_dv_search',
             facet => 'field_%Name%_lst',
             params => ['field_%Name%_dv_s','field_%Name%_s'],
             fieldRestriction => 'field_%Name%_s,field_%Name%_dv_s',
@@ -170,7 +170,7 @@ sub _getFieldMappingTemplate {
         },
         'user+group' => {
             sort => 'field_%Name%_dv_s',
-            search => 'field_%Name%_dv_s',
+            search => 'field_%Name%_dv_search',
             facet => 'field_%Name%_dv_s',
             params => ['field_%Name%_dv_s','field_%Name%_s'],
             fieldRestriction => 'field_%Name%_s,field_%Name%_dv_s',
@@ -178,7 +178,7 @@ sub _getFieldMappingTemplate {
         },
         'user+grouponly' => {
             sort => 'field_%Name%_dv_s',
-            search => 'field_%Name%_dv_s',
+            search => 'field_%Name%_dv_search',
             facet => 'field_%Name%_dv_s',
             params => ['field_%Name%_dv_s','field_%Name%_s'],
             fieldRestriction => 'field_%Name%_s,field_%Name%_dv_s',
@@ -186,7 +186,7 @@ sub _getFieldMappingTemplate {
         },
         'user+grouponly+multi' => {
             sort => 'none',
-            search => 'none_s',
+            search => 'field_%Name%_dv_search',
             facet => 'field_%Name%_lst',
             params => ['field_%Name%_dv_s', 'field_%Name%_s'],
             fieldRestriction => 'field_%Name%_s,field_%Name%_dv_s',
