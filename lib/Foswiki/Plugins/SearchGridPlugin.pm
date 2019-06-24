@@ -205,7 +205,8 @@ sub _searchGrid {
     }
 
     my $vueClientToken = Foswiki::Plugins::VueJSPlugin::getClientToken();
-    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\" data-vue-client-token=\"$vueClientToken\"><grid preferences-selector='$prefSelector'></grid></div>";
+    Foswiki::Plugins::JSi18nPlugin::JSI18N($session, 'SearchGridPlugin', 'SearchGrid');
+    return "<div class=\"SearchGridContainer\"><span class=\"foswikiHidden prefsSelector\">$prefSelector</span></div>";
 }
 
 sub _generateFrontendData {
