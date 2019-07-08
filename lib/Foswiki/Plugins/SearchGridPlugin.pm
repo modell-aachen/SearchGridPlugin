@@ -100,7 +100,7 @@ sub maintenanceHandler {
         foreach my $field (@{$form->getFields}) {
           next unless $field;
           my $name = $field->{name};
-          next unless $name && $name =~ s#([^a-zA-Z0-9_])#%RED%<b>$1</b>%ENDCOLOR%#g;
+          next unless $name && $name =~ s#([^a-zA-Z0-9_])#%RED{encode="none"}%<b>$1</b>%ENDCOLOR{encode="none"}%#g;
           push @offenders, "<li>field '$name' in the form [[$web.$topic][$web.$topic]].</li>";
         }
       }
@@ -205,7 +205,8 @@ sub _searchGrid {
     }
 
     my $vueClientToken = Foswiki::Plugins::VueJSPlugin::getClientToken();
-    return "%JSI18N{\"SearchGridPlugin\" id=\"SearchGrid\"}%<div class=\"SearchGridContainer\" data-vue-client-token=\"$vueClientToken\"><grid preferences-selector='$prefSelector'></grid></div>";
+    Foswiki::Plugins::JSi18nPlugin::JSI18N($session, 'SearchGridPlugin', 'SearchGrid');
+    return "<div class=\"SearchGridContainer\"><span class=\"foswikiHidden prefsSelector\">$prefSelector</span></div>";
 }
 
 sub _generateFrontendData {
