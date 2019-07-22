@@ -225,7 +225,6 @@ sub _generateFrontendData {
     my $facets = $params->{facets} || '';
     my $form = $params->{form} || '';
     my $fieldRestriction = $params->{fieldRestriction} || '';
-    my $gridField = $params->{gridField} || '';
     my $addons = $params->{addons} || '';
     my $wizardNoResults = $params->{wizardNoResults} || '';
     my $wizardNoEntries = $params->{wizardNoEntries} || '';
@@ -325,14 +324,6 @@ sub _generateFrontendData {
         $index++;
     }
 
-    # Parse grid field
-    if($gridField){
-        my $gridField = @{_parseCommands($gridField)}[0];
-        $frontendPrefs->{gridField} = {
-            component => $gridField->{command},
-            params => $gridField->{params}
-        }
-    }
     # Parse filters
     foreach my $filter (@{_parseCommands($filters,$form,'filter')}) {
         @{$filter->{params}}[0] = $session->i18n->maketext(@{$filter->{params}}[0]);
