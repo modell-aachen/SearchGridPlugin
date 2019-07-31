@@ -23,7 +23,6 @@ And here is the corresponding macro call:
    resultsPerPage="10"
    initialSort="title_sort,desc"
    fieldRestriction="title,url,author,createdate,web,type,language"
-   gridField="test-grid-field(title,url,createdate)"
    enableExcelExport="1"
    wizardNoEntries="vue-wizard(Nothing here,fa-magic,Unfortunately we could not find anything,Create some Topic,ButtonHref,)"
    wizardNoResults="vue-wizard(Nothing here,fa-magic,Unfortunately we could not find anything for these filters,,,)"
@@ -38,7 +37,6 @@ And here is the corresponding macro call:
 | headers | Comma-separated list of headers in the grid. Automatic maketexting. The header for each formfield will be automaticly set if the form is given. | "" | "Title,Author" |
 | sortFields | This list corresponds to the list of headers and defines on which data field a header should perform sorting. It needs to have as many entries as the headers list. If you do not want to enable sorting for a header, set the entry to "none". The sortField-param for each formfield will be automaticly set if the form is given | "" | "topic,none" |
 | fields | Defines which fields to render and how they should be rendered. A field is always defined in the form "name(param1,param2,...)". Each field could be defined in a short notation "(name)" if it is in the form which is given (More information: [[#Short_definition][short definition]]). See [[#Fields][Fields]]. | "" | "url-field(title,url),text-field(author_s)" |
-| gridField | If this is set to a field component then the grid view is enabled. The specified field component is responsible for rendering a single entry in grid view. | "" | "test-grid-field(title,url,createdate)" |
 | fieldRestriction | Defines which fields should be provided by the solar API in order to minimze the response size. This should be a list of all solr fields needed by the fields, filters and facets used in the grid. The fieldRestriction for each formfield will be automaticly set if the form is given. | "web,form,topic" | "title,url" |
 | filters | List of filters which appear above the grid. See [[#Filters][Filters]]. | "" | "full-text-filter(Title,title)" |
 | facets | List of facets which appear next to the grid. See [[#Facets][Facets]]. | "" | "multi-select-facet(Webs,web),single-select-facet(Author,author)" |
